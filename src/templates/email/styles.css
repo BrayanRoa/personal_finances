@@ -1,0 +1,36 @@
+.welcome-card {
+    width: 300px;
+    padding: 20px;
+    margin: auto;
+    text-align: center;
+    background-color: #f7f7f7;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-image {
+    width: 100%;
+    height: auto;
+}
+
+.card-title {
+    margin: 20px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.card-description {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.card-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
