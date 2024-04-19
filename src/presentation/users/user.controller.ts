@@ -32,28 +32,28 @@ export class UserController {
     }
 
     public create = (req: Request, res: Response) => {
-        const { email_user, ...rest } = req.body
+        const { id_user, ...rest } = req.body
         const emailService = new EmailService(envs.MAILER_SERVICE, envs.MAILER_EMAIL, envs.MAILER_SECRET_KEY)
         new CreateUser(this.userRepository, emailService)
-            .execute(rest, email_user)
+            .execute(rest, id_user)
             .then(user => CustomResponse.handleResponse(res, user, 201))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
     public update = async (req: Request, res: Response) => {
         const id = req.params.id
-        const { email_user, ...rest } = req.body
+        const { id_user, ...rest } = req.body
         new UpdateUser(this.userRepository)
-            .execute(id, rest, email_user)
+            .execute(id, rest, id_user)
             .then(user => CustomResponse.handleResponse(res, user, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
     public delete = async (req: Request, res: Response) => {
         const id = req.params.id;
-        const { email_user } = req.body
+        const { id_user } = req.body
         new DeleteUser(this.userRepository)
-            .execute(id, email_user)
+            .execute(id, id_user)
             .then(user => CustomResponse.handleResponse(res, user, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }

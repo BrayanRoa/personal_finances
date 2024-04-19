@@ -15,7 +15,7 @@ export interface Meta {
 
 export class ValidationDb {
 
-    validate(error: any):CustomResponse | undefined {
+    validate(error: any): CustomResponse | undefined {
         const errors = error as PrismaErrors;
 
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -27,6 +27,8 @@ export class ValidationDb {
                     return new CustomResponse(`table name: '${errors.meta.modelName}' dont exist in database`, 400);
                 case 'P2025':
                     return new CustomResponse(`${errors.meta.cause}`, 404);
+                case 'P2003':
+                    return new CustomResponse(`Foreign key constraint failed on field: '${errors.meta.field_name}' in model: '${errors.meta.modelName}'`, 400)
                 default:
                     return new CustomResponse(`review this code error ${errors.code}`, 400)
             }

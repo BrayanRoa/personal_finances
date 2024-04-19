@@ -6,6 +6,7 @@ import { AuthRoutes } from './auth/auth.routes'
 import { envs } from '../config/envs';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocs } from '../utils/swagger/swaggerOptions';
+import { CategoryRoutes } from './category/category.routes';
 
 export class Server {
 
@@ -36,6 +37,7 @@ export class Server {
         return [
             new UserRoutes().router,
             new AuthRoutes().router,
+            new CategoryRoutes().router
             // new AuthRouter().router,
             // new PersonRouter().router,
             // new DocumentTypeRouter().router,

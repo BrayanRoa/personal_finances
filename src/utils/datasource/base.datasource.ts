@@ -30,7 +30,7 @@ export class BaseDatasource {
         const audit: CreateAuditDTO = {
             class_name: this.audit_class,
             data: JSON.stringify(data),
-            id_class: data.id,
+            id_class: data.id.toString(),
             type,
             user: user_audits
         }

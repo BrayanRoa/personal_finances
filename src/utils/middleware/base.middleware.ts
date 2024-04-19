@@ -20,7 +20,7 @@ export class SharedMiddleware<T extends {}, U extends {}> {
 
     public async validateDto(req: Request, res: Response, next: NextFunction, type: "create" | "update") {
         let data: T | U;
-        const { email_user, ...rest } = req.body
+        const { id_user, ...rest } = req.body
         if (type === "create") {
             data = Object.assign(new this.TCreateDto(), rest);
         } else {
@@ -52,7 +52,7 @@ export class SharedMiddleware<T extends {}, U extends {}> {
 
         if (!authorization.startsWith("Bearer ")) return CustomResponse.Unauthorized(res, `invalid Bearer token`);
 
-        const token = authorization.split(" ")[1] || "" 
+        const token = authorization.split(" ")[1] || ""
 
         try {
             const payload = await JwtAdapter.decodeToken<{ id: string }>(token);
@@ -65,7 +65,7 @@ export class SharedMiddleware<T extends {}, U extends {}> {
             })
             if (!user) return CustomResponse.Unauthorized(res, `Token invalid - Contact the administrator`);
 
-            req.body.email_user = user.email;
+            req.body.userId = user.id;
             next();
 
         } catch (error: any) {
