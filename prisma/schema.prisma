@@ -46,12 +46,12 @@ model Transaction {
   deleted_at DateTime?
 
   userId String //* Esta columna almacenará la clave foránea (foreign key)
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
-  walletId Int    @unique // Clave foránea marcada como única
+  walletId Int // Clave foránea
   wallet   Wallet @relation(fields: [walletId], references: [id])
 
-  categoryId Int      @unique // Clave foránea
+  categoryId Int // Clave foránea
   category   Category @relation(fields: [categoryId], references: [id])
 
   tags Tag[]
@@ -66,9 +66,9 @@ model Wallet {
   deleted_at  DateTime?
 
   userId String
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
-  transaction Transaction?
+  transactions Transaction[] // Un Wallet puede tener múltiples transacciones
 }
 
 model Category {
@@ -79,7 +79,7 @@ model Category {
   deleted_at       DateTime?
   userId           String
   User             User?            @relation(fields: [userId], references: [id])
-  Transaction      Transaction?
+  Transaction      Transaction[]
   BudgetCategories BudgetCategory[]
 }
 
@@ -92,7 +92,7 @@ model Tag {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  userId String 
+  userId String?
   User   User?   @relation(fields: [userId], references: [id])
 
   transactionId Int?

@@ -14,8 +14,8 @@ export class AuthRepositoryImpl implements AuthRepository {
     updateUser(id: string, data: UpdateUserDto): Promise<boolean | CustomResponse> {
         return this.datasource.updateUSer(id, data)
     }
-    getOneUser(param: string): Promise<UserEntity | CustomResponse> {
-        return this.datasource.findOneUser(param)
+    getOneUser(param: string, type?: string): Promise<UserEntity | CustomResponse> {
+        return this.datasource.findOneUser(param, type)
     }
     async registerUser(user: CreateUserDto): Promise<UserEntity | CustomResponse> {  
         const hashedPassword = await this.passwordHasher.hashPassword(user.password)

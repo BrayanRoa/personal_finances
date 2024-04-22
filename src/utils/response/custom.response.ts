@@ -3,7 +3,7 @@ import { Response } from "express";
 export enum HttpStatus {
     OK = 200,
     CREATED = 201,
-    NO_CONTENT = 204,
+    DELETED = 204,
     BAD_REQUEST = 400,
     UNAUTHORIZED = 401,
     FORBIDDEN = 403,
@@ -39,6 +39,8 @@ export class CustomResponse extends Error {
                     return this.Ok(res, error);
                 case 201:
                     return this.Created(res, error);
+                case 204:
+                    return this.Deleted(res, error);
                 default:
                     return this.Error(res, error);
             }
@@ -64,10 +66,10 @@ export class CustomResponse extends Error {
         })
     }
 
-    static NoContent(res: Response, data: any): Response {
-        return res.status(HttpStatus.NO_CONTENT).json({
-            status: HttpStatus.NO_CONTENT,
-            statusMsg: "NO CONTENT",
+    static Deleted(res: Response, data: any): Response {
+        return res.status(HttpStatus.OK).json({
+            status: HttpStatus.OK,
+            statusMsg: "DELETED",
             data
         })
     }

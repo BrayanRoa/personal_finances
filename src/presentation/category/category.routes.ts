@@ -30,9 +30,6 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
          *              name:
          *                type: string
          *                example: Food
-         *              userId:
-         *                type: string
-         *                example: 7e05dd99-5912-48a1-b5bb-bb44ca8aa8cf
          *    responses:
          *      '201':
          *        description: Category created successfully

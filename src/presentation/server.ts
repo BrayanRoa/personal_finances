@@ -7,6 +7,7 @@ import { envs } from '../config/envs';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocs } from '../utils/swagger/swaggerOptions';
 import { CategoryRoutes } from './category/category.routes';
+import { TransactionRoutes } from './transaction/transaction.routes';
 
 export class Server {
 
@@ -37,7 +38,8 @@ export class Server {
         return [
             new UserRoutes().router,
             new AuthRoutes().router,
-            new CategoryRoutes().router
+            new CategoryRoutes().router,
+            new TransactionRoutes().router,
             // new AuthRouter().router,
             // new PersonRouter().router,
             // new DocumentTypeRouter().router,

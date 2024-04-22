@@ -22,7 +22,7 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
             return data.map(item => CategoryEntity.fromObject(item))
         })
     }
-    create(category: CreateCategoryDto, user_audits: string): Promise<CategoryEntity | CustomResponse> {
+    create(category: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             category.name = category.name.toUpperCase()
             const exist = await this.exist(category.userId, category.name)
@@ -34,7 +34,7 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
             });
             const data = CategoryEntity.fromObject(new_category);
             this.auditSave(data, "CREATE", user_audits)
-            return CategoryEntity.fromObject(new_category);
+            return "Category created successfully"
         })
     }
 

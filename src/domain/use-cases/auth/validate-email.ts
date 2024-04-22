@@ -14,7 +14,7 @@ export class ValidateEmail implements ValidateEmailUseCase {
         if (token === undefined) {
             throw new CustomResponse("Token must be provided on the request", 400)
         }
-        const result = await JwtAdapter.decodeToken<{id:string}>(token)
+        const result = await JwtAdapter.decodeToken<{ id: string }>(token)
         if (!result) {
             throw new CustomResponse("Invalid token", 401)
         }

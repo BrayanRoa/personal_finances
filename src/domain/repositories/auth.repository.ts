@@ -7,7 +7,7 @@ import { UserEntity } from "../entities/users/user.entity";
 export abstract class AuthRepository {
 
     abstract registerUser(user: CreateUserDto): Promise<UserEntity | CustomResponse>;
-    abstract getOneUser(param: string): Promise<UserEntity | CustomResponse>;
+    abstract getOneUser(param: string, type?:string): Promise<UserEntity | CustomResponse>;
     abstract updateUser(id:string, data:UpdateUserDto):Promise<boolean | CustomResponse>
 
 }

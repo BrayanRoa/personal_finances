@@ -21,7 +21,7 @@ export class LoginUser implements LoginUserUseCase {
     ) { }
 
     async execute(email: string, password: string): Promise<{ msg: string, token: string } | CustomResponse> {
-        const user = await this.authRepository.getOneUser(email);
+        const user = await this.authRepository.getOneUser(email, "LOGIN");
         if (user instanceof UserEntity) {
             const isMatch = await this.passwordHasher.verifyPassword(password, user.password!);
             if (isMatch) {

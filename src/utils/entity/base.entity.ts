@@ -3,7 +3,7 @@ export class BaseEntity {
 
 
     constructor(
-        public id: string, 
+        public id: string | number, 
         public created_at: Date,
         public updated_at: Date,
         public deleted_at?: Date,

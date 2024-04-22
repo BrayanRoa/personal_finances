@@ -1,4 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import { envs } from '../../config/envs';
 
 const options = {
     definition: {
@@ -24,7 +25,7 @@ const options = {
         ],
         servers: [
             {
-                url: 'http://localhost:3000/api/v1',  // Aquí colocas la base de tu url
+                url: envs.WEB_SERVICE_URL,  // Aquí colocas la base de tu url
             },
         ],
     },

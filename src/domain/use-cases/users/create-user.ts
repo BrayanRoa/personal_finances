@@ -1,6 +1,5 @@
 import { EmailService } from "../../../utils/emails/email.service";
 import { CustomResponse } from "../../../utils/response/custom.response";
-import { BaseUseCase } from "../../../utils/use-case/base.use-case";
 import { CreateUserDto } from "../../dtos";
 import { UserEntity } from "../../entities/users/user.entity";
 import { UserRepository } from "../../repositories/user.repository";

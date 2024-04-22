@@ -12,7 +12,7 @@ export class CategoryRepositoryImp implements CategoryRepository {
     getAll(userId: string): Promise<CustomResponse | CategoryEntity[]> {
         return this.dataSource.getAll(userId)
     }
-    create(category: CreateCategoryDto, user_audits: string): Promise<CategoryEntity | CustomResponse> {
+    create(category: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
         return this.dataSource.create(category, user_audits)
     }
 

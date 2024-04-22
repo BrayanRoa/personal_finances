@@ -6,11 +6,16 @@ import { UserEntity } from "../../domain/entities/users/user.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
 
+
 export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource {
     constructor() {
         super()
     }
-    findOneUser(param: string): Promise<UserEntity | CustomResponse> {
+    findOneUser(param: string, type?: string): Promise<UserEntity | CustomResponse> {
+        let condition = (type === "LOGIN")
+            ? { deleted_at: null, emailValidated: true }
+            : { deleted_at: null }
+
         return this.handleErrors(async () => {
             const exist = await BaseDatasource.prisma.user.findFirst({
                 where: {
@@ -19,7 +24,7 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
                         { id: param }
                     ],
                     AND: [
-                        { deleted_at: null },
+                        { ...condition },
                     ]
                 }
             })
