@@ -1,0 +1,56 @@
+import { Request, Response } from "express";
+import { WalletRepository } from "../../domain/repositories/wallet.repository";
+import { CreateWallet } from "../../domain/use-cases/wallet/create-wallet";
+import { CustomResponse } from "../../utils/response/custom.response";
+import { GetAllWallet } from "../../domain/use-cases/wallet/get-all-wallet";
+import { GetOneWallet } from "../../domain/use-cases/wallet/get-one-wallet";
+import { UpdateWallet } from "../../domain/use-cases/wallet/update-wallet";
+import { DeleteWallet } from "../../domain/use-cases/wallet/delete-wallet";
+
+export class WalletController {
+    constructor(
+        private readonly walletRepository: WalletRepository,
+    ) { }
+
+
+    public getAll = (req: Request, res: Response) => {
+        const { userId } = req.body
+        return new GetAllWallet(this.walletRepository)
+            .execute(userId)
+            .then(response => CustomResponse.handleResponse(res, response, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public getOne = (req: Request, res: Response) => {
+        const { id } = req.params
+        const { userId } = req.body
+        return new GetOneWallet(this.walletRepository)
+            .execute(+id, userId)
+            .then(response => CustomResponse.handleResponse(res, response, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public create = (req: Request, res: Response) => {
+        return new CreateWallet(this.walletRepository)
+            .execute(req.body)
+            .then(response => CustomResponse.handleResponse(res, response, 201))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public update = async (req: Request, res: Response) => {
+        const { id } = req.params
+        return new UpdateWallet(this.walletRepository)
+            .execute(+id, req.body)
+            .then(response => CustomResponse.handleResponse(res, response, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public delete = async (req: Request, res: Response) => {
+        const { id } = req.params
+        const { userId } = req.body
+        return new DeleteWallet(this.walletRepository)
+            .execute(+id, userId)
+            .then(response => CustomResponse.handleResponse(res, response, 204))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+}

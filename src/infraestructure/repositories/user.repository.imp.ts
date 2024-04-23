@@ -23,10 +23,10 @@ export class UserRepositoryImpl implements UserRepository {
     findById(id: string): Promise<UserEntity | CustomResponse> {
         return this.dataSource.findById(id);
     }
-    update(id: string, updateUserDto: UpdateUserDto, user_audits: string): Promise<UserEntity | CustomResponse> {
+    update(id: string, updateUserDto: UpdateUserDto, user_audits: string): Promise<string | CustomResponse> {
         return this.dataSource.update(id, updateUserDto, user_audits);
     }
-    delete(id: string, user_audits: string): Promise<UserEntity | CustomResponse> {
+    delete(id: string, user_audits: string): Promise<string | CustomResponse> {
         return this.dataSource.delete(id, user_audits);
     }
 

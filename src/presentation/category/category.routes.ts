@@ -63,8 +63,6 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
          *  get:
          *    tags: [Categories]
          *    summary: Retrieves all categories.
-         *    parameters:
-         *    
          *    responses:
          *      '200':
          *        description: Successful operation
@@ -108,6 +106,61 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
         this.router.get(`${prefix}`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.getAll
+        )
+
+        /**
+         * @swagger
+         * /category/{id}:
+         *  get:
+         *    tags: [Categories]
+         *    summary: Retrieves a category by its ID.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: integer
+         *        required: true
+         *        description: Numeric ID of the category to retrieve.
+         *    responses:
+         *      '200':
+         *        description: Successful operation
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: object
+         *                  properties:
+         *                    id:
+         *                      type: integer
+         *                    created_at:
+         *                      type: string
+         *                      format: date-time
+         *                    updated_at:
+         *                      type: string
+         *                      format: date-time
+         *                    deleted_at:
+         *                      type: string
+         *                      format: date-time
+         *                    name:
+         *                      type: string
+         *                    description:
+         *                      type: string
+         *                    userId:
+         *                      type: string
+         *      '400':
+         *        description: Invalid ID supplied
+         *      '404':
+         *        description: Category not found
+         */
+        this.router.get(`${prefix}/:id`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.getOne
         )
     }
 

@@ -39,9 +39,8 @@ export class TransactionController {
 
     public update = (req: Request, res: Response) => {
         const { id } = req.params
-        const { userId, ...rest } = req.body
         return new UpdateTransaction(this.repository)
-            .execute(+id, rest, userId)
+            .execute(+id, req.body)
             .then(user => CustomResponse.handleResponse(res, user, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }

@@ -19,7 +19,7 @@ export class UpdateTransactionDto {
     @IsEnum(["INCOME", "OUTFLOW"])
     public readonly type?: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @IsEnum([
         "NEVER",
@@ -39,10 +39,10 @@ export class UpdateTransactionDto {
 
     @IsOptional()
     @IsInt()
-    public readonly walletId!: number;
+    public readonly walletId?: number;
 
     @IsOptional()
     @IsInt()
-    public categoryId!: number;
+    public categoryId?: number;
 
 }

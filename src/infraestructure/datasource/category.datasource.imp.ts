@@ -10,6 +10,21 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
         super()
         this.audit_class = "CATEGORY"
     }
+    getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse> {
+        return this.handleErrors(async () => {
+            const category = await BaseDatasource.prisma.category.findFirst({
+                where: {
+                    AND: [
+                        { id },
+                        { deleted_at: null },
+                        { userId }
+                    ]
+                }
+            })
+            if (!category) return new CustomResponse(`Don't exist category with id ${id}`, 404)
+            return CategoryEntity.fromObject(category)
+        })
+    }
     getAll(userId: string): Promise<CategoryEntity[] | CustomResponse> {
         return this.handleErrors(async () => {
             const data = await BaseDatasource.prisma.category.findMany({
@@ -22,18 +37,15 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
             return data.map(item => CategoryEntity.fromObject(item))
         })
     }
-    create(category: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
+    create(data: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            category.name = category.name.toUpperCase()
-            const exist = await this.exist(category.userId, category.name)
-            if (exist) {
-                return new CustomResponse(`Already exist category with name: ${category.name}`, 400)
-            }
+            const exist = await this.exist(data.userId, data.name)
+            if (exist) return new CustomResponse(`Already exist category with name: ${data.name}`, 400)
             const new_category = await BaseDatasource.prisma.category.create({
-                data: category,
+                data,
             });
-            const data = CategoryEntity.fromObject(new_category);
-            this.auditSave(data, "CREATE", user_audits)
+            const info = CategoryEntity.fromObject(new_category);
+            this.auditSave(info.id, info, "CREATE", user_audits)
             return "Category created successfully"
         })
     }

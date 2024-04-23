@@ -9,11 +9,15 @@ export class CategoryRepositoryImp implements CategoryRepository {
     constructor(
         private readonly dataSource: CategoryDatasource
     ) { }
+    getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse> {
+        return this.dataSource.getOne(id, userId);
+    }
     getAll(userId: string): Promise<CustomResponse | CategoryEntity[]> {
         return this.dataSource.getAll(userId)
     }
-    create(category: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
-        return this.dataSource.create(category, user_audits)
+    create(data: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
+        data.name = data.name.toUpperCase()
+        return this.dataSource.create(data, user_audits)
     }
 
 }

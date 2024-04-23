@@ -6,13 +6,13 @@ import { CustomResponse } from "../../utils/response/custom.response";
 
 export class AuditsDatasourceImp extends BaseDatasource implements AuditsDatasource {
 
-    constructor(){
+    constructor() {
         super()
     }
 
-    create(createAuditDto: CreateAuditDTO): Promise<AudistsEntity | CustomResponse> {
+    create(data: CreateAuditDTO): Promise<AudistsEntity | CustomResponse> {
         return this.handleErrors(async () => {
-            const new_audit = await BaseDatasource.prisma.audists.create({ data: createAuditDto })
+            const new_audit = await BaseDatasource.prisma.audists.create({ data })
             return AudistsEntity.fromObject(new_audit);
         })
     }

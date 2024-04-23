@@ -6,5 +6,7 @@ import { CategoryEntity } from "../entities/category/category.entity";
 export abstract class CategoryRepository {
 
     abstract getAll(userId: string): Promise<CategoryEntity[] | CustomResponse>;
-    abstract create(category: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse>;
+    abstract create(data: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse>;
+    abstract getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse>
+
 }

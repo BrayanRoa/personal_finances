@@ -9,8 +9,8 @@ export class AuditsRepositoryImpl implements AuditsRepository {
     constructor(
         private readonly dataSource: AuditsDatasource
     ) { }
-    create(createAuditDto: CreateAuditDTO): Promise<AudistsEntity | CustomResponse> {
-        return this.dataSource.create(createAuditDto)
+    create(data: CreateAuditDTO): Promise<AudistsEntity | CustomResponse> {
+        return this.dataSource.create(data)
     }
 
 }

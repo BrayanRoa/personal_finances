@@ -35,10 +35,10 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
             }
         })
     }
-    registerUser(createUserDto: CreateUserDto): Promise<UserEntity | CustomResponse> {
+    registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse> {
         return this.handleErrors(async () => {
             const new_user = await BaseDatasource.prisma.user.create({
-                data: createUserDto,
+                data,
             });
             return UserEntity.fromObject(new_user);
         });

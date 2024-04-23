@@ -20,7 +20,7 @@ export class UserDatasourceImp extends BaseDatasource implements UserDatasource 
                 data: createUserDto,
             });
             const { password, ...rest } = UserEntity.fromObject(new_user);
-            this.auditSave(rest, "CREATE", user_audits)
+            this.auditSave(rest.id, new_user, "CREATE", user_audits)
             return { ...rest };
         });
     }
@@ -36,7 +36,7 @@ export class UserDatasourceImp extends BaseDatasource implements UserDatasource 
                         ]
                 }
             })
-            if (users.length === 0) throw new CustomResponse("there are no users", 404)
+            if (users.length === 0) return new CustomResponse("there are no users", 404)
             const usersWithoutPassword = users.map(user => {
                 const { password, ...rest } = UserEntity.fromObject(user);
                 return { ...rest };
@@ -61,24 +61,24 @@ export class UserDatasourceImp extends BaseDatasource implements UserDatasource 
             return { ...rest }
         })
     }
-    update(id: string, updateUserDto: UpdateUserDto, user_audits: string): Promise<UserEntity | CustomResponse> {
+    update(id: string, updateUserDto: UpdateUserDto, user_audits: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             const updated = await BaseDatasource.prisma.user.update({
                 where: { id },
                 data: updateUserDto
             })
-            this.auditSave(updated, "UPDATE", user_audits)
-            return UserEntity.fromObject(updated);
+            this.auditSave(updated.id, updated, "UPDATE", user_audits)
+            return "user updated successfully"
         })
     }
-    delete(id: string, user_audits: string): Promise<UserEntity | CustomResponse> {
+    delete(id: string, user_audits: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             const deleted = await BaseDatasource.prisma.user.update({
                 where: { id },
                 data: { deleted_at: new Date() }
             })
-            this.auditSave(deleted, "DELETE", user_audits)
-            return UserEntity.fromObject(deleted);
+            this.auditSave(deleted.id, deleted, "DELETE", user_audits)
+            return "user deleted successfully"
         });
     }
 

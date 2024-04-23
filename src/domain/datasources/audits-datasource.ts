@@ -5,5 +5,5 @@ import { AudistsEntity } from "../entities/audits/audits.entity";
 
 export abstract class AuditsDatasource {
 
-    abstract create(createAuditDto: CreateAuditDTO): Promise<AudistsEntity | CustomResponse>
+    abstract create(data: CreateAuditDTO): Promise<AudistsEntity | CustomResponse>
 }

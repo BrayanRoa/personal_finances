@@ -28,11 +28,11 @@ export class BaseDatasource {
         }
     }
 
-    protected async auditSave(data: any, type: actions, user_audits: string) {
+    protected async auditSave(id: string | number, data: any, type: actions, user_audits: string) {
         const audit: CreateAuditDTO = {
             class_name: this.audit_class,
             data: JSON.stringify(data),
-            id_class: data.id.toString(),
+            id_class: id.toString(),
             type,
             user: user_audits
         }
