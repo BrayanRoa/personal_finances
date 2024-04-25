@@ -42,10 +42,6 @@ export class Server {
             new CategoryRoutes().router,
             new TransactionRoutes().router,
             new WalletRoutes().router
-            // new AuthRouter().router,
-            // new PersonRouter().router,
-            // new DocumentTypeRouter().router,
-            // new RoleRouter().router
         ]
     }
 

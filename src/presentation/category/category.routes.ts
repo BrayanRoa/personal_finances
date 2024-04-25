@@ -1,4 +1,4 @@
-import { CategoryDatasourceImp } from "../../infraestructure/datasource/category.datasource.imp";
+import { container } from "../../infraestructure/dependencies/container";
 import { CategoryRepositoryImp } from "../../infraestructure/repositories/category.repository.imp";
 import { BaseRouter } from "../../utils/router/base.router";
 import { CategoryController } from "./category.controller";
@@ -7,7 +7,7 @@ import { CategoryMiddleware } from "./category.middleware";
 export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddleware, CategoryRepositoryImp> {
 
     constructor() {
-        super(CategoryController, CategoryMiddleware, new CategoryRepositoryImp(new CategoryDatasourceImp()));
+        super(CategoryController, CategoryMiddleware, container.cradle.categoryRepository);
     }
 
     routes(): void {
@@ -55,7 +55,6 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
             (req, res, next) => this.middleware.validateDto(req, res, next, "create"),
             this.controller.Create
         )
-
 
         /**
          * @swagger

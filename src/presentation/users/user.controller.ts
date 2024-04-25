@@ -8,6 +8,7 @@ import { DeleteUser } from "../../domain/use-cases/users/delete-user";
 import { CustomResponse } from "../../utils/response/custom.response";
 import { EmailService } from "../../utils/emails/email.service";
 import { envs } from "../../config/envs";
+import { container } from "../../infraestructure/dependencies/container";
 
 export class UserController {
     constructor(
@@ -33,8 +34,7 @@ export class UserController {
 
     public create = (req: Request, res: Response) => {
         const { id_user, ...rest } = req.body
-        const emailService = new EmailService(envs.MAILER_SERVICE, envs.MAILER_EMAIL, envs.MAILER_SECRET_KEY)
-        new CreateUser(this.userRepository, emailService)
+        new CreateUser(this.userRepository, container.cradle.emailService)
             .execute(rest, id_user)
             .then(user => CustomResponse.handleResponse(res, user, 201))
             .catch(err => CustomResponse.handleResponse(res, err))

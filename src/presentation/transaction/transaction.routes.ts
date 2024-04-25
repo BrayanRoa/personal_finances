@@ -2,16 +2,17 @@ import { TransactionRepositoryImp } from "../../infraestructure/repositories/tra
 import { BaseRouter } from "../../utils/router/base.router";
 import { TransactionController } from "./transaction.controller";
 import { TransactionMiddleware } from "./transaction.middleware";
-import { TransactionDatasourceImp } from './../../infraestructure/datasource/transaction.datasource.imp';
+import { container } from "../../infraestructure/dependencies/container";
 
 export class TransactionRoutes extends BaseRouter<TransactionController, TransactionMiddleware, TransactionRepositoryImp> {
 
     constructor() {
-        super(TransactionController, TransactionMiddleware, new TransactionRepositoryImp(new TransactionDatasourceImp()));
+        super(TransactionController, TransactionMiddleware, container.cradle.transactionRepository);
     }
 
     routes(): void {
         const prefix = "/transaction";
+
         /**
          * @swagger
          * /transaction:
@@ -82,6 +83,67 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
             this.controller.getAll
         )
 
+        /**
+         * @swagger
+         * /transaction/{id}:
+         *  get:
+         *    tags: [Transactions]
+         *    summary: Retrieves a category by its ID.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: integer
+         *        required: true
+         *        description: Numeric ID of the category to retrieve.
+         *    responses:
+         *      '200':
+         *        description: Successful operation
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: object
+         *                  properties:
+         *                    id:
+         *                      type: integer
+         *                    created_at:
+         *                      type: string
+         *                      format: date-time
+         *                    updated_at:
+         *                      type: string
+         *                      format: date-time
+         *                    deleted_at:
+         *                      type: string
+         *                      format: date-time
+         *                    date:
+         *                      type: string
+         *                      format: date-time
+         *                    amount:
+         *                      type: string
+         *                    description:
+         *                      type: string
+         *                    type:
+         *                      type: string
+         *                    repeat:
+         *                      type: string
+         *                    userId:
+         *                      type: string
+         *                    walletId:
+         *                      type: integer
+         *                    categoryId:
+         *                      type: integer
+         *      '400':
+         *        description: Invalid ID supplied
+         *      '404':
+         *        description: Category not found
+         */
         this.router.get(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.getOne

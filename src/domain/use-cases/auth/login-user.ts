@@ -18,7 +18,7 @@ export class LoginUser implements LoginUserUseCase {
     constructor(
         private authRepository: AuthRepository,
         private passwordHasher: PasswordHasher
-    ) { }
+    ) {}
 
     async execute(email: string, password: string): Promise<{ msg: string, token: string } | CustomResponse> {
         const user = await this.authRepository.getOneUser(email, "LOGIN");

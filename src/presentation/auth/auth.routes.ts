@@ -1,22 +1,14 @@
-import { AuthDatasourceImp } from "../../infraestructure/datasource/auth.datasource.imp";
+import { container } from "../../infraestructure/dependencies/container";
 import { AuthRepositoryImpl } from "../../infraestructure/repositories/auth.repository.imp";
-import { BcryptPasswordHasher } from "../../utils/passwordHasher/bcryptPasswordHasher";
 import { BaseRouter } from "../../utils/router/base.router";
-import { AuthMiddleware } from "./aurth.middleware";
+import { AuthMiddleware } from "./auth.middleware";
 import { AuthController } from "./auth.controller";
 
 
 export class AuthRoutes extends BaseRouter<AuthController, AuthMiddleware, AuthRepositoryImpl> {
 
     constructor() {
-        super(
-            AuthController,
-            AuthMiddleware,
-            new AuthRepositoryImpl(
-                new AuthDatasourceImp(),
-                new BcryptPasswordHasher()
-            )
-        );
+        super(AuthController, AuthMiddleware, container.cradle.authRepository);
     }
 
     routes(): void {
@@ -110,12 +102,12 @@ export class AuthRoutes extends BaseRouter<AuthController, AuthMiddleware, AuthR
         *                  example: CREATED
         *                data: 
         *                  type: string
-        */ 
+        */
         this.router.post(`${prefix}/register`,
             (req, res, next) => this.middleware.validateDto(req, res, next, "create"),
             this.controller.register
         )
-        
+
         this.router.get(`${prefix}/validate-email/:token`, this.controller.validateEmail)
     }
 }

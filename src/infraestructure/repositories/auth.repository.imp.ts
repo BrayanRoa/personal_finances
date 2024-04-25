@@ -8,18 +8,18 @@ import { CustomResponse } from "../../utils/response/custom.response";
 
 export class AuthRepositoryImpl implements AuthRepository {
     constructor(
-        private datasource: AuthDatasource,
+        private authDatasource: AuthDatasource,
         private passwordHasher: PasswordHasher,
     ) { }
     updateUser(id: string, data: UpdateUserDto): Promise<boolean | CustomResponse> {
-        return this.datasource.updateUSer(id, data)
+        return this.authDatasource.updateUSer(id, data)
     }
     getOneUser(param: string, type?: string): Promise<UserEntity | CustomResponse> {
-        return this.datasource.findOneUser(param, type)
+        return this.authDatasource.findOneUser(param, type)
     }
-    async registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse> {  
+    async registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse> {
         const hashedPassword = await this.passwordHasher.hashPassword(data.password)
         data.password = hashedPassword
-        return this.datasource.registerUser(data);
+        return this.authDatasource.registerUser(data);
     }
 }

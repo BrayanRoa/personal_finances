@@ -6,7 +6,7 @@ export interface GetOneTransactionUseCase {
     execute(id: number, userId: string): Promise<TransactionEntity | CustomResponse>;
 }
 
-export class GetOneTransactiona implements GetOneTransactionUseCase {
+export class GetOneTransaction implements GetOneTransactionUseCase {
 
     constructor(
         private repository: TransactionRepository,

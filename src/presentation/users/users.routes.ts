@@ -1,15 +1,14 @@
 import { UserMiddleware } from "./user.middleware";
-import { UserDatasourceImp } from "../../infraestructure/datasource/user.datasource.imp";
 import { UserRepositoryImpl } from "../../infraestructure/repositories/user.repository.imp";
 import { BaseRouter } from "../../utils/router/base.router";
 import { UserController } from "./user.controller";
-import { BcryptPasswordHasher } from "../../utils/passwordHasher/bcryptPasswordHasher";
+import { container } from "../../infraestructure/dependencies/container";
 
 
 export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserRepositoryImpl> {
 
     constructor() {
-        super(UserController, UserMiddleware, new UserRepositoryImpl(new UserDatasourceImp(), new BcryptPasswordHasher()));
+        super(UserController, UserMiddleware, container.cradle.userRepository);
     }
 
     routes(): void {

@@ -1,6 +1,6 @@
 {
   "exclude": ["node_modules", "dist", "src/**/*.test.ts"],
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/domain/use-cases/category/get-all-category.ts"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

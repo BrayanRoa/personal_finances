@@ -7,17 +7,17 @@ import { CustomResponse } from "../../utils/response/custom.response";
 export class CategoryRepositoryImp implements CategoryRepository {
 
     constructor(
-        private readonly dataSource: CategoryDatasource
+        private readonly categoryDatasource: CategoryDatasource
     ) { }
     getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse> {
-        return this.dataSource.getOne(id, userId);
+        return this.categoryDatasource.getOne(id, userId);
     }
     getAll(userId: string): Promise<CustomResponse | CategoryEntity[]> {
-        return this.dataSource.getAll(userId)
+        return this.categoryDatasource.getAll(userId)
     }
     create(data: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
         data.name = data.name.toUpperCase()
-        return this.dataSource.create(data, user_audits)
+        return this.categoryDatasource.create(data, user_audits)
     }
 
 }

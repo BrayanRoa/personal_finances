@@ -33,6 +33,7 @@ export class EmailService {
         mailerEmail: string,
         senderEmailPassword: string
     ) {
+        console.log({ mailService, mailerEmail, senderEmailPassword });
         this.transporter = nodemailer.createTransport({
             service: mailService,
             auth: {
@@ -53,7 +54,7 @@ export class EmailService {
         return true
     }
 
-    async welcomeEmail(id:string, email:string) {
+    async welcomeEmail(id: string, email: string) {
 
         const token = await JwtAdapter.generateToken({ id });
 

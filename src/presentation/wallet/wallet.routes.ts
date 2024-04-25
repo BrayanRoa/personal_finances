@@ -1,4 +1,4 @@
-import { WalletDatasourceImp } from "../../infraestructure/datasource/wallet.datasource.imp";
+import { container } from "../../infraestructure/dependencies/container";
 import { WalletRepositoryImp } from "../../infraestructure/repositories/wallet.repository.imp";
 import { BaseRouter } from "../../utils/router/base.router";
 import { WalletController } from "./wallet.controller";
@@ -9,7 +9,7 @@ import { WalletMiddleware } from "./wallet.middleware";
 export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware, WalletRepositoryImp> {
 
     constructor() {
-        super(WalletController, WalletMiddleware, new WalletRepositoryImp(new WalletDatasourceImp()));
+        super(WalletController, WalletMiddleware, container.cradle.walletRepository);
     }
 
     routes(): void {

@@ -8,23 +8,23 @@ import { CustomResponse } from "../../utils/response/custom.response";
 export class WalletRepositoryImp implements WalletRepository {
 
     constructor(
-        private readonly dataSource: WalletDatasource
+        private readonly walletDatasource: WalletDatasource
     ) { }
     getAll(userId: string): Promise<CustomResponse | WalletEntity[]> {
-        return this.dataSource.getAll(userId)
+        return this.walletDatasource.getAll(userId)
     }
     create(data: CreateWalletDto, user_audits: string): Promise<string | CustomResponse> {
         data.name = data.name.toUpperCase()
-        return this.dataSource.create(data, user_audits)
+        return this.walletDatasource.create(data, user_audits)
     }
     delete(id: number, user_audits: string): Promise<string | CustomResponse> {
-        return this.dataSource.delete(id, user_audits)
+        return this.walletDatasource.delete(id, user_audits)
     }
     findById(id: number, userId: string): Promise<CustomResponse | WalletEntity> {
-        return this.dataSource.findById(id, userId)
+        return this.walletDatasource.findById(id, userId)
     }
     update(id: number, data: UpdateWalletDto, user_audits: string): Promise<string | CustomResponse> {
-        return this.dataSource.update(id, data, user_audits)
+        return this.walletDatasource.update(id, data, user_audits)
     }
 
 }

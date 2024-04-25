@@ -5,7 +5,7 @@ import { CustomResponse } from "../../utils/response/custom.response";
 import { DeleteTransaction } from "../../domain/use-cases/transaction/delete-transaction";
 import { GetAllTransaction } from "../../domain/use-cases/transaction/get-all-transaction";
 import { UpdateTransaction } from "../../domain/use-cases/transaction/update-transaction";
-import { GetOneTransactiona } from "../../domain/use-cases/transaction/get-one-transaction";
+import { GetOneTransaction } from "../../domain/use-cases/transaction/get-one-transaction";
 
 export class TransactionController {
 
@@ -24,7 +24,7 @@ export class TransactionController {
     public getOne = (req: Request, res: Response) => {
         const id = req.params.id
         const { userId } = req.body
-        return new GetOneTransactiona(this.repository)
+        return new GetOneTransaction(this.repository)
             .execute(+id, userId)
             .then(transaction => CustomResponse.handleResponse(res, transaction, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
