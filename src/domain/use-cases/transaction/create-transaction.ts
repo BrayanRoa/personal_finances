@@ -3,7 +3,7 @@ import { CreateTransactionDto } from "../../dtos/transaction/create-transaction.
 import { TransactionRepository } from "../../repositories/transaction.repository";
 
 export interface CreateTransactionUseCase {
-    execute(dto: CreateTransactionDto): Promise<string | CustomResponse>;
+    execute(dto: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse>;
 }
 
 
@@ -13,7 +13,7 @@ export class CreateTransaction implements CreateTransactionUseCase {
         private repository: TransactionRepository,
     ) {
     }
-    execute(dto: CreateTransactionDto): Promise<string | CustomResponse> {
-        return this.repository.create(dto, dto.userId)
+    execute(dto: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
+        return this.repository.create(dto)
     }
 }

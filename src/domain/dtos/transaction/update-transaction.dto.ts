@@ -1,6 +1,10 @@
-import { IsDateString, IsDecimal, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsDecimal, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateTransactionDto {
+
+    @IsOptional()
+    @IsNumber()
+    id?:number
 
     @IsOptional()
     @IsDateString()
@@ -44,5 +48,9 @@ export class UpdateTransactionDto {
     @IsOptional()
     @IsInt()
     public categoryId?: number;
+
+    @IsBoolean()
+    @IsOptional()
+    active?: boolean;
 
 }

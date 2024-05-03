@@ -3,7 +3,7 @@ import { UpdateTransactionDto } from "../../dtos/transaction/update-transaction.
 import { TransactionRepository } from "../../repositories/transaction.repository";
 
 export interface UpdateTransactionUseCase {
-    execute(id: number, dto: UpdateTransactionDto): Promise<string | CustomResponse>;
+    execute(id: number, dto: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse>;
 }
 
 
@@ -13,7 +13,7 @@ export class UpdateTransaction implements UpdateTransactionUseCase {
         private repository: TransactionRepository,
     ) {
     }
-    execute(id: number, dto: UpdateTransactionDto): Promise<string | CustomResponse> {
-        return this.repository.update(id, dto, dto.userId)
+    execute(id: number, dto: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
+        return this.repository.update(id, dto, "dto.userId")
     }
 }

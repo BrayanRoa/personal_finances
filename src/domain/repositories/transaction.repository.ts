@@ -5,10 +5,13 @@ import { CreateTransactionDto } from './../dtos/transaction/create-transaction.d
 
 export abstract class TransactionRepository {
 
-    abstract create(data: CreateTransactionDto, user_audits: string): Promise<string | CustomResponse>
+    abstract create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse>
     abstract getAll(userId: string): Promise<TransactionEntity[] | CustomResponse>
     abstract findById(id: number, userId: string): Promise<TransactionEntity | CustomResponse>
     abstract delete(id: number, user_audits: string): Promise<string | CustomResponse>
-    abstract update(id: number, data: UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse>
+    abstract update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse>
+
+    abstract getAllRecurring(): Promise<CustomResponse | TransactionEntity[]>
+
 
 }

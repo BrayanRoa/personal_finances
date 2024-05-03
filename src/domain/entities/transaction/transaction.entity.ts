@@ -9,9 +9,11 @@ export class TransactionEntity extends BaseEntity {
         public description: string,
         public type: string,
         public repeat: string,
-        public userId: number,
+        public userId: string,
         public walletId: number,
         public categoryId: number,
+        public active: boolean,
+        public next_date: Date,
         public created_at: Date,
         public updated_at: Date,
         public deleted_at?: Date
@@ -30,6 +32,8 @@ export class TransactionEntity extends BaseEntity {
             obj.userId,
             obj.walletId,
             obj.categoryId,
+            obj.active,
+            obj.next_date,
             obj.created_at,
             obj.updated_at,
             obj.deleted_at

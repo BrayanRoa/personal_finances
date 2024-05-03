@@ -9,6 +9,8 @@ import { swaggerDocs } from '../utils/swagger/swaggerOptions';
 import { CategoryRoutes } from './category/category.routes';
 import { TransactionRoutes } from './transaction/transaction.routes';
 import { WalletRoutes } from './wallet/wallet.routes';
+import cron from 'node-cron';
+import { transactionsRecurring } from '../works/processRecurringTransactions';
 
 export class Server {
 
@@ -24,7 +26,14 @@ export class Server {
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
         this.middlewares()
         this.app.use("/api/v1", this.routers())
+        this.scheduleCronJobs()
         // this.listen()
+    }
+
+    scheduleCronJobs() {
+        cron.schedule('*/5 * * * * *', async () => {
+            await transactionsRecurring()
+        });
     }
 
     middlewares() {

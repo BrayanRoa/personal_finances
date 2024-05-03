@@ -12,9 +12,18 @@ export class TransactionRepositoryImp extends TransactionRepository {
     ) {
         super()
     }
-    create(data: CreateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
-        data.date = new Date(data.date)
-        return this.transactionDatasource.create(data, user_audits)
+    getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
+        return this.transactionDatasource.getAllRecurring()
+    }
+    create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
+        if (data instanceof Array) {
+            data.forEach(element => {
+                element.date = new Date(element.date)
+            });
+        } else {
+            data.date = new Date(data.date)
+        }
+        return this.transactionDatasource.create(data)
     }
     getAll(userId: string): Promise<CustomResponse | TransactionEntity[]> {
         return this.transactionDatasource.getAll(userId)
@@ -26,9 +35,9 @@ export class TransactionRepositoryImp extends TransactionRepository {
         return this.transactionDatasource.delete(id, user_audits);
     }
 
-    update(id: number, data: UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
-        if (data.date) {
-            data.date = new Date(data.date)
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
+        if(!(data instanceof Array)) { // aqui pregunto si no es un array
+            data.date = new Date(data.date!)
         }
         return this.transactionDatasource.update(id, data, user_audits)
     }

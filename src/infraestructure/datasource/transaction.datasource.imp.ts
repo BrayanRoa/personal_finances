@@ -4,6 +4,7 @@ import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-trans
 import { TransactionEntity } from "../../domain/entities/transaction/transaction.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
+import { calculateNextDate } from "../../works/processRecurringTransactions";
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -11,25 +12,50 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         super()
         this.audit_class = "TRANSACTION"
     }
-    update(id: number, data: UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            const { userId, ...rest } = data
-            const action = await BaseDatasource.prisma.transaction.updateMany({
-                where: { AND: [{ id }, { userId }] },
-                data: rest
-            })
-            if (action.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
-            this.auditSave(id, rest, "UPDATE", user_audits)
-            return "Transaction update successful"
+            let updateUserOperations
+            if (data instanceof Array) {
+                updateUserOperations = data.map(data => BaseDatasource.prisma.transaction.update({
+                    where: {
+                        id: data.id
+                    },
+                    data: data
+                }))
+                const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
+                action.forEach(data => {
+                    this.auditSave(data.id, action, "UPDATE", user_audits)
+                })
+                return "transactions updated successfully"
+            } else {
+                const { userId, ...rest } = data
+                const action = await BaseDatasource.prisma.transaction.updateMany({
+                    where: { AND: [{ id }, { userId }] },
+                    data: rest
+                })
+                if (action.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
+                this.auditSave(id, rest, "UPDATE", user_audits)
+                return "Transaction update successful"
+            }
         })
     }
 
-    create(data: CreateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
+    create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            const action = await BaseDatasource.prisma.transaction.create({
-                data
-            })
-            this.auditSave(action.id, action, "CREATE", user_audits)
+            let createUserOperations
+            if (data instanceof Array) {
+                createUserOperations = data.map(data => BaseDatasource.prisma.transaction.create({ data: data }))
+                const action = await BaseDatasource.prisma.$transaction(createUserOperations)
+                action.forEach(data => {
+                    this.auditSave(data.id, action, "CREATE", data.userId)
+                })
+            } else {
+                data = calculateNextDate(data)
+                const action = await BaseDatasource.prisma.transaction.create({
+                    data
+                })
+                this.auditSave(action.id, action, "CREATE", data.userId)
+            }
             return "Transaction created successfully"
         })
     }
@@ -38,6 +64,24 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             const action = await BaseDatasource.prisma.transaction.findMany({
                 where: {
                     AND: [{ deleted_at: null, userId }]
+                }
+            })
+            return action.map(transaction => TransactionEntity.fromObject(transaction))
+        })
+    }
+
+    getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
+        return this.handleErrors(async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const action = await BaseDatasource.prisma.transaction.findMany({
+                where: {
+                    AND: [
+                        { deleted_at: null },
+                        { repeat: { not: "NEVER" } },
+                        { next_date: today },
+                        { active: true }
+                    ]
                 }
             })
             return action.map(transaction => TransactionEntity.fromObject(transaction))

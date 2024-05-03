@@ -68,6 +68,10 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *                      repeat:
          *                        type: string
          *                        example: NEVER
+         *                      active:
+         *                        type: boolean
+         *                      next_date:
+         *                        type: date
          *                      userId:
          *                        type: string
          *                        example: 5246729c-5efb-44b1-8942-2c7fc082a916
@@ -133,6 +137,10 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *                      type: string
          *                    repeat:
          *                      type: string
+         *                    active:
+         *                      type: boolean
+         *                    next_date:
+         *                      type: date
          *                    userId:
          *                      type: string
          *                    walletId:
@@ -176,6 +184,8 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *                  type: number
          *              categoryId:
          *                  type: number
+         *              active:
+         *                  type: boolean 
          *    responses:
          *      '201':
          *        description: Transaction created successfully

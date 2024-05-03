@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateTransactionDto {
 
@@ -24,7 +24,10 @@ export class CreateTransactionDto {
     @IsEnum([
         "NEVER",
         "EVERY DAY",
+        "EVERY TWO DAYS",
+        "EVERY WORKING DAY",
         "EVERY WEEK",
+        "EVERY TWO WEEKS",
         "EVERY MONTH",
         "EVERY TWO MONTHS",
         "EVERY THREE MONTHS",
@@ -44,5 +47,13 @@ export class CreateTransactionDto {
     @IsNotEmpty()
     @IsInt()
     public categoryId!: number;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    active!: boolean;
+
+    @IsOptional()
+    @IsDateString()
+    next_date!: Date
 
 }
