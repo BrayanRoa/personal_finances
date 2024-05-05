@@ -1,6 +1,5 @@
 import { container } from '../infraestructure/dependencies/container';
 import { GetAllTransactionRecurring } from '../domain/use-cases/transaction/get-all-transaction-recurring';
-import { TransactionEntity } from '../domain/entities';
 import { CreateTransaction, UpdateTransaction } from '../domain/use-cases';
 import { CreateTransactionDto, UpdateTransactionDto } from '../domain/dtos';
 

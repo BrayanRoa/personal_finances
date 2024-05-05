@@ -6,8 +6,6 @@ import { CreateUser } from "../../domain/use-cases/users/create-user";
 import { UpdateUser } from "../../domain/use-cases/users/update-user";
 import { DeleteUser } from "../../domain/use-cases/users/delete-user";
 import { CustomResponse } from "../../utils/response/custom.response";
-import { EmailService } from "../../utils/emails/email.service";
-import { envs } from "../../config/envs";
 import { container } from "../../infraestructure/dependencies/container";
 
 export class UserController {
@@ -33,27 +31,27 @@ export class UserController {
     }
 
     public create = (req: Request, res: Response) => {
-        const { id_user, ...rest } = req.body
+        const { userId, ...rest } = req.body
         new CreateUser(this.userRepository, container.cradle.emailService)
-            .execute(rest, id_user)
+            .execute(rest, userId)
             .then(user => CustomResponse.handleResponse(res, user, 201))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
     public update = async (req: Request, res: Response) => {
         const id = req.params.id
-        const { id_user, ...rest } = req.body
+        const { userId, ...rest } = req.body
         new UpdateUser(this.userRepository)
-            .execute(id, rest, id_user)
+            .execute(id, rest, userId)
             .then(user => CustomResponse.handleResponse(res, user, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
     public delete = async (req: Request, res: Response) => {
         const id = req.params.id;
-        const { id_user } = req.body
+        const { userId } = req.body
         new DeleteUser(this.userRepository)
-            .execute(id, id_user)
+            .execute(id, userId)
             .then(user => CustomResponse.handleResponse(res, user, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }

@@ -133,18 +133,87 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
             this.controller.getOne
         )
 
+        
         this.router.post(`${prefix}`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             (req, res, next) => this.middleware.validateDto(req, res, next, "create"),
             this.controller.create
         )
 
-        this.router.put(`${prefix}/:id`,
+        /**
+         * @swagger
+         * /users/{id}:
+         *  patch:
+         *    tags: [Users]
+         *    summary: Updates an existing user.
+         *    description: Updates any field of a user profile for a specific user. The userId is derived from the JWT of the authenticated user.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: string
+         *        required: true
+         *        description: Numeric ID of the user to update.
+         *    requestBody:
+         *      required: true
+         *      content:
+         *        application/json:
+         *          schema:
+         *            type: object
+         *            properties:
+         *              name:
+         *                type: string
+         *              email:
+         *                type: string
+         *              password:
+         *                type: string
+         *    responses:
+         *      '200':
+         *        description: User updated successfully
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: string
+         *                  
+         *      '400':
+         *        description: Invalid ID supplied or invalid input data
+         *      '404':
+         *        description: User not found
+         */
+        this.router.patch(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             (req, res, next) => this.middleware.validateDto(req, res, next, "update"),
             this.controller.update
         )
 
+        /**
+         * @swagger
+         * /users/{id}:
+         *  delete:
+         *    tags: [Users]
+         *    summary: Deletes a user by ID.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: string
+         *        required: true
+         *        description: Numeric ID of the user to delete.
+         *    responses:
+         *      '200':
+         *        description: User deleted successfully
+         *      '400':
+         *        description: Invalid ID supplied
+         *      '404':
+         *        description: User not found
+         */
         this.router.delete(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.delete

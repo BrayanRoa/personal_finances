@@ -23,7 +23,11 @@ export class UserRepositoryImpl implements UserRepository {
     findById(id: string): Promise<UserEntity | CustomResponse> {
         return this.userDatasource.findById(id);
     }
-    update(id: string, updateUserDto: UpdateUserDto, user_audits: string): Promise<string | CustomResponse> {
+    async update(id: string, updateUserDto: UpdateUserDto, user_audits: string): Promise<string | CustomResponse> {
+        if (updateUserDto.password !== undefined){
+            const hashedPassword = await this.passwordHasher.hashPassword(updateUserDto.password)
+            updateUserDto.password = hashedPassword
+        }
         return this.userDatasource.update(id, updateUserDto, user_audits);
     }
     delete(id: string, user_audits: string): Promise<string | CustomResponse> {

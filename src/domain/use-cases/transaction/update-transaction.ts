@@ -14,6 +14,6 @@ export class UpdateTransaction implements UpdateTransactionUseCase {
     ) {
     }
     execute(id: number, dto: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
-        return this.repository.update(id, dto, "dto.userId")
+        return this.repository.update(id, dto)
     }
 }

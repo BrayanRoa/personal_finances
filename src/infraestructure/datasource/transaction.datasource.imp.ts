@@ -12,19 +12,17 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         super()
         this.audit_class = "TRANSACTION"
     }
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            let updateUserOperations
             if (data instanceof Array) {
-                updateUserOperations = data.map(data => BaseDatasource.prisma.transaction.update({
-                    where: {
-                        id: data.id
-                    },
-                    data: data
-                }))
+                const updateUserOperations = data.map(({ id, userId, ...rest }) =>
+                    BaseDatasource.prisma.transaction.update({
+                        where: { id },
+                        data: rest
+                    }))
                 const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
                 action.forEach(data => {
-                    this.auditSave(data.id, action, "UPDATE", user_audits)
+                    this.auditSave(data.id, data, "UPDATE", data.userId)
                 })
                 return "transactions updated successfully"
             } else {
@@ -34,7 +32,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     data: rest
                 })
                 if (action.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
-                this.auditSave(id, rest, "UPDATE", user_audits)
+                this.auditSave(id, rest, "UPDATE", userId)
                 return "Transaction update successful"
             }
         })
@@ -42,19 +40,18 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
     create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            let createUserOperations
             if (data instanceof Array) {
-                createUserOperations = data.map(data => BaseDatasource.prisma.transaction.create({ data: data }))
-                const action = await BaseDatasource.prisma.$transaction(createUserOperations)
-                action.forEach(data => {
-                    this.auditSave(data.id, action, "CREATE", data.userId)
+                const createUserOperations = data.map(item =>
+                    BaseDatasource.prisma.transaction.create({ data: item })
+                )
+                const transactions = await BaseDatasource.prisma.$transaction(createUserOperations)
+                transactions.forEach(transaction => {
+                    this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
                 })
             } else {
                 data = calculateNextDate(data)
-                const action = await BaseDatasource.prisma.transaction.create({
-                    data
-                })
-                this.auditSave(action.id, action, "CREATE", data.userId)
+                const transaction = await BaseDatasource.prisma.transaction.create({ data })
+                this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
             }
             return "Transaction created successfully"
         })

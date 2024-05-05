@@ -35,11 +35,11 @@ export class TransactionRepositoryImp extends TransactionRepository {
         return this.transactionDatasource.delete(id, user_audits);
     }
 
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto, user_audits: string): Promise<string | CustomResponse> {
-        if(!(data instanceof Array)) { // aqui pregunto si no es un array
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
+        if (!(data instanceof Array)) { // aqui pregunto si no es un array
             data.date = new Date(data.date!)
         }
-        return this.transactionDatasource.update(id, data, user_audits)
+        return this.transactionDatasource.update(id, data,)
     }
 
 }
