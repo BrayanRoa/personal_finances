@@ -23,6 +23,6 @@ export class UpdateUserDto {
     public readonly email_sent?: boolean;
 
     @IsNotEmpty()
-    public readonly userId!: string;
+    public readonly userId?: string;
 
 }

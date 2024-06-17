@@ -38,14 +38,6 @@ export class SharedMiddleware<T extends {}, U extends {}> {
         next()
     }
 
-    // async uuidValidator(req: Request, res: Response, next: NextFunction) {
-    //     const { id } = req.params
-    //     if (!uuidValid(id)) {
-    //         return this.httpResponse.BadRequest(res, `the id "${id}" is not valid`)
-    //     }
-    //     next()
-    // }
-
     async validarJwt(req: Request, res: Response, next: NextFunction) {
         const authorization = req.header("Authorization");
         if (!authorization) return CustomResponse.Unauthorized(res, `there are no token on the request`);

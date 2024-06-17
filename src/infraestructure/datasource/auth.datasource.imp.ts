@@ -28,11 +28,9 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
                     ]
                 }
             })
-            if (exist) {
-                return UserEntity.fromObject(exist)
-            } else {
-                return new CustomResponse("email not found", 404)
-            }
+            return (exist) 
+                ? UserEntity.fromObject(exist) 
+                : new CustomResponse("email not found", 404);
         })
     }
     registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse> {

@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { CustomResponse } from "../response/custom.response";
 import { ValidationDb } from "../validations-db/validation-db";
 import { CreateAuditDTO } from "../../domain/dtos/audits/create-audits.dto";
+import { logger } from "../logger/winston";
 
 type actions = "CREATE" | "DELETE" | "UPDATE"
 
@@ -19,7 +20,7 @@ export class BaseDatasource {
             return await operation();
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                console.log(error);
+                logger.error(error)
                 throw this.validationDb.validate(error);
             } else {
                 console.log(error);

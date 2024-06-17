@@ -49,7 +49,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
                 })
             } else {
-                data = calculateNextDate(data)
+                if (data.repeat !== "NEVER"){
+                    data = calculateNextDate(data)
+                }
                 const transaction = await BaseDatasource.prisma.transaction.create({ data })
                 this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
             }

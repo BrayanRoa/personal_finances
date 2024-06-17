@@ -133,7 +133,44 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
             this.controller.getOne
         )
 
-        
+        /**
+         * @swagger
+         * /users:
+         *  post:
+         *    tags: [Users]
+         *    summary: Creates a new user.
+         *    description: Creates a new user account. The userId is derived from the JWT of the authenticated user.
+         *    requestBody:
+         *      required: true
+         *      content:
+         *        application/json:
+         *          schema:
+         *            type: object
+         *            properties:
+         *              name:
+         *                type: string
+         *              email:
+         *                type: string
+         *              password:
+         *                type: string
+         *    responses:
+         *      '201':
+         *        description: User created successfully
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: string
+         *                  example: User registered successfully, please verify your email address
+         *      '400':
+         *        description: Invalid input data
+         */
         this.router.post(`${prefix}`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             (req, res, next) => this.middleware.validateDto(req, res, next, "create"),

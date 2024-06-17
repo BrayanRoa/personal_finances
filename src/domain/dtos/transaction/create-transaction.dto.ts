@@ -10,7 +10,6 @@ export class CreateTransactionDto {
     @IsNumber()
     public readonly amount!: number;
 
-    @IsNotEmpty()
     @IsString()
     public description!: string;
 

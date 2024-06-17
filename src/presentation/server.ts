@@ -31,7 +31,7 @@ export class Server {
     }
 
     scheduleCronJobs() {
-        cron.schedule('*/5 * * * * *', async () => {
+        cron.schedule('*/10 * * * * *', async () => {
             await transactionsRecurring()
         });
     }

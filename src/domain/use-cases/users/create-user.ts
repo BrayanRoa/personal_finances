@@ -22,11 +22,11 @@ export class CreateUser implements CreateUserUseCase {
 
         try {
             await this.emailService.welcomeEmail(create.id, dto.email)
-            await this.repository.update(create.id, { email_sent: true, userId: create.id }, user_audits)
+            await this.repository.update(create.id, { email_sent: true }, user_audits)
             return "User registered successfully, please verify your email address"
         } catch (error) {
-            return new CustomResponse(`mail could not be sent`, 500)
             // TODO: AQUI DEBERIA ALMACENAR EN UN LOG Y NO MOSTRARLE AL USUARIO EL PROBLEMA
+            return new CustomResponse(`mail could not be sent`, 500)
         }
     }
 }

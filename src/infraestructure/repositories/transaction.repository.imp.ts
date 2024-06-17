@@ -20,7 +20,7 @@ export class TransactionRepositoryImp extends TransactionRepository {
             data.forEach(element => {
                 element.date = new Date(element.date)
             });
-        } else {
+        }else{
             data.date = new Date(data.date)
         }
         return this.transactionDatasource.create(data)
