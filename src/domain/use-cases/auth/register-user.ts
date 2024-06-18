@@ -18,7 +18,7 @@ export class RegisterUser implements RegisterUserUseCase {
         try {
             await this.emailService.welcomeEmail(resp.id, dto.email)
             resp.email_sent = true
-            await this.authRepository.updateUser(resp.id, { email_sent: true, userId: resp.id })
+            await this.authRepository.updateUser(resp.id, { email_sent: true })
             return "User registered successfully, please verify your email address"
         } catch (error) {
             return new CustomResponse(`mail could not be sent`, 500)

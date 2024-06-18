@@ -5,3 +5,4 @@ postgres/
 coverage/
 build/
 dist/
+.env
