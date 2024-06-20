@@ -9,6 +9,9 @@ export class CategoryRepositoryImp implements CategoryRepository {
     constructor(
         private readonly categoryDatasource: CategoryDatasource
     ) { }
+    defaultCategories(userId: string): Promise<string | CustomResponse> {
+        return this.categoryDatasource.defaultCategories(userId)
+    }
     getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse> {
         return this.categoryDatasource.getOne(id, userId);
     }

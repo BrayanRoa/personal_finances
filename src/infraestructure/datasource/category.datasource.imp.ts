@@ -4,11 +4,40 @@ import { CategoryEntity } from "../../domain/entities/category/category.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
 
+const default_categories = [
+    { "name": "FOOD" },
+    { "name": "PURCHASING" },
+    { "name": "TRANSPORT" },
+    { "name": "HOME" },
+    { "name": "INVOICES" },
+    { "name": "ENTERTAINMENT" },
+    { "name": "VEHICLE" },
+    { "name": "TRAVEL" },
+    { "name": "FAMILY" },
+    { "name": "SPORTS" },
+    { "name": "BEAUTY" },
+    { "name": "WORK" },
+    { "name": "OTHERS" }
+]
+
 export class CategoryDatasourceImp extends BaseDatasource implements CategoryDatasource {
 
     constructor() {
         super()
         this.audit_class = "CATEGORY"
+    }
+    defaultCategories(userId: string): Promise<string | CustomResponse> {
+        return this.handleErrors(async () => {
+            for (const category of default_categories) {
+                await BaseDatasource.prisma.category.create({
+                    data: {
+                        name: category.name,
+                        userId: userId,
+                    },
+                });
+            }
+            return "OK"
+        })
     }
     getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse> {
         return this.handleErrors(async () => {

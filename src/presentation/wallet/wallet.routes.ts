@@ -56,6 +56,8 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
          *                        type: string
          *                      description:
          *                        type: string
+         *                      balance:
+         *                        type: number
          *                      userId:
          *                        type: string
          *                      transactions:
@@ -109,6 +111,8 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
          *                type: string
          *              description:
          *                type: string
+         *              balance:
+         *                type: number
          *    responses:
          *      '201':
          *        description: Wallet created successfully
@@ -244,6 +248,8 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
          *                type: string
          *              description:
          *                type: string
+         *              balance:
+         *                type: number
          *    responses:
          *      '200':
          *        description: Wallet updated successfully

@@ -1,6 +1,7 @@
 import { JwtAdapter } from "../../../utils/jwt/jwt";
 import { CustomResponse } from "../../../utils/response/custom.response";
 import { AuthRepository } from "../../repositories/auth.repository";
+import { CategoryRepository } from "../../repositories/category.repository";
 
 export interface ValidateEmailUseCase {
     execute(token: string): Promise<string | CustomResponse>;
@@ -8,7 +9,8 @@ export interface ValidateEmailUseCase {
 
 export class ValidateEmail implements ValidateEmailUseCase {
     constructor(
-        public authRepository: AuthRepository
+        public authRepository: AuthRepository,
+        private categoryRepository: CategoryRepository
     ) { }
     async execute(token: string): Promise<string | CustomResponse> {
         if (token === undefined) {
@@ -25,6 +27,7 @@ export class ValidateEmail implements ValidateEmailUseCase {
             return exist
         }
         await this.authRepository.updateUser(id, { emailValidated: true })
+        this.categoryRepository.defaultCategories(id)
         return "Email successfully verified"
     }
 

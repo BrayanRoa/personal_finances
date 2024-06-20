@@ -29,7 +29,7 @@ export class AuthController {
 
     public validateEmail = async (req: Request, res: Response) => {
         const { token } = req.params;
-        new ValidateEmail(this.authRepository)
+        new ValidateEmail(this.authRepository, container.cradle.categoryRepository)
             .execute(token)
             .then(auth => CustomResponse.handleResponse(res, auth, 200))
             .catch(err => CustomResponse.handleResponse(res, err));
