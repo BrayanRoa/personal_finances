@@ -6,6 +6,7 @@ import { DeleteTransaction } from "../../domain/use-cases/transaction/delete-tra
 import { GetAllTransaction } from "../../domain/use-cases/transaction/get-all-transaction";
 import { UpdateTransaction } from "../../domain/use-cases/transaction/update-transaction";
 import { GetOneTransaction } from "../../domain/use-cases/transaction/get-one-transaction";
+import { container } from "../../infraestructure/dependencies/container";
 
 export class TransactionController {
 
@@ -31,7 +32,7 @@ export class TransactionController {
     }
 
     public create = (req: Request, res: Response) => {
-        return new CreateTransaction(this.repository)
+        return new CreateTransaction(this.repository, container.cradle.walletRepository)
             .execute(req.body)
             .then(transaction => CustomResponse.handleResponse(res, transaction, 201))
             .catch(error => CustomResponse.handleResponse(res, error))

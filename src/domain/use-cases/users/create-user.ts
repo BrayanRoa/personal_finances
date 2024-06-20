@@ -21,7 +21,7 @@ export class CreateUser implements CreateUserUseCase {
         if (create instanceof CustomResponse) return create
 
         try {
-            await this.emailService.welcomeEmail(create.id, dto.email)
+            await this.emailService.welcomeEmail(create.id, dto.email, dto.name)
             await this.repository.update(create.id, { email_sent: true }, user_audits)
             return "User registered successfully, please verify your email address"
         } catch (error) {

@@ -16,7 +16,7 @@ export class RegisterUser implements RegisterUserUseCase {
         const resp = await this.authRepository.registerUser(dto)
         if (resp instanceof CustomResponse) return resp
         try {
-            await this.emailService.welcomeEmail(resp.id, dto.email)
+            await this.emailService.welcomeEmail(resp.id, dto.email, dto.name)
             resp.email_sent = true
             await this.authRepository.updateUser(resp.id, { email_sent: true })
             return "User registered successfully, please verify your email address"

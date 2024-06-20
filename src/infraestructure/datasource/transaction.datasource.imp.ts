@@ -33,6 +33,19 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 })
                 if (action.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
                 this.auditSave(id, rest, "UPDATE", userId)
+
+                let wallet = await BaseDatasource.prisma.wallet.findFirst({
+                    where: {
+                        AND: [
+                            { id: data.walletId },
+                            { userId }
+                        ]
+                    }
+                })
+                if (wallet){
+                    wallet!.balance = wallet?.balance! - data.amount!
+                    console.log(wallet.balance);
+                }
                 return "Transaction update successful"
             }
         })
@@ -72,7 +85,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
     getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
         return this.handleErrors(async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
             const action = await BaseDatasource.prisma.transaction.findMany({
                 where: {
                     AND: [

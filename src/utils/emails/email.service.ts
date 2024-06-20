@@ -1,7 +1,9 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import { envs } from '../../config/envs';
 import { JwtAdapter } from '../jwt/jwt';
-import path from 'path';
+import fs from 'fs';
+import handlebars from 'handlebars';
+
 
 interface SendEmailOptions {
     to: string | string[]; // se puede enviar a una sola persona o a muchas
@@ -33,7 +35,6 @@ export class EmailService {
         mailerEmail: string,
         senderEmailPassword: string
     ) {
-        console.log({ mailService, mailerEmail, senderEmailPassword });
         this.transporter = nodemailer.createTransport({
             service: mailService,
             auth: {
@@ -43,42 +44,33 @@ export class EmailService {
         });
     }
 
+    async welcomeEmail(id: string, email: string, name:string){
+        fs.readFile('src/templates/email/email-template.html', 'utf-8', async(err, source) => {
+            const token = await JwtAdapter.generateToken({ id });
+            const link = `${envs.WEB_SERVICE_URL}/auth/validate-email/${token}`
 
-
-    async sendEmailToTransport(options: SendEmailOptions): Promise<boolean> {
-        const { to, subject, htmlBody, attachements = [] } = options;
-        const data = await this.transporter.sendMail(
-            { to, subject, html: htmlBody, attachments: attachements }
-        )
-        console.log(data);
-        return true
-    }
-
-    async welcomeEmail(id: string, email: string) {
-
-        const token = await JwtAdapter.generateToken({ id });
-
-        const file = path.resolve(__dirname, "../../../public/assets/heroes/dc-arrow.jpg")
-        const link = `${envs.WEB_SERVICE_URL}/auth/validate-email/${token}`
-        // const htmlFilePath = path.resolve(__dirname, "../../../templates/email/email-template.html");
-        const options = {
-            to: email,
-            subject: "This is a test",
-            htmlBody: `
-                <div class="welcome-card">
-                    <img class="card-image" src="welcome.jpg" alt="Card Image">
-                    <h2 class="card-title">¡Bienvenido a Nuestra Aplicación!</h2>
-                    <p class="card-description">Estamos emocionados de tenerte aquí. Empieza a explorar todas nuestras características.</p>
-                    <a href=${link}>validate-token</a>
-                </div>`,
-            attachments: [
-                {
-                    filename: "hero.jpg",
-                    path: file
+            if(err) throw err;
+          
+            const template = handlebars.compile(source);
+            const replacements = {
+                name,
+                link
+            };
+            const htmlToSend = template(replacements);
+        
+            const mailOptions = {
+                to: email,
+                subject: '¡Bienvenido!',
+                html: htmlToSend
+            };
+        
+            this.transporter.sendMail(mailOptions, function (err, info) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log('Email sent: ' + info.response);
                 }
-            ]
-        }
-        // Lee el contenido del archivo
-        await this.sendEmailToTransport(options)
+            });
+        });
     }
 }

@@ -7,7 +7,7 @@ import moment from 'moment';
 interface Transaction {
     id?: number;
     amount: number;
-    date:Date,
+    date: Date,
     description: string;
     type: string;
     repeat: string;
@@ -95,7 +95,7 @@ export const transactionsRecurring = () => {
 }
 
 const saveTransactions = (transactions: CreateTransactionDto[]) => {
-    return new CreateTransaction(container.cradle.transactionRepository).execute(transactions).then()
+    return new CreateTransaction(container.cradle.transactionRepository, container.cradle.walletRepository).execute(transactions).then()
 }
 
 const updateTransactions = (transactions: UpdateTransactionDto[]) => {
