@@ -25,7 +25,7 @@ export class TransactionEntity extends BaseEntity {
         return new TransactionEntity(
             obj.id,
             obj.date,
-            obj.amount,
+            +obj.amount,
             obj.description,
             obj.type,
             obj.repeat,
