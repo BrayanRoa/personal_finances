@@ -34,6 +34,17 @@ export function calculateNextDate(transaction: Transaction) {
         case "EVERY TWO DAYS":
             nextDate = moment(data.date).add(2, 'days');
             break;
+        case "EVERY WORKING DAY":
+            const currentDay = moment(data.date).isoWeekday(); // 0 es lunes 6 es domingo
+            // Si es viernes o fin de semana, se salta al próximo lunes.
+            if (currentDay >= 4) {
+                // 7 es el próximo lunes
+                nextDate = moment(data.date).isoWeekday(7);
+            } else {
+                // Para los otros días, solo agrega 1.
+                nextDate = moment(data.date).add(1, 'days');
+            }
+            break;
         case "EVERY WEEK":
             nextDate = moment(data.date).add(1, 'weeks');
             break;
