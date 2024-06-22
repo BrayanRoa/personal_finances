@@ -11,6 +11,7 @@ import { TransactionRoutes } from './transaction/transaction.routes';
 import { WalletRoutes } from './wallet/wallet.routes';
 import cron from 'node-cron';
 import { transactionsRecurring } from '../works/processRecurringTransactions';
+import { BudgetRoutes } from './budget/budget.routes';
 
 export class Server {
 
@@ -50,7 +51,8 @@ export class Server {
             new AuthRoutes().router,
             new CategoryRoutes().router,
             new TransactionRoutes().router,
-            new WalletRoutes().router
+            new WalletRoutes().router,
+            new BudgetRoutes().router,
         ]
     }
 

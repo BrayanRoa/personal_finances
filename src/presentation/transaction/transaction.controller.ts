@@ -48,7 +48,7 @@ export class TransactionController {
 
     public delete = (req: Request, res: Response) => {
         const { id } = req.params
-        return new DeleteTransaction(this.repository)
+        return new DeleteTransaction(this.repository, container.cradle.walletRepository)
             .execute(+id, req.body.userId)
             .then(del => CustomResponse.handleResponse(res, del, 204))
             .catch(error => CustomResponse.handleResponse(res, error))

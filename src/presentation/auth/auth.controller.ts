@@ -20,7 +20,6 @@ export class AuthController {
     }
 
     public register = async (req: Request, res: Response) => {
-        // const emailService = new EmailService(envs.MAILER_SERVICE, envs.MAILER_EMAIL, envs.MAILER_SECRET_KEY)
         new RegisterUser(this.authRepository, container.cradle.emailService)
             .execute(req.body)
             .then(auth => CustomResponse.handleResponse(res, auth, 201))

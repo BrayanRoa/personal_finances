@@ -115,7 +115,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         return this.handleErrors(async () => {
             const action = await BaseDatasource.prisma.transaction.updateMany({
                 where: {
-                    AND: [{ id }, { userId: user_audits }]
+                    AND: [{ id }, { userId: user_audits }, {deleted_at: null }]
                 },
                 data: {
                     deleted_at: new Date()

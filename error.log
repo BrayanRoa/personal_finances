@@ -13,3 +13,5 @@
 {"clientVersion":"5.13.0","code":"P2002","level":"error","meta":{"modelName":"User","target":["email"]},"name":"PrismaClientKnownRequestError","service":"user-service"}
 {"clientVersion":"5.13.0","code":"P2002","level":"error","meta":{"modelName":"User","target":["email"]},"name":"PrismaClientKnownRequestError","service":"user-service"}
 {"clientVersion":"5.13.0","code":"P2002","level":"error","meta":{"modelName":"User","target":["email"]},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.13.0","code":"P2002","level":"error","meta":{"modelName":"User","target":["email"]},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.13.0","code":"P2003","level":"error","meta":{"field_name":"Transaction_categoryId_fkey (index)","modelName":"Transaction"},"name":"PrismaClientKnownRequestError","service":"user-service"}
