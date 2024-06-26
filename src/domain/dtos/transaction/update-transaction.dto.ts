@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsDecimal, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateTransactionDto {
 
@@ -11,7 +11,7 @@ export class UpdateTransactionDto {
     public date?: Date;
 
     @IsOptional()
-    @IsDecimal()
+    @IsNumber()
     public readonly amount?: number;
 
     @IsOptional()
@@ -33,7 +33,8 @@ export class UpdateTransactionDto {
         "EVERY TWO MONTHS",
         "EVERY THREE MONTHS",
         "EVERY SIX MONTHS",
-        "EVERY YEAR"
+        "EVERY YEAR",
+        "EVERY WORKING DAY"
     ])
     public readonly repeat?: string;
 
