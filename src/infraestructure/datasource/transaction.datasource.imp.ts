@@ -12,41 +12,52 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         super()
         this.audit_class = "TRANSACTION"
     }
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number } | CustomResponse | string> {
         return this.handleErrors(async () => {
             if (data instanceof Array) {
-                const updateUserOperations = data.map(({ id, userId, ...rest }) =>
-                    BaseDatasource.prisma.transaction.update({
+                const updateUserOperations = data.map(({ id, userId, ...rest }) => {
+                    if (rest.repeat === "NEVER") {
+                        rest.active = false
+                        rest.next_date = null
+
+                    }
+                    return BaseDatasource.prisma.transaction.update({
                         where: { id },
                         data: rest
-                    }))
+                    })
+                })
                 const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
                 action.forEach(data => {
                     this.auditSave(data.id, data, "UPDATE", data.userId)
                 })
                 return "transactions updated successfully"
             } else {
-                const { userId, ...rest } = data
-                const action = await BaseDatasource.prisma.transaction.updateMany({
-                    where: { AND: [{ id }, { userId }] },
-                    data: rest
-                })
-                if (action.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
-                this.auditSave(id, rest, "UPDATE", userId)
-
-                let wallet = await BaseDatasource.prisma.wallet.findFirst({
-                    where: {
-                        AND: [
-                            { id: data.walletId },
-                            { userId }
-                        ]
-                    }
-                })
-                if (wallet){
-                    wallet!.balance = wallet?.balance! - data.amount!
-                    console.log(wallet.balance);
+                const { userId, ...updateData } = data;
+                if (updateData.repeat === "NEVER") {
+                    updateData.active = false;
+                    updateData.next_date = null;
                 }
-                return "Transaction update successful"
+
+                const transaction = await this.findById(id, userId)
+                if (transaction instanceof CustomResponse) {
+                    return transaction;
+                }
+
+                const action = transaction.amount !== updateData.amount ?
+                    (transaction.amount < updateData?.amount! ? "ADD" : "SUBTRACT") : "";
+
+                const amountDifference = Math.abs(transaction.amount - updateData?.amount!);
+
+                const updateTransactionResult = await BaseDatasource.prisma.transaction.updateMany({
+                    where: { AND: [{ id }, { userId }] },
+                    data: updateData
+                })
+
+                if (updateTransactionResult.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
+
+                this.auditSave(id, updateData, "UPDATE", userId);
+
+                return { action, amountDifference }
             }
         })
     }
@@ -62,7 +73,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
                 })
             } else {
-                if (data.repeat !== "NEVER"){
+                if (data.repeat !== "NEVER") {
                     data = calculateNextDate(data)
                 }
                 const transaction = await BaseDatasource.prisma.transaction.create({ data })
@@ -115,7 +126,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         return this.handleErrors(async () => {
             const action = await BaseDatasource.prisma.transaction.updateMany({
                 where: {
-                    AND: [{ id }, { userId: user_audits }, {deleted_at: null }]
+                    AND: [{ id }, { userId: user_audits }, { deleted_at: null }]
                 },
                 data: {
                     deleted_at: new Date()

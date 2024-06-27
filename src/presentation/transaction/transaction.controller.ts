@@ -40,7 +40,7 @@ export class TransactionController {
 
     public update = (req: Request, res: Response) => {
         const { id } = req.params
-        return new UpdateTransaction(this.repository)
+        return new UpdateTransaction(this.repository, container.cradle.walletRepository)
             .execute(+id, req.body)
             .then(user => CustomResponse.handleResponse(res, user, 200))
             .catch(err => CustomResponse.handleResponse(res, err))

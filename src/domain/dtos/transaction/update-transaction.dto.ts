@@ -54,4 +54,7 @@ export class UpdateTransactionDto {
     @IsOptional()
     active?: boolean;
 
+    @IsOptional()
+    @IsDateString()
+    next_date!: Date | null;
 }

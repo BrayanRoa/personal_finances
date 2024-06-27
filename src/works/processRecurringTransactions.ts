@@ -110,6 +110,6 @@ const saveTransactions = (transactions: CreateTransactionDto[]) => {
 }
 
 const updateTransactions = (transactions: UpdateTransactionDto[]) => {
-    return new UpdateTransaction(container.cradle.transactionRepository).execute(0, transactions).then()
+    return new UpdateTransaction(container.cradle.transactionRepository, container.cradle.walletRepository).execute(0, transactions).then()
 }
 // console.log(transactions);
