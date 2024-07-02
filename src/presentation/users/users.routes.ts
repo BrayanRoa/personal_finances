@@ -72,17 +72,10 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
 
         /**
          * @swagger
-         * /users/{id}:
+         * /users/get_information:
          *  get:
          *    tags: [Users]
          *    summary: Obtiene un usuario por su ID
-         *    parameters:
-         *      - in: path
-         *        name: id
-         *        schema:
-         *          type: string
-         *        required: true
-         *        description: ID del usuario
          *    responses:
          *      '200':
          *        description: Operación exitosa
@@ -127,7 +120,7 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
          *                      type: boolean
          *                      example: true
          */
-        this.router.get(`${prefix}/:id`,
+        this.router.get(`${prefix}/get_information`,
             // (req, res, next) => this.middleware.validarJwt(req, res, next), 
             [this.middleware.validarJwt],
             this.controller.getOne
