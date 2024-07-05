@@ -5,5 +5,7 @@ export class UpdateCategoryDto {
     @IsOptional()
     public readonly name?: string;
 
-
+    @IsString()
+    @IsOptional()
+    public readonly icon?: string;
 }

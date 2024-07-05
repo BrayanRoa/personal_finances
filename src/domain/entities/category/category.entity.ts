@@ -4,6 +4,7 @@ export class CategoryEntity extends BaseEntity {
     constructor(
         public id: string,
         public name: string,
+        public icon: string,
         public userId: string,
         public created_at: Date,
         public updated_at: Date,
@@ -16,6 +17,7 @@ export class CategoryEntity extends BaseEntity {
         return new CategoryEntity(
             obj.id,
             obj.name,
+            obj.icon,
             obj.userId,
             obj.created_at,
             obj.updated_at,

@@ -172,18 +172,11 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
 
         /**
          * @swagger
-         * /users/{id}:
+         * /users/update:
          *  patch:
          *    tags: [Users]
          *    summary: Updates an existing user.
          *    description: Updates any field of a user profile for a specific user. The userId is derived from the JWT of the authenticated user.
-         *    parameters:
-         *      - in: path
-         *        name: id
-         *        schema:
-         *          type: string
-         *        required: true
-         *        description: Numeric ID of the user to update.
          *    requestBody:
          *      required: true
          *      content:
@@ -217,7 +210,7 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
          *      '404':
          *        description: User not found
          */
-        this.router.patch(`${prefix}/:id`,
+        this.router.patch(`${prefix}/update`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             (req, res, next) => this.middleware.validateDto(req, res, next, "update"),
             this.controller.update
@@ -225,17 +218,10 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
 
         /**
          * @swagger
-         * /users/{id}:
+         * /users/delete_account:
          *  delete:
          *    tags: [Users]
          *    summary: Deletes a user by ID.
-         *    parameters:
-         *      - in: path
-         *        name: id
-         *        schema:
-         *          type: string
-         *        required: true
-         *        description: Numeric ID of the user to delete.
          *    responses:
          *      '200':
          *        description: User deleted successfully
@@ -244,7 +230,7 @@ export class UserRoutes extends BaseRouter<UserController, UserMiddleware, UserR
          *      '404':
          *        description: User not found
          */
-        this.router.delete(`${prefix}/:id`,
+        this.router.delete(`${prefix}/delete_account`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.delete
         )

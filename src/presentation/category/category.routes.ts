@@ -30,6 +30,8 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
          *              name:
          *                type: string
          *                example: Food
+         *              icon: 
+         *                type: string
          *    responses:
          *      '201':
          *        description: Category created successfully
@@ -98,6 +100,8 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
          *                      name:
          *                        type: string
          *                        example: Food
+         *                      icon: 
+         *                        type: string
          *                      userId:
          *                        type: string
          *                        example: 7e05dd99-5912-48a1-b5bb-bb44ca8aa8cf
@@ -151,6 +155,8 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
          *                    description:
          *                      type: string
          *                    userId:
+         *                      type: string
+         *                    icon: 
          *                      type: string
          *      '400':
          *        description: Invalid ID supplied

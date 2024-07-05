@@ -34,7 +34,7 @@ model User {
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   date        DateTime
   amount      Decimal
   description String
@@ -77,6 +77,7 @@ model Wallet {
 model Category {
   id               Int              @id @default(autoincrement())
   name             String
+  icon             String           @db.VarChar(100)
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
   deleted_at       DateTime?

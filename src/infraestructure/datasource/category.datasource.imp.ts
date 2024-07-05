@@ -5,19 +5,19 @@ import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 const default_categories = [
-    { "name": "FOOD" },
-    { "name": "PURCHASING" },
-    { "name": "TRANSPORT" },
-    { "name": "HOME" },
-    { "name": "INVOICES" },
-    { "name": "ENTERTAINMENT" },
-    { "name": "VEHICLE" },
-    { "name": "TRAVEL" },
-    { "name": "FAMILY" },
-    { "name": "SPORTS" },
-    { "name": "BEAUTY" },
-    { "name": "WORK" },
-    { "name": "OTHERS" }
+    { "name": "FOOD", "icon": "" },
+    { "name": "PURCHASING", "icon": "" },
+    { "name": "TRANSPORT", "icon": "" },
+    { "name": "HOME", "icon": "" },
+    { "name": "INVOICES", "icon": "" },
+    { "name": "ENTERTAINMENT", "icon": "" },
+    { "name": "VEHICLE", "icon": "" },
+    { "name": "TRAVEL", "icon": "" },
+    { "name": "FAMILY", "icon": "" },
+    { "name": "SPORTS", "icon": "" },
+    { "name": "BEAUTY", "icon": "" },
+    { "name": "WORK", "icon": "" },
+    { "name": "OTHERS", "icon": "" }
 ]
 
 export class CategoryDatasourceImp extends BaseDatasource implements CategoryDatasource {
@@ -32,6 +32,7 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
                 await BaseDatasource.prisma.category.create({
                     data: {
                         name: category.name,
+                        icon: category.icon,
                         userId: userId,
                     },
                 });
