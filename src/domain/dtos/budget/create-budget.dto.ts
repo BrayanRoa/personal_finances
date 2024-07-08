@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export class CreateBudgetDto {
 
@@ -26,4 +26,26 @@ export class CreateBudgetDto {
     @IsString()
     @IsNotEmpty()
     public readonly userId!: string
+
+    @IsString()
+    @IsNotEmpty()
+    @IsEnum([
+        "EVERY DAY",
+        "EVERY WEEK",
+        "EVERY TWO WEEKS",
+        "EVERY MONTH",
+        "EVERY TWO MONTHS",
+        "EVERY THREE MONTHS",
+        "EVERY SIX MONTHS",
+        "EVERY YEAR"
+    ])
+    public readonly repeat!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    public readonly categories!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    public readonly wallets!: string;
 }

@@ -9,6 +9,9 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
+        return this.budgetDatasource.getOne(id, userId)
+    }
     getAll(userId: string): Promise<BudgetEntity[] | CustomResponse> {
         return this.budgetDatasource.getAll(userId)
     }

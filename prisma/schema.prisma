@@ -72,6 +72,7 @@ model Wallet {
   user   User   @relation(fields: [userId], references: [id])
 
   transactions Transaction[] // Un Wallet puede tener múltiples transacciones
+  BudgetWallet BudgetWallet[]
 }
 
 model Category {
@@ -110,12 +111,23 @@ model Budget {
   initial_date     DateTime
   end_date         DateTime
   amount           Decimal
+  repeat           String
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
   deleted_at       DateTime?
   userId           String
   User             User?            @relation(fields: [userId], references: [id])
   BudgetCategories BudgetCategory[]
+  BudgetWallet     BudgetWallet[]
+}
+
+model BudgetWallet {
+  budgetId Int
+  walletId Int
+  budget   Budget @relation(fields: [budgetId], references: [id])
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  @@id([budgetId, walletId])
 }
 
 model BudgetCategory {

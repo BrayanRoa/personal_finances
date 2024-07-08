@@ -6,7 +6,7 @@ export abstract class BudgetDatasource {
 
     abstract getAll(userId: string): Promise<BudgetEntity[] | CustomResponse>;
     abstract create(data: CreateBudgetDto, user_audits: string): Promise<string | CustomResponse>;
-    // abstract getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse>
+    abstract getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse>
     // abstract defaultCategories(userId: string): Promise<string | CustomResponse>
 
 }

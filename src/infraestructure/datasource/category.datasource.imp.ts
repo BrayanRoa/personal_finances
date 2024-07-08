@@ -5,19 +5,18 @@ import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 const default_categories = [
-    { "name": "FOOD", "icon": "" },
-    { "name": "PURCHASING", "icon": "" },
-    { "name": "TRANSPORT", "icon": "" },
-    { "name": "HOME", "icon": "" },
-    { "name": "INVOICES", "icon": "" },
-    { "name": "ENTERTAINMENT", "icon": "" },
-    { "name": "VEHICLE", "icon": "" },
-    { "name": "TRAVEL", "icon": "" },
-    { "name": "FAMILY", "icon": "" },
-    { "name": "SPORTS", "icon": "" },
-    { "name": "BEAUTY", "icon": "" },
-    { "name": "WORK", "icon": "" },
-    { "name": "OTHERS", "icon": "" }
+    { "name": "FOOD", "icon": "fast-food-outline" },
+    { "name": "PURCHASING", "icon": "cart-outline" },
+    { "name": "TRANSPORT", "icon": "car-outline" },
+    { "name": "HOME", "icon": "home-outline" },
+    { "name": "INVOICES", "icon": "card-outline" },
+    { "name": "ENTERTAINMENT", "icon": "musical-notes-outline" },
+    { "name": "TRAVEL", "icon": "airplane-outline" },
+    { "name": "FAMILY", "icon": "people-circle-outline" },
+    { "name": "SPORTS", "icon": "american-football-outline" },
+    { "name": "BEAUTY", "icon": "rose-outline" },
+    { "name": "WORK", "icon": "business-outline" },
+    { "name": "OTHERS", "icon": "list-outline" }
 ]
 
 export class CategoryDatasourceImp extends BaseDatasource implements CategoryDatasource {

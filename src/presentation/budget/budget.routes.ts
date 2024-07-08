@@ -89,6 +89,8 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *                format: date-time
          *              amount:
          *                type: number
+         *              categories:
+         *                type: string
          *    responses:
          *      '201':
          *        description: Budget created successfully

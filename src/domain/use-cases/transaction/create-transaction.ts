@@ -1,6 +1,7 @@
 import { CustomResponse } from "../../../utils/response/custom.response";
 import { CreateTransactionDto } from "../../dtos/transaction/create-transaction.dto";
 import { WalletEntity } from "../../entities";
+import { BudgetRepository } from "../../repositories/budget.repository";
 import { TransactionRepository } from "../../repositories/transaction.repository";
 import { WalletRepository } from "../../repositories/wallet.repository";
 
@@ -13,7 +14,8 @@ export class CreateTransaction implements CreateTransactionUseCase {
 
     constructor(
         private repository: TransactionRepository,
-        private wallet: WalletRepository
+        private wallet: WalletRepository,
+        private budget: BudgetRepository
     ) {
     }
     async execute(dto: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
@@ -31,6 +33,14 @@ export class CreateTransaction implements CreateTransactionUseCase {
                     : Number(walletData.balance) - Number(item.amount);
 
                 await this.wallet.update(item.walletId, { balance: walletData.balance }, item.userId)
+
+                if (item.type === "INCOME"){
+                    // const budget = await this.budget.getOne()
+                    // if (budget) {
+                    //     budget.amount += item.amount;
+                    //     await this.budget.update(budget.id, budget)
+                    // }
+                }
             }
         }
 

@@ -106,7 +106,11 @@ export const transactionsRecurring = () => {
 }
 
 const saveTransactions = (transactions: CreateTransactionDto[]) => {
-    return new CreateTransaction(container.cradle.transactionRepository, container.cradle.walletRepository).execute(transactions).then()
+    return new CreateTransaction(
+        container.cradle.transactionRepository,
+        container.cradle.walletRepository,
+        container.cradle.budgetRepository,
+    ).execute(transactions).then()
 }
 
 const updateTransactions = (transactions: UpdateTransactionDto[]) => {
