@@ -10,6 +10,9 @@ export class WalletRepositoryImp implements WalletRepository {
     constructor(
         private readonly walletDatasource: WalletDatasource
     ) { }
+    findByIds(id: number[]): Promise<CustomResponse | WalletEntity[]> {
+        return this.walletDatasource.findByIds(id);
+    }
     getAll(userId: string): Promise<CustomResponse | WalletEntity[]> {
         return this.walletDatasource.getAll(userId)
     }

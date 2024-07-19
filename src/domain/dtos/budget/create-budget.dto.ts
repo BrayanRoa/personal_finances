@@ -21,7 +21,11 @@ export class CreateBudgetDto {
     @IsNotEmpty()
     @IsNumber()
     @IsPositive()
-    public readonly amount!: number;
+    public readonly limit_amount!: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    public readonly current_amount!: number;
 
     @IsString()
     @IsNotEmpty()

@@ -9,4 +9,5 @@ export abstract class WalletDatasource {
     abstract delete(id: number, user_audits: string): Promise<string | CustomResponse>;
     abstract findById(id: number, userId: string): Promise<WalletEntity | CustomResponse>;
     abstract update(id: number, data: UpdateWalletDto, user_audits: string): Promise<string | CustomResponse>;
+    abstract findByIds(id: number[]): Promise<CustomResponse | WalletEntity[]>
 }

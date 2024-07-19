@@ -110,7 +110,8 @@ model Budget {
   description      String
   initial_date     DateTime
   end_date         DateTime
-  amount           Decimal
+  limit_amount     Decimal
+  current_amount   Decimal
   repeat           String
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt

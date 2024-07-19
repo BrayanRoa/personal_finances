@@ -34,12 +34,17 @@ export class CreateTransaction implements CreateTransactionUseCase {
 
                 await this.wallet.update(item.walletId, { balance: walletData.balance }, item.userId)
 
-                if (item.type === "INCOME"){
-                    // const budget = await this.budget.getOne()
-                    // if (budget) {
-                    //     budget.amount += item.amount;
-                    //     await this.budget.update(budget.id, budget)
-                    // }
+                if (item.type === "OUTFLOW") {
+                    const budget = await this.budget.get_one_by_date(item.walletId, item.categoryId, item.userId)
+                    if (budget instanceof Array) {
+                        for (const bud of budget) {
+                            bud.current_amount = Number(bud.current_amount) + Number(item.amount);
+                            await this.budget.update(+bud.id, bud, bud.userId)
+                            if (bud.current_amount > bud.limit_amount) {
+                                console.log("NOS PASAMOS"); // TODO: VER COMO MANEJO LOS MENSAJES DE ALERTA QUE SE ESTA PASANDO DEL PRESUPUESTO ESTABLECIDO
+                            }
+                        }
+                    }
                 }
             }
         }

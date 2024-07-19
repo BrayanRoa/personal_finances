@@ -1,5 +1,6 @@
 import { CustomResponse } from "../../utils/response/custom.response";
 import { CreateBudgetDto } from "../dtos/budget/create-budget.dto";
+import { UpdateBudgetDto } from "../dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../entities/budget/budget.entity";
 
 export abstract class BudgetDatasource {
@@ -7,6 +8,9 @@ export abstract class BudgetDatasource {
     abstract getAll(userId: string): Promise<BudgetEntity[] | CustomResponse>;
     abstract create(data: CreateBudgetDto, user_audits: string): Promise<string | CustomResponse>;
     abstract getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse>
+    abstract get_one_by_date(walletid: number, categoryid: number, userid: string): Promise<BudgetEntity[] | CustomResponse>
+
+    abstract update(id: number, data: UpdateBudgetDto, user_audits: string): Promise<string | CustomResponse>
     // abstract defaultCategories(userId: string): Promise<string | CustomResponse>
 
 }

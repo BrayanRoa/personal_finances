@@ -61,6 +61,21 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
             return WalletEntity.fromObject(wallet)
         })
     }
+
+    findByIds(id: number[]): Promise<CustomResponse | WalletEntity[]> {
+        return this.handleErrors(async () => {
+            const wallets = await BaseDatasource.prisma.wallet.findMany({
+                where: {
+                    id: {
+                        in: id
+                    }
+                },
+                include: { transactions: true }
+            })
+            if (!wallets || wallets.length === 0) return new CustomResponse("Wallet not found", 404)
+            return wallets.map(wallet => WalletEntity.fromObject(wallet))
+        })
+    }
     update(id: number, data: UpdateWalletDto, user_audits: string): Promise<string | CustomResponse> {
         const { userId, ...rest } = data
         return this.handleErrors(async () => {

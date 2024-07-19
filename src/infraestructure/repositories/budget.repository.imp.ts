@@ -1,5 +1,6 @@
 import { BudgetDatasource } from "../../domain/datasources/budget.datasource";
 import { CreateBudgetDto } from "../../domain/dtos/budget/create-budget.dto";
+import { UpdateBudgetDto } from "../../domain/dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
 import { BudgetRepository } from "../../domain/repositories/budget.repository";
 import { CustomResponse } from "../../utils/response/custom.response";
@@ -9,6 +10,12 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    update(id: number, data: UpdateBudgetDto, user_audits: string): Promise<string | CustomResponse> {
+        return this.budgetDatasource.update(id, data, user_audits)
+    }
+    get_one_by_date(walletid: number, categoryid: number, userid: string): Promise<BudgetEntity[] | CustomResponse> {
+        return this.budgetDatasource.get_one_by_date(walletid, categoryid, userid)
+    }
     getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
         return this.budgetDatasource.getOne(id, userId)
     }
