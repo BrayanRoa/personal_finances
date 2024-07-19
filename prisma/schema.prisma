@@ -29,6 +29,7 @@ model User {
   categories   Category[] // a user can have several categories
   tags         Tag[] // a user can have several tags
   budget       Budget[]
+  Notification Notification[]
 
   @@map(name: "users")
 }
@@ -154,4 +155,18 @@ model Audists {
   // role String
   // permissions String
   @@map(name: "audists")
+}
+
+model Notification {
+  id      Int     @id @default(autoincrement())
+  message String
+  title   String
+  read    Boolean
+
+  userId String
+  User   User?  @relation(fields: [userId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }

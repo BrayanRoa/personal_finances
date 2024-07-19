@@ -110,6 +110,7 @@ const saveTransactions = (transactions: CreateTransactionDto[]) => {
         container.cradle.transactionRepository,
         container.cradle.walletRepository,
         container.cradle.budgetRepository,
+        container.cradle.emailService,
     ).execute(transactions).then()
 }
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .header {
+            text-align: center;
+            color: #f00;
+        }
+
+        .content {
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="header">Aviso de Presupuesto Excedido</h1>
+        <div class="content">
+            <p>Estimado(a) {{name}},</p>
+            <p>Esperamos que estés bien. Este es un aviso para informarte que has excedido tu presupuesto mensual
+                llamado {{budget_name}}.</p>
+            <p>Tu límite de presupuesto era: <strong>{{budget_amount}}</strong></p>
+            <p>Tu gasto hasta la fecha es: <strong>{{current_spending}}</strong></p>
+            <p>Te has excedido por: <strong>{{budget_excess}}</strong></p>
+            <p>Te recomendamos revisar tus gastos y considerar ajustar tu presupuesto para el próximo mes.</p>
+            <p>Gracias por usar nuestra aplicación.</p>
+            <p>Saludos cordiales,</p>
+            <p>El equipo de {{bussines_name}}</p>
+        </div>
+    </div>
+</body>
+
+</html>

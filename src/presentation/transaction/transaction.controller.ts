@@ -34,7 +34,9 @@ export class TransactionController {
     public create = (req: Request, res: Response) => {
         return new CreateTransaction(
             this.repository,
-            container.cradle.walletRepository, container.cradle.budgetRepository)
+            container.cradle.walletRepository, 
+            container.cradle.budgetRepository,
+            container.cradle.emailService)
             .execute(req.body)
             .then(transaction => CustomResponse.handleResponse(res, transaction, 201))
             .catch(error => CustomResponse.handleResponse(res, error))

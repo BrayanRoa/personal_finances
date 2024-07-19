@@ -14,6 +14,8 @@ import { WalletDatasourceImp } from '../datasource/wallet.datasource.imp';
 import { WalletRepositoryImp } from '../repositories/wallet.repository.imp';
 import { BudgetRepositoryImp } from '../repositories/budget.repository.imp';
 import { BudgetDatasourceImp } from '../datasource/budget.datasource.imp';
+import { NotificationRepositoryImp } from '../repositories/notification.repository.imp';
+import { NotificationDatasourceImp } from '../datasource/notification.datasource.imp';
 
 interface IContainer {
     passwordHasher: BcryptPasswordHasher,
@@ -30,6 +32,8 @@ interface IContainer {
     walletRepository: WalletRepositoryImp,
     budgetDatasource: BudgetDatasourceImp,
     budgetRepository: BudgetRepositoryImp,
+    notificationDatasource: NotificationDatasourceImp,
+    notificationRepository: NotificationRepositoryImp
 }
 
 export const container: AwilixContainer<IContainer> = createContainer<IContainer>({
@@ -61,4 +65,6 @@ container.register({
 
     budgetDatasource: asClass(BudgetDatasourceImp).singleton(),
     budgetRepository: asClass(BudgetRepositoryImp).singleton(),
+    notificationDatasource: asClass(NotificationDatasourceImp).singleton(),
+    notificationRepository: asClass(NotificationRepositoryImp).singleton()
 });
