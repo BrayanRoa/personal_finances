@@ -10,9 +10,9 @@ export interface GetUserUseCase {
 export class GetUser implements GetUserUseCase {
 
     constructor(
-        private repository: UserRepository
+        private userRepository: UserRepository
     ) { }
     execute(id: string): Promise<UserEntity | undefined | CustomResponse> {
-        return this.repository.findById(id)
+        return this.userRepository.findById(id)
     }
 }

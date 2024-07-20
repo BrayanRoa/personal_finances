@@ -7,6 +7,7 @@ import { BudgetRepository } from "../../repositories/budget.repository";
 import { TransactionRepository } from "../../repositories/transaction.repository";
 import { WalletRepository } from "../../repositories/wallet.repository";
 import { CreateNotification } from "../notification/create-notification";
+import { GetUser } from "../users/get-user";
 
 export interface CreateTransactionUseCase {
     execute(dto: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse>;
@@ -44,7 +45,7 @@ export class CreateTransaction implements CreateTransactionUseCase {
                             await this.budget.update(+bud.id, bud, bud.userId)
                             if (bud.current_amount > bud.limit_amount) {
                                 this.save_notification(item.userId)
-                                this.send_email(bud.name, bud.limit_amount, bud.current_amount)
+                                this.send_email(item.userId, bud.name, bud.limit_amount, bud.current_amount)
                             }
                         }
                     }
@@ -67,13 +68,25 @@ export class CreateTransaction implements CreateTransactionUseCase {
         })
     }
 
-    async send_email(budget_name: string, budget_amount: number, current_spending: number) {
-        await this.emailService.budgetExceeded(
-            "brayanandresrl@ufps.edu.co",
-            "Brayan",
-            budget_name.toUpperCase(),
-            budget_amount,
-            current_spending
-        )
+    async send_email(user_id: string, budget_name: string, budget_amount: number, current_spending: number) {
+        try {
+            const user = new GetUser(container.cradle.userRepository)
+            const userData = await user.execute(user_id)
+
+            if (userData instanceof CustomResponse || userData === undefined) {
+                return new CustomResponse("user not found", 400)
+            }
+            else {
+                await this.emailService.budgetExceeded(
+                    userData.email!,
+                    userData.name.toUpperCase(),
+                    budget_name.toUpperCase(),
+                    budget_amount,
+                    current_spending
+                )
+            }
+        } catch (error) {
+            console.error("Error sending email:", error)
+        }
     }
 }
