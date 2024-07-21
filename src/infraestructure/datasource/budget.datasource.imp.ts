@@ -13,16 +13,26 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
     }
     update(id: number, data: UpdateBudgetDto, user_audits: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            const budget = await BaseDatasource.prisma.budget.updateMany({
-                where: {
-                    id,
-                    userId: data.userId
-                },
-                data
-            })
-            if (budget.count === 0) return new CustomResponse("Budget not found", 404)
-            this.auditSave(id, data, "UPDATE", user_audits)
-            return "Budget updated successfully"
+            const getOne = await this.getOne(id, user_audits)
+            if (getOne instanceof CustomResponse) {
+                return getOne
+            } else {
+                if (data.limit_amount) {
+                    if (getOne.current_amount > data.limit_amount!) {
+                        return new CustomResponse("Limit amount should be greater or equal to the current amount", 400)
+                    }
+                }
+                const budget = await BaseDatasource.prisma.budget.updateMany({
+                    where: {
+                        id,
+                        userId: data.userId
+                    },
+                    data
+                })
+                if (budget.count === 0) return new CustomResponse("Budget not found", 404)
+                this.auditSave(id, data, "UPDATE", user_audits)
+                return "Budget update successfully"
+            }
         })
     }
     getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
@@ -88,7 +98,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
     }
 
     get_one_by_date(walletid: number, categoryid: number, userid: string): Promise<BudgetEntity[] | CustomResponse> {
-        console.log({walletid}, {categoryid}, {userid});
+        console.log({ walletid }, { categoryid }, { userid });
         return this.handleErrors(async () => {
             const today = new Date();
             today.setUTCHours(0, 0, 0, 0);

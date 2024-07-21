@@ -10,17 +10,9 @@ export class UpdateBudgetDto {
     @IsOptional()
     public description?: string;
 
-    @IsDateString()
-    @IsOptional()
-    public initial_date?: Date;
-
-    @IsDateString()
-    @IsOptional()
-    public end_date?: Date;
-
     @IsNumber()
     @IsOptional()
-    public readonly amount?: number;
+    public readonly limit_amount?: number;
 
     @IsString()
     @IsNotEmpty()
@@ -36,11 +28,8 @@ export class UpdateBudgetDto {
         "EVERY TWO MONTHS",
         "EVERY THREE MONTHS",
         "EVERY SIX MONTHS",
-        "EVERY YEAR"
+        "EVERY YEAR",
+        "NEVER"
     ])
     public readonly repeat?: string;
-
-    @IsString()
-    @IsOptional()
-    public readonly categories?: string;
 }

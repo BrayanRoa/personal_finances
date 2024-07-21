@@ -91,6 +91,8 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *                type: number
          *              current_amount:
          *                type: number
+         *              repeat:
+         *                type: string
          *              categories:
          *                type: string
          *              wallets:
@@ -116,6 +118,60 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             (req, res, next) => this.middleware.validateDto(req, res, next, "create"),
             this.controller.Create
+        )
+
+        /**
+         * @swagger
+         * /budget/{id}:
+         *  patch:
+         *    tags: [Budget]
+         *    summary: Updates an existing budget.
+         *    description: Updates any field of a budget for a specific user. The userId is derived from the JWT of the authenticated user.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: string
+         *        required: true
+         *        description: ID of the budget to update.
+         *    requestBody:
+         *      required: true
+         *      content:
+         *        application/json:
+         *          schema:
+         *            type: object
+         *            properties:
+         *              name:
+         *                type: string
+         *              description:
+         *                type: string
+         *              limit_amount:
+         *                type: number
+         *              repeat:
+         *                type: string
+         *    responses:
+         *      '200':
+         *        description: Budget updated successfully
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: string
+         *      '400':
+         *        description: Invalid ID supplied or invalid input data
+         *      '404':
+         *        description: Budget not found
+         */
+        this.router.patch(`${prefix}/:id`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            (req, res, next) => this.middleware.validateDto(req, res, next, "update"),
+            this.controller.update
         )
 
     }

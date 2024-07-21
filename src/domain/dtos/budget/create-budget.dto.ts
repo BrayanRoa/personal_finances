@@ -41,7 +41,8 @@ export class CreateBudgetDto {
         "EVERY TWO MONTHS",
         "EVERY THREE MONTHS",
         "EVERY SIX MONTHS",
-        "EVERY YEAR"
+        "EVERY YEAR",
+        "NEVER"
     ])
     public readonly repeat!: string;
 
