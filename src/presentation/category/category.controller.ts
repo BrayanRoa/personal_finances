@@ -4,6 +4,8 @@ import { CategoryRepository } from "../../domain/repositories/category.repositor
 import { CustomResponse } from "../../utils/response/custom.response";
 import { GetOneCategory } from "../../domain/use-cases/category/get-one-category";
 import { GetAllCategories } from "../../domain/use-cases";
+import { DeleteCategory } from "../../domain/use-cases/category/delete-category";
+import { container } from "../../infraestructure/dependencies/container";
 
 export class CategoryController {
 
@@ -31,6 +33,15 @@ export class CategoryController {
         return new GetOneCategory(this.categoryRepository)
             .execute(+id, userId)
             .then(categories => CustomResponse.handleResponse(res, categories, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public delete = (req: Request, res: Response) => {
+        const { id } = req.params
+        const { userId } = req.body
+        return new DeleteCategory(this.categoryRepository, container.cradle.transactionRepository)
+            .execute(+id, userId)
+            .then(category => CustomResponse.handleResponse(res, category, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 }

@@ -60,6 +60,45 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
 
         /**
          * @swagger
+         * /category/{id}:
+         *  patch:
+         *    tags: [Categories]
+         *    summary: delete categories without transaction
+         *    description: Updates any field of a budget for a specific user. The userId is derived from the JWT of the authenticated user.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: string
+         *        required: true
+         *        description: ID of the budget to delete.
+         *    responses:
+         *      '200':
+         *        description: Budget updated successfully
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: string
+         *      '400':
+         *        description: Invalid ID supplied or invalid input data
+         *      '404':
+         *        description: Budget not found
+         */
+        this.router.patch(`${prefix}/:id`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            // (req, res, next) => this.middleware.validateDto(req, res, next, "update"),
+            this.controller.delete
+        )
+
+        /**
+         * @swagger
          * /category:
          *  get:
          *    tags: [Categories]

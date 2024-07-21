@@ -25,6 +25,18 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
         super()
         this.audit_class = "CATEGORY"
     }
+    delete(id: number, userId: string): Promise<string | CustomResponse> {
+        return this.handleErrors(async () => {
+            await BaseDatasource.prisma.category.update({
+                where: {
+                    id,
+                    userId
+                },
+                data: { deleted_at: new Date() },
+            })
+            return "Category deleted successfully"
+        })
+    }
     defaultCategories(userId: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             for (const category of default_categories) {
@@ -85,7 +97,7 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
         const data = await BaseDatasource.prisma.category.findFirst({
             where: {
                 AND: [
-                    { name: nameCategory },
+                    { name: nameCategory.toUpperCase() },
                     { userId: userId },
                     { deleted_at: null }
                 ]

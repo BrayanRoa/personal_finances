@@ -12,6 +12,9 @@ export class TransactionRepositoryImp extends TransactionRepository {
     ) {
         super()
     }
+    transactionWithCategories(idCategory: number, userId: string): Promise<CustomResponse | boolean> {
+        return this.transactionDatasource.transactionWithCategories(idCategory, userId)
+    }
     getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
         return this.transactionDatasource.getAllRecurring()
     }
@@ -20,7 +23,7 @@ export class TransactionRepositoryImp extends TransactionRepository {
             data.forEach(element => {
                 element.date = new Date(element.date)
             });
-        }else{
+        } else {
             data.date = new Date(data.date)
         }
         return this.transactionDatasource.create(data)

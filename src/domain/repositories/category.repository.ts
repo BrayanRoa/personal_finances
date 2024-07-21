@@ -10,5 +10,6 @@ export abstract class CategoryRepository {
     abstract getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse>
     abstract defaultCategories(userId: string): Promise<string | CustomResponse>
 
+    abstract delete(id: number, userId: string): Promise<string | CustomResponse>
 
 }

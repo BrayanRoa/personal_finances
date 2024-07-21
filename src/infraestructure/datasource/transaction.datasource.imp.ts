@@ -12,6 +12,16 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         super()
         this.audit_class = "TRANSACTION"
     }
+    transactionWithCategories(idCategory: number, userId: string): Promise<CustomResponse | boolean> {
+        return this.handleErrors(async () => {
+            const transaction = await BaseDatasource.prisma.transaction.findMany({
+                where: {
+                    categoryId: idCategory, userId
+                },
+            })
+            return transaction.length > 0 ? true : false
+        })
+    }
     update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number } | CustomResponse | string> {
         return this.handleErrors(async () => {
             if (data instanceof Array) {
@@ -87,7 +97,8 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             const action = await BaseDatasource.prisma.transaction.findMany({
                 where: {
                     AND: [{ deleted_at: null, userId }]
-                }
+                },
+                orderBy: { date: 'desc' }
             })
             return action.map(transaction => TransactionEntity.fromObject(transaction))
         })

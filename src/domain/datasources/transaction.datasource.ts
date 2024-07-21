@@ -8,6 +8,7 @@ export abstract class TransactionDatasource {
     abstract getAll(userId: string): Promise<TransactionEntity[] | CustomResponse>
     abstract findById(id: number, userId: string): Promise<TransactionEntity | CustomResponse>
     abstract delete(id: number, user_audits: string): Promise<string | CustomResponse>
-    abstract update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{action:string, amountDifference:number} | string | CustomResponse>
+    abstract update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number } | string | CustomResponse>
     abstract getAllRecurring(): Promise<CustomResponse | TransactionEntity[]>
+    abstract transactionWithCategories(idCategory: number, userId: string): Promise<CustomResponse | boolean>
 }
