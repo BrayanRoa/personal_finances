@@ -28,13 +28,15 @@ export class UpdateTransactionDto {
     @IsEnum([
         "NEVER",
         "EVERY DAY",
+        "EVERY TWO DAYS",
+        "EVERY WORKING DAY",
         "EVERY WEEK",
+        "EVERY TWO WEEKS",
         "EVERY MONTH",
         "EVERY TWO MONTHS",
         "EVERY THREE MONTHS",
         "EVERY SIX MONTHS",
         "EVERY YEAR",
-        "EVERY WORKING DAY"
     ])
     public readonly repeat?: string;
 

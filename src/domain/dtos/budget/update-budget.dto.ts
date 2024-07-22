@@ -21,7 +21,6 @@ export class UpdateBudgetDto {
     @IsString()
     @IsOptional()
     @IsEnum([
-        "EVERY DAY",
         "EVERY WEEK",
         "EVERY TWO WEEKS",
         "EVERY MONTH",

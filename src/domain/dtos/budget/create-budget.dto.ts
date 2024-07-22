@@ -34,7 +34,6 @@ export class CreateBudgetDto {
     @IsString()
     @IsNotEmpty()
     @IsEnum([
-        "EVERY DAY",
         "EVERY WEEK",
         "EVERY TWO WEEKS",
         "EVERY MONTH",

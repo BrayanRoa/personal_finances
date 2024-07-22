@@ -83,7 +83,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             const budgetWallets = data.wallets.split(",")
             if (budgetWallets.length >= 1) {
                 for (const wallet of budgetWallets) {
-                    console.log(wallet);
                     await BaseDatasource.prisma.budgetWallet.create({
                         data: {
                             walletId: +wallet,
