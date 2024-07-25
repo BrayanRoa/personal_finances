@@ -14,6 +14,8 @@ export abstract class BudgetRepository {
 
     abstract update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<string | CustomResponse>
     abstract getAllRecurring(): Promise<CustomResponse | BudgetEntity[]>
+    abstract delete(id: number, userId: string): Promise<string | CustomResponse>
+
 
 
 }

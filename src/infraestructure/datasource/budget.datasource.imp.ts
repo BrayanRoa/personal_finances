@@ -13,6 +13,20 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         super()
         this.audit_class = "BUDGET"
     }
+    delete(id: number, userId: string): Promise<string | CustomResponse> {
+        return this.handleErrors(async () => {
+            await BaseDatasource.prisma.budget.updateMany({
+                where: {
+                    id,
+                    userId
+                },
+                data: {
+                    deleted_at: new Date()
+                },
+            })
+            return "Budget deleted successfully"
+        })
+    }
     getAllRecurring(): Promise<CustomResponse | BudgetEntity[]> {
         return this.handleErrors(async () => {
             const today = new Date();
@@ -141,7 +155,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             if (data instanceof Array) {
                 data.map(async (budget) => {
                     const { categories, ...rest } = budget
-                    console.log({ rest });
                     const new_budget = await BaseDatasource.prisma.budget.create({ data: rest })
                     const budgetCategories = budget.categories.split(",")
                     if (budgetCategories.length >= 1) {

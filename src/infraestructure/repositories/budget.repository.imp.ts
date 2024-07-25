@@ -10,6 +10,9 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    delete(id: number, userId: string): Promise<string | CustomResponse> {
+        return this.budgetDatasource.delete(id, userId)
+    }
     createMany(data: CreateBudgetDto[]): Promise<string | CustomResponse> {
         return this.budgetDatasource.createMany(data)
     }
@@ -28,14 +31,6 @@ export class BudgetRepositoryImp implements BudgetRepository {
     getAll(userId: string): Promise<BudgetEntity[] | CustomResponse> {
         return this.budgetDatasource.getAll(userId)
     }
-    // async create(data: CreateBudgetDto[]): Promise<string | CustomResponse> {
-    //     data.date = new Date(data.date);
-    //     data.end_date = new Date(data.end_date);
-    //     if (data.date.getTime() > data.end_date.getTime()) {
-    //         return new CustomResponse('The initial date must be before the end date', 400)
-    //     }
-    //     return this.budgetDatasource.create(data, user_audits)
-    // }
 
     create(data: CreateBudgetDto): Promise<string | CustomResponse> {
         if (data instanceof Array) {

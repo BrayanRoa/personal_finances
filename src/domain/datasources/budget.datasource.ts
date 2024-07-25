@@ -16,6 +16,8 @@ export abstract class BudgetDatasource {
 
     abstract getAllRecurring(): Promise<CustomResponse | BudgetEntity[]>
 
+    abstract delete(id: number, userId: string): Promise<string | CustomResponse>
+
     // abstract defaultCategories(userId: string): Promise<string | CustomResponse>
 
 }

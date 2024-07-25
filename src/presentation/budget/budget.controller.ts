@@ -4,6 +4,7 @@ import { BudgetRepository } from "../../domain/repositories/budget.repository";
 import { GetAllBudgets } from "../../domain/use-cases/budget/get-all-budget";
 import { CreateBudget } from "../../domain/use-cases/budget/create-budget";
 import { UpdateBudget } from "../../domain/use-cases/budget/update-budget";
+import { DeleteBudget } from "../../domain/use-cases/budget/delete-budget";
 
 export class BudgetController {
 
@@ -29,6 +30,15 @@ export class BudgetController {
 
     public getOne = (req: Request, res: Response) => {
 
+    }
+
+    public delete = (req: Request, res: Response) => {
+        const { id } = req.params
+        const { userId } = req.body
+        return new DeleteBudget(this.repository)
+            .execute(+id, userId)
+            .then(del => CustomResponse.handleResponse(res, del, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
     }
 
     public update = (req: Request, res: Response) => {
