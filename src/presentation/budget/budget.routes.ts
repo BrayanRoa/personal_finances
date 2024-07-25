@@ -182,8 +182,8 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
 
         /**
          * @swagger
-         * /budget/{id}/delete:
-         *  patch:
+         * /budget/{id}:
+         *  delete:
          *    tags: [Budget]
          *    summary: Soft deletes a budget.
          *    description: Soft deletes a budget for a specific user. The budget is not permanently removed from the database. The userId is derived from the JWT of the authenticated user.
@@ -202,7 +202,7 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *      '404':
          *        description: Budget not found
          */
-        this.router.patch(`${prefix}/:id/delete`,
+        this.router.delete(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.delete
         )
