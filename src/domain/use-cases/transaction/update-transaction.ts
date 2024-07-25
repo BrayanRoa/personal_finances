@@ -20,7 +20,6 @@ export class UpdateTransaction implements UpdateTransactionUseCase {
         if (result instanceof CustomResponse) {
             return result;
         }
-
         if (result instanceof Object) {
             if (!(dto instanceof Array)) {
                 const wallet = await this.walletRepositopry.findById(dto.walletId!, dto.userId)

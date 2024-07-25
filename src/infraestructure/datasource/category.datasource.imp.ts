@@ -67,7 +67,6 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
         })
     }
     getAll(userId: string): Promise<CategoryEntity[] | CustomResponse> {
-        console.log("CAT");
         return this.handleErrors(async () => {
             const data = await BaseDatasource.prisma.category.findMany({
                 where: {

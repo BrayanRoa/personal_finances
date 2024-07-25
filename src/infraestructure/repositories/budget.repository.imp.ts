@@ -10,8 +10,14 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
-    update(id: number, data: UpdateBudgetDto, user_audits: string): Promise<string | CustomResponse> {
-        return this.budgetDatasource.update(id, data, user_audits)
+    createMany(data: CreateBudgetDto[]): Promise<string | CustomResponse> {
+        return this.budgetDatasource.createMany(data)
+    }
+    getAllRecurring(): Promise<CustomResponse | BudgetEntity[]> {
+        return this.budgetDatasource.getAllRecurring()
+    }
+    update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
+        return this.budgetDatasource.update(id, data)
     }
     get_one_by_date(walletid: number, categoryid: number, userid: string): Promise<BudgetEntity[] | CustomResponse> {
         return this.budgetDatasource.get_one_by_date(walletid, categoryid, userid)
@@ -22,13 +28,26 @@ export class BudgetRepositoryImp implements BudgetRepository {
     getAll(userId: string): Promise<BudgetEntity[] | CustomResponse> {
         return this.budgetDatasource.getAll(userId)
     }
-    async create(data: CreateBudgetDto, user_audits: string): Promise<string | CustomResponse> {
-        data.initial_date = new Date(data.initial_date);
-        data.end_date = new Date(data.end_date);
-        if (data.initial_date.getTime() > data.end_date.getTime()) {
-            return new CustomResponse('The initial date must be before the end date', 400)
+    // async create(data: CreateBudgetDto[]): Promise<string | CustomResponse> {
+    //     data.date = new Date(data.date);
+    //     data.end_date = new Date(data.end_date);
+    //     if (data.date.getTime() > data.end_date.getTime()) {
+    //         return new CustomResponse('The initial date must be before the end date', 400)
+    //     }
+    //     return this.budgetDatasource.create(data, user_audits)
+    // }
+
+    create(data: CreateBudgetDto): Promise<string | CustomResponse> {
+        if (data instanceof Array) {
+            data.forEach(element => {
+                element.date = new Date(element.date)
+                element.end_date = new Date(element.end_date)
+            });
+        } else {
+            data.date = new Date(data.date)
+            data.end_date = new Date(data.end_date)
         }
-        return this.budgetDatasource.create(data, user_audits)
+        return this.budgetDatasource.create(data)
     }
 
 }

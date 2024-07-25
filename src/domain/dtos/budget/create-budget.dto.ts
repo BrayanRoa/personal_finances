@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export class CreateBudgetDto {
 
@@ -12,7 +12,7 @@ export class CreateBudgetDto {
 
     @IsNotEmpty()
     @IsDateString()
-    public initial_date!: Date;
+    public date!: Date;
 
     @IsNotEmpty()
     @IsDateString()
@@ -49,7 +49,19 @@ export class CreateBudgetDto {
     @IsNotEmpty()
     public readonly categories!: string;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    public readonly wallets!: string;
+    public readonly walletId!: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    public readonly percentage!: number;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    public readonly active!: boolean;
+
+    @IsOptional()
+    @IsDateString()
+    public readonly next_date!: Date
 }

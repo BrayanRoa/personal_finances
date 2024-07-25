@@ -42,7 +42,7 @@ export class CreateTransaction implements CreateTransactionUseCase {
                     if (budget instanceof Array) {
                         for (const bud of budget) {
                             bud.current_amount = Number(bud.current_amount) + Number(item.amount);
-                            await this.budget.update(+bud.id, bud, bud.userId)
+                            await this.budget.update(+bud.id, bud)
                             if (bud.current_amount > bud.limit_amount) {
                                 this.save_notification(item.userId)
                                 this.send_email(item.userId, bud.name, bud.limit_amount, bud.current_amount)

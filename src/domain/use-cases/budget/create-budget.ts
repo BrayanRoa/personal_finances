@@ -3,17 +3,18 @@ import { CreateBudgetDto } from "../../dtos/budget/create-budget.dto";
 import { BudgetRepository } from "../../repositories/budget.repository";
 
 export interface CreateBudgetUseCase {
-    execute(dto: CreateBudgetDto): Promise<string | CustomResponse>;
+    execute(dto: CreateBudgetDto[] | CreateBudgetDto): Promise<string | CustomResponse>;
 }
 
 
 export class CreateBudget implements CreateBudgetUseCase {
 
     constructor(
-        private repository: BudgetRepository
+        private repository: BudgetRepository,
     ) { }
-    execute(dto: CreateBudgetDto): Promise<string | CustomResponse> {
-        return this.repository.create(dto, dto.userId)
+
+    async execute(dto: CreateBudgetDto): Promise<string | CustomResponse> {
+        return this.repository.create(dto)
     }
 
 

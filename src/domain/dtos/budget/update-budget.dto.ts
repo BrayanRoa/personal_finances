@@ -1,6 +1,10 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateBudgetDto {
+
+    @IsOptional()
+    @IsNumber()
+    id?: number
 
     @IsString()
     @IsOptional()
@@ -31,4 +35,21 @@ export class UpdateBudgetDto {
         "NEVER"
     ])
     public readonly repeat?: string;
+
+    @IsNumber()
+    @IsOptional()
+    public readonly percentage?: number;
+
+    @IsBoolean()
+    @IsOptional()
+    public readonly active?: boolean;
+
+    @IsOptional()
+    @IsDateString()
+    public readonly next_date?: Date | null
+
+    @IsString()
+    @IsOptional()
+    public readonly categories?: string;
+
 }

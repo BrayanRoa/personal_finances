@@ -4,7 +4,7 @@ import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-trans
 import { TransactionEntity } from "../../domain/entities/transaction/transaction.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
-import { calculateNextDate } from "../../works/processRecurringTransactions";
+import { calculateNextDateToTransaction } from "../../works/processRecurringTransactions";
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -29,7 +29,6 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     if (rest.repeat === "NEVER") {
                         rest.active = false
                         rest.next_date = null
-
                     }
                     return BaseDatasource.prisma.transaction.update({
                         where: { id },
@@ -74,6 +73,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
     create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
+            // console.log("soy la data entrante",{data});
             if (data instanceof Array) {
                 const createUserOperations = data.map(item =>
                     BaseDatasource.prisma.transaction.create({ data: item })
@@ -84,7 +84,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 })
             } else {
                 if (data.repeat !== "NEVER") {
-                    data = calculateNextDate(data)
+                    data = calculateNextDateToTransaction(data)
                 }
                 const transaction = await BaseDatasource.prisma.transaction.create({ data })
                 this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)

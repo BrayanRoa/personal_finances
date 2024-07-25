@@ -61,19 +61,18 @@ model Transaction {
 }
 
 model Wallet {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String
-  balance     Float
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String
+  balance      Float
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  deleted_at   DateTime?
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  transactions Transaction[] // Un Wallet puede tener múltiples transacciones
-  BudgetWallet BudgetWallet[]
+  budgets Budget[] // Este es el campo nuevo que se añade a Wallet
 }
 
 model Category {
@@ -109,27 +108,23 @@ model Budget {
   id               Int              @id @default(autoincrement())
   name             String
   description      String
-  initial_date     DateTime
+  date             DateTime
   end_date         DateTime
   limit_amount     Decimal
   current_amount   Decimal
   repeat           String
+  percentage       Decimal
+  next_date        DateTime?
+  active           Boolean
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
   deleted_at       DateTime?
   userId           String
   User             User?            @relation(fields: [userId], references: [id])
   BudgetCategories BudgetCategory[]
-  BudgetWallet     BudgetWallet[]
-}
 
-model BudgetWallet {
-  budgetId Int
-  walletId Int
-  budget   Budget @relation(fields: [budgetId], references: [id])
-  wallet   Wallet @relation(fields: [walletId], references: [id])
-
-  @@id([budgetId, walletId])
+  walletId Int // Esto es nuevo
+  Wallet   Wallet @relation(fields: [walletId], references: [id]) // Y esto también es nuevo
 }
 
 model BudgetCategory {

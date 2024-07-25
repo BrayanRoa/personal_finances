@@ -36,7 +36,7 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *                    type: string
          *                  description:
          *                    type: string
-         *                  initial_date:
+         *                  date:
          *                    type: string
          *                    format: date-time
          *                  end_date:
@@ -81,7 +81,7 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *                type: string
          *              description:
          *                type: string
-         *              initial_date:
+         *              date:
          *                type: string
          *                format: date-time
          *              end_date:
@@ -95,8 +95,12 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *                type: string
          *              categories:
          *                type: string
-         *              wallets:
-         *                type: string
+         *              walletId:
+         *                type: number
+         *              percentage:
+         *                type: number
+         *              active:
+         *                type: boolean
          *    responses:
          *      '201':
          *        description: Budget created successfully
@@ -149,6 +153,8 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
          *                type: number
          *              repeat:
          *                type: string
+         *              active:
+         *                type: boolean
          *    responses:
          *      '200':
          *        description: Budget updated successfully

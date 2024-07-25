@@ -72,8 +72,6 @@ export class UserDatasourceImp extends BaseDatasource implements UserDatasource 
         })
     }
     delete(id: string, user_audits: string): Promise<string | CustomResponse> {
-        console.log(id);
-        console.log(user_audits);
         return this.handleErrors(async () => {
             const deleted = await BaseDatasource.prisma.user.update({
                 where: { id },
