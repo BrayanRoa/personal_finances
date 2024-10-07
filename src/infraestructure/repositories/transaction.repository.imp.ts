@@ -3,6 +3,7 @@ import { CreateTransactionDto } from "../../domain/dtos/transaction/create-trans
 import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-transaction.dto";
 import { TransactionEntity } from "../../domain/entities/transaction/transaction.entity";
 import { TransactionRepository } from "../../domain/repositories/transaction.repository";
+import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 export class TransactionRepositoryImp extends TransactionRepository {
@@ -28,8 +29,8 @@ export class TransactionRepositoryImp extends TransactionRepository {
         }
         return this.transactionDatasource.create(data)
     }
-    getAll(userId: string): Promise<CustomResponse | TransactionEntity[]> {
-        return this.transactionDatasource.getAll(userId)
+    getAll(userId: string, search: string| undefined, page:number, per_page:number): Promise<CustomResponse | TransactionInterface> {
+        return this.transactionDatasource.getAll(userId, search, page, per_page)
     }
     findById(id: number, userId: string): Promise<CustomResponse | TransactionEntity> {
         return this.transactionDatasource.findById(id, userId)

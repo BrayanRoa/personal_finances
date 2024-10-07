@@ -19,6 +19,24 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *  get:
          *    tags: [Transactions]
          *    summary: Retrieves all transactions.
+         *    parameters:
+         *      - in: query
+         *        name: page
+         *        schema:
+         *          type: integer
+         *          default: 1
+         *        description: Page number for the results pagination.
+         *      - in: query
+         *        name: per_page
+         *        schema:
+         *          type: integer
+         *          default: 10
+         *        description: Number of results to return per page.
+         *      - in: query
+         *        name: search
+         *        schema:
+         *          type: string
+         *        description: Search for transactions by description.
          *    responses:
          *      '200':
          *        description: Successful operation

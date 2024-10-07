@@ -1,10 +1,13 @@
+import { Prisma } from "@prisma/client";
 import { TransactionDatasource } from "../../domain/datasources/transaction.datasource";
 import { CreateTransactionDto } from "../../domain/dtos/transaction/create-transaction.dto";
 import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-transaction.dto";
 import { TransactionEntity } from "../../domain/entities/transaction/transaction.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
+import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 import { calculateNextDateToTransaction } from "../../works/processRecurringTransactions";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -92,16 +95,137 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             return "Transaction created successfully"
         })
     }
-    getAll(userId: string): Promise<CustomResponse | TransactionEntity[]> {
+    // getAll(userId: string, search: string | undefined, page: number, per_page: number): Promise<CustomResponse | TransactionInterface> {
+    //     return this.handleErrors(async () => {
+    //         let action = null;
+    //         let totalRecords = 0;
+    //         if (search) {
+    //             action = await BaseDatasource.prisma.transaction.findMany({
+    //                 where: {
+    //                     AND: [
+    //                         {
+    //                             deleted_at: null,
+    //                             userId: userId,
+    //                         },
+    //                         {
+    //                             OR: [
+    //                                 {
+    //                                     description: {
+    //                                         contains: search,
+    //                                         mode: 'insensitive',
+    //                                     },
+    //                                 },
+    //                                 {
+    //                                     type: {
+    //                                         contains: search,
+    //                                         mode: 'insensitive',
+    //                                     },
+    //                                 },
+    //                                 {
+    //                                     amount: {
+    //                                         equals: parseFloat(search)
+    //                                     }
+    //                                 }
+    //                             ],
+    //                         },
+    //                     ],
+    //                 },
+    //                 orderBy: { date: 'desc' },
+    //                 skip: (page - 1) * per_page,
+    //                 take: per_page,
+    //             });
+    //         } else {
+    //             totalRecords = await BaseDatasource.prisma.transaction.count({
+    //                 where: {
+    //                     AND: [{ deleted_at: null, userId }]
+    //                 }
+    //             });
+
+    //             action = await BaseDatasource.prisma.transaction.findMany({
+    //                 where: {
+    //                     AND: [{ deleted_at: null, userId }]
+    //                 },
+    //                 orderBy: { date: 'desc' },
+    //                 skip: (page - 1) * per_page,
+    //                 take: per_page,
+    //             })
+    //         }
+    //         return {
+    //             transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
+    //             meta:
+    //             {
+    //                 totalRecords,
+    //                 totalPages: Math.ceil(totalRecords / per_page),
+    //                 currentPage: page,
+    //                 next_page: true ? Math.ceil(totalRecords / per_page) > page : false,
+    //             }
+    //         }
+    //     })
+    // }
+
+
+    getAll(userId: string, search: string | undefined, page: number, per_page: number): Promise<CustomResponse | TransactionInterface> {
         return this.handleErrors(async () => {
-            const action = await BaseDatasource.prisma.transaction.findMany({
-                where: {
-                    AND: [{ deleted_at: null, userId }]
-                },
-                orderBy: { date: 'desc' }
-            })
-            return action.map(transaction => TransactionEntity.fromObject(transaction))
-        })
+
+            const commonParams: Prisma.TransactionFindManyArgs = {
+                orderBy: { date: 'desc' },
+                skip: (page - 1) * per_page,
+                take: per_page,
+            };
+
+            let action = [];
+            let totalRecords = 0;
+
+            if (search) {
+                // Caso con búsqueda
+                action = await BaseDatasource.prisma.transaction.findMany({
+                    where: {
+                        AND: [
+                            { deleted_at: null, userId: userId },
+                            {
+                                OR: [
+                                    { description: { contains: `${search}`, mode: 'insensitive' } },
+                                    { type: { contains: `${search}`, mode: 'insensitive' } },
+                                    { amount: { equals: parseFloat(search) || 0 } },
+                                    { repeat: { contains: `${search}`, mode: 'insensitive' } },
+                                    { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
+                                    { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } }
+                                ],
+                            },
+                        ],
+                    },
+                    include: {
+                        wallet: true,
+                        category: true,
+                    },
+                    ...commonParams
+                });
+            } else {
+                // Caso sin búsqueda
+                [totalRecords, action] = await Promise.all([
+                    BaseDatasource.prisma.transaction.count({
+                        where: { deleted_at: null, userId: userId },
+                    }),
+                    BaseDatasource.prisma.transaction.findMany({
+                        where: { deleted_at: null, userId: userId },
+                        ...commonParams,
+                        include: {
+                            wallet: true,
+                            category: true,
+                        }
+                    }),
+                ]);
+            }
+            return {
+                transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
+                meta: {
+                    totalRecords,
+                    totalPages: Math.ceil(totalRecords / per_page),
+                    currentPage: page,
+                    next_page: totalRecords > page * per_page,
+                }
+            }
+        });
     }
 
     getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {

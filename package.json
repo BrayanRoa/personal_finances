@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "set NODE_ENV=development&&tsnd --respawn --clear src/app.ts",
+    "dev": "NODE_ENV=development tsnd --respawn --clear src/app.ts",
     "build": "rimraf ./dist && tsc",
     "start": "set NODE_ENV=production&&npm run build && node dist/app.js",
     "prisma:migrate:test": "dotenv -e .env.test -- npx prisma migrate deploy",

@@ -130,6 +130,7 @@ export const transactionsRecurring = () => {
     return new GetAllTransactionRecurring(container.cradle.transactionRepository)
         .execute()
         .then((transactions) => {
+            console.log(transactions);
             if (transactions instanceof Array) {
                 const modifiedTransactions = transactions.map(calculateNextDateToTransaction);
                 if (modifiedTransactions) {

@@ -1,4 +1,6 @@
 import { BaseEntity } from "../../../utils/entity/base.entity";
+import { CategoryEntity } from "../category/category.entity";
+import { WalletEntity } from "../wallet/wallet.entity";
 
 export class TransactionEntity extends BaseEntity {
 
@@ -14,6 +16,8 @@ export class TransactionEntity extends BaseEntity {
         public categoryId: number,
         public active: boolean,
         public next_date: Date,
+        public wallet:WalletEntity,
+        public category:CategoryEntity,
         public created_at: Date,
         public updated_at: Date,
         public deleted_at?: Date
@@ -34,6 +38,8 @@ export class TransactionEntity extends BaseEntity {
             obj.categoryId,
             obj.active,
             obj.next_date,
+            obj.wallet,
+            obj.category,
             obj.created_at,
             obj.updated_at,
             obj.deleted_at

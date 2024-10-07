@@ -16,8 +16,15 @@ export class TransactionController {
 
     public getAll = (req: Request, res: Response) => {
         const { userId } = req.body
+        const { search, page=1, per_page=10 } = req.query;
+
+        // Comprobar si search es una cadena de texto o undefined
+        if (search && typeof search !== 'string') {
+            return res.status(400).json({ error: 'Invalid search parameter.' });
+        }
+
         return new GetAllTransaction(this.repository)
-            .execute(userId)
+            .execute(userId, search, +page, +per_page)
             .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
@@ -34,7 +41,7 @@ export class TransactionController {
     public create = (req: Request, res: Response) => {
         return new CreateTransaction(
             this.repository,
-            container.cradle.walletRepository, 
+            container.cradle.walletRepository,
             container.cradle.budgetRepository,
             container.cradle.emailService)
             .execute(req.body)
