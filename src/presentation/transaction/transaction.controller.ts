@@ -15,8 +15,9 @@ export class TransactionController {
     ) { }
 
     public getAll = (req: Request, res: Response) => {
+        const today = new Date();
         const { userId } = req.body
-        const { search, page=1, per_page=10 } = req.query;
+        const { search, page=1, per_page=10, year=today.getFullYear(), month=today.getMonth()+1, walletId=0 } = req.query;
 
         // Comprobar si search es una cadena de texto o undefined
         if (search && typeof search !== 'string') {
@@ -24,7 +25,7 @@ export class TransactionController {
         }
 
         return new GetAllTransaction(this.repository)
-            .execute(userId, search, +page, +per_page)
+            .execute(userId, search, +page, +per_page, +year, +month, +walletId)
             .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }

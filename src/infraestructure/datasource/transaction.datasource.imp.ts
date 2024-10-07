@@ -95,77 +95,15 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             return "Transaction created successfully"
         })
     }
-    // getAll(userId: string, search: string | undefined, page: number, per_page: number): Promise<CustomResponse | TransactionInterface> {
-    //     return this.handleErrors(async () => {
-    //         let action = null;
-    //         let totalRecords = 0;
-    //         if (search) {
-    //             action = await BaseDatasource.prisma.transaction.findMany({
-    //                 where: {
-    //                     AND: [
-    //                         {
-    //                             deleted_at: null,
-    //                             userId: userId,
-    //                         },
-    //                         {
-    //                             OR: [
-    //                                 {
-    //                                     description: {
-    //                                         contains: search,
-    //                                         mode: 'insensitive',
-    //                                     },
-    //                                 },
-    //                                 {
-    //                                     type: {
-    //                                         contains: search,
-    //                                         mode: 'insensitive',
-    //                                     },
-    //                                 },
-    //                                 {
-    //                                     amount: {
-    //                                         equals: parseFloat(search)
-    //                                     }
-    //                                 }
-    //                             ],
-    //                         },
-    //                     ],
-    //                 },
-    //                 orderBy: { date: 'desc' },
-    //                 skip: (page - 1) * per_page,
-    //                 take: per_page,
-    //             });
-    //         } else {
-    //             totalRecords = await BaseDatasource.prisma.transaction.count({
-    //                 where: {
-    //                     AND: [{ deleted_at: null, userId }]
-    //                 }
-    //             });
 
-    //             action = await BaseDatasource.prisma.transaction.findMany({
-    //                 where: {
-    //                     AND: [{ deleted_at: null, userId }]
-    //                 },
-    //                 orderBy: { date: 'desc' },
-    //                 skip: (page - 1) * per_page,
-    //                 take: per_page,
-    //             })
-    //         }
-    //         return {
-    //             transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
-    //             meta:
-    //             {
-    //                 totalRecords,
-    //                 totalPages: Math.ceil(totalRecords / per_page),
-    //                 currentPage: page,
-    //                 next_page: true ? Math.ceil(totalRecords / per_page) > page : false,
-    //             }
-    //         }
-    //     })
-    // }
-
-
-    getAll(userId: string, search: string | undefined, page: number, per_page: number): Promise<CustomResponse | TransactionInterface> {
+    getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number): Promise<CustomResponse | TransactionInterface> {
         return this.handleErrors(async () => {
+
+            let action = [];
+            let totalRecords = 0;
+
+            let startDate = new Date(+year, +month - 1, 1);
+            let endDate = new Date(+year, +month, 0);
 
             const commonParams: Prisma.TransactionFindManyArgs = {
                 orderBy: { date: 'desc' },
@@ -173,15 +111,16 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 take: per_page,
             };
 
-            let action = [];
-            let totalRecords = 0;
+            const baseCondition = {
+                AND: [{ deleted_at: null, userId: userId, walletId, date: { gte: startDate, lt: endDate } }],
+            }
 
             if (search) {
                 // Caso con búsqueda
                 action = await BaseDatasource.prisma.transaction.findMany({
                     where: {
                         AND: [
-                            { deleted_at: null, userId: userId },
+                            baseCondition,
                             {
                                 OR: [
                                     { description: { contains: `${search}`, mode: 'insensitive' } },
@@ -204,10 +143,10 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 // Caso sin búsqueda
                 [totalRecords, action] = await Promise.all([
                     BaseDatasource.prisma.transaction.count({
-                        where: { deleted_at: null, userId: userId },
+                        where: baseCondition,
                     }),
                     BaseDatasource.prisma.transaction.findMany({
-                        where: { deleted_at: null, userId: userId },
+                        where: baseCondition,
                         ...commonParams,
                         include: {
                             wallet: true,

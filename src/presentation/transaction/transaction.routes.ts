@@ -21,6 +21,12 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *    summary: Retrieves all transactions.
          *    parameters:
          *      - in: query
+         *        name: walletId
+         *        required: true
+         *        schema:
+         *          type: number
+         *        description: Search for transactions by month
+         *      - in: query
          *        name: page
          *        schema:
          *          type: integer
@@ -37,6 +43,16 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *        schema:
          *          type: string
          *        description: Search for transactions by description.
+         *      - in: query
+         *        name: year
+         *        schema:
+         *          type: number
+         *        description: Search for transactions by year
+         *      - in: query
+         *        name: month
+         *        schema:
+         *          type: number
+         *        description: Search for transactions by month
          *    responses:
          *      '200':
          *        description: Successful operation

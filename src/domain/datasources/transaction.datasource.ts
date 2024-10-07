@@ -7,7 +7,7 @@ import { CreateTransactionDto } from './../dtos/transaction/create-transaction.d
 export abstract class TransactionDatasource {
 
     abstract create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse>
-    abstract getAll(userId: string, search: string|undefined, page:number, per_page:number): Promise<TransactionInterface | CustomResponse>
+    abstract getAll(userId: string, search: string|undefined, page:number, per_page:number, year:number, month:number, walletId:number): Promise<TransactionInterface | CustomResponse>
     abstract findById(id: number, userId: string): Promise<TransactionEntity | CustomResponse>
     abstract delete(id: number, user_audits: string): Promise<string | CustomResponse>
     abstract update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number } | string | CustomResponse>

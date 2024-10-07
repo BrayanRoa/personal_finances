@@ -4,7 +4,7 @@ import { TransactionEntity } from "../../entities/transaction/transaction.entity
 import { TransactionRepository } from "../../repositories/transaction.repository";
 
 export interface GetAllTransactionUseCase {
-    execute(userId: string, search: string, page: number, per_page: number): Promise<TransactionInterface | CustomResponse>;
+    execute(userId: string, search: string, page: number, per_page: number, year:number, month:number, walletId:number): Promise<TransactionInterface | CustomResponse>;
 }
 
 
@@ -14,7 +14,7 @@ export class GetAllTransaction implements GetAllTransactionUseCase {
         private repository: TransactionRepository,
     ) {
     }
-    execute(userId: string, search: string | undefined, page: number, per_page: number): Promise<TransactionInterface | CustomResponse> {
-        return this.repository.getAll(userId, search, page, per_page)
+    execute(userId: string, search: string | undefined, page: number, per_page: number, year:number, month:number, walletId:number): Promise<TransactionInterface | CustomResponse> {
+        return this.repository.getAll(userId, search, page, per_page, year, month, walletId)
     }
 }
