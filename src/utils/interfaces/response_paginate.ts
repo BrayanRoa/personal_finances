@@ -13,3 +13,9 @@ interface GetAllResponse {
 export interface TransactionInterface extends GetAllResponse {
     transactions: TransactionEntity[]
 }
+
+export interface DashboardInterface {
+    totalIncome:number;
+    totalExpenses:number;
+    availableAmount: number;
+}

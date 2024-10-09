@@ -101,6 +101,8 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
             let action = [];
             let totalRecords = 0;
+            let totalExpenses = 0
+            let totalIncome = 0
 
             let startDate = new Date(+year, +month - 1, 1);
             let endDate = new Date(+year, +month, 0);
@@ -109,10 +111,16 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 orderBy: { date: 'desc' },
                 skip: (page - 1) * per_page,
                 take: per_page,
+                include: {
+                    wallet: true,
+                    category: true,
+                }
             };
 
             const baseCondition = {
-                AND: [{ deleted_at: null, userId: userId, walletId, date: { gte: startDate, lt: endDate } }],
+                AND: [
+                    { deleted_at: null, userId: userId, walletId, date: { gte: startDate, lt: endDate } }
+                ],
             }
 
             if (search) {
@@ -123,19 +131,15 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                             baseCondition,
                             {
                                 OR: [
+                                    { repeat: { contains: `${search}`, mode: 'insensitive' } },
                                     { description: { contains: `${search}`, mode: 'insensitive' } },
                                     { type: { contains: `${search}`, mode: 'insensitive' } },
-                                    { amount: { equals: parseFloat(search) || 0 } },
-                                    { repeat: { contains: `${search}`, mode: 'insensitive' } },
                                     { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
-                                    { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } }
+                                    { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } },
+                                    { amount: { equals: parseFloat(search) || 0 } },
                                 ],
                             },
                         ],
-                    },
-                    include: {
-                        wallet: true,
-                        category: true,
                     },
                     ...commonParams
                 });
@@ -148,15 +152,31 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     BaseDatasource.prisma.transaction.findMany({
                         where: baseCondition,
                         ...commonParams,
-                        include: {
-                            wallet: true,
-                            category: true,
-                        }
                     }),
                 ]);
+
+                const [expenses, income] = await Promise.all([
+                    BaseDatasource.prisma.transaction.aggregate({
+                        _sum: {
+                            amount: true
+                        },
+                        where: { ...baseCondition.AND[0], type: "OUTFLOW" },
+                    }),
+                    BaseDatasource.prisma.transaction.aggregate({
+                        _sum: {
+                            amount: true
+                        },
+                        where: { ...baseCondition.AND[0], type: "INCOME" },
+                    })
+                ])
+
+                totalIncome = income._sum.amount ? income._sum.amount.toNumber() : 0;
+                totalExpenses = expenses._sum.amount ? expenses._sum.amount.toNumber() : 0;
             }
             return {
                 transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
+                totalIncome: totalIncome,
+                totalExpenses: totalExpenses,
                 meta: {
                     totalRecords,
                     totalPages: Math.ceil(totalRecords / per_page),
