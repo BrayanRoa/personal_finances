@@ -309,5 +309,46 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.delete
         )
+
+        
+        /**
+         * @swagger
+         * /wallet/dashboard/{id}:
+         *  get:
+         *    tags: [Wallet]
+         *    summary: Retrieves a wallet dashboard by ID.
+         *    parameters:
+         *      - in: path
+         *        name: id
+         *        schema:
+         *          type: string
+         *        required: true
+         *        description: String ID of the wallet to get the dashboard for.
+         *    responses:
+         *      '200':
+         *        description: Successful operation
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: object
+         *                  properties:
+         *                    totalIncomes:
+         *                      type: number
+         *                    totalExpenses:
+         *                      type: number
+         *      '404':
+         *        description: Wallet not found
+         */
+        this.router.get(`${prefix}/dashboard/:id`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.dashboardWallet
+        )
     }
 }

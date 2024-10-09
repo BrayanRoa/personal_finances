@@ -6,6 +6,7 @@ import { GetAllWallet } from "../../domain/use-cases/wallet/get-all-wallet";
 import { GetOneWallet } from "../../domain/use-cases/wallet/get-one-wallet";
 import { UpdateWallet } from "../../domain/use-cases/wallet/update-wallet";
 import { DeleteWallet } from "../../domain/use-cases/wallet/delete-wallet";
+import { DashboardWallet } from "../../domain/use-cases/wallet/dashboard-wallet";
 
 export class WalletController {
     constructor(
@@ -51,6 +52,15 @@ export class WalletController {
         return new DeleteWallet(this.walletRepository)
             .execute(+id, userId)
             .then(response => CustomResponse.handleResponse(res, response, 204))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public dashboardWallet = async (req: Request, res: Response) => {
+        const { id } = req.params
+        const { user_audits } = req.body
+        return new DashboardWallet(this.walletRepository)
+            .execute(+id, user_audits)
+            .then(response => CustomResponse.handleResponse(res, response, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 }

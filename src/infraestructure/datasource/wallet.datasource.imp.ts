@@ -3,6 +3,7 @@ import { CreateWalletDto } from "../../domain/dtos/wallet/create-wallet.dto";
 import { UpdateWalletDto } from "../../domain/dtos/wallet/update-wallet.dto";
 import { WalletEntity } from "../../domain/entities/wallet/wallet.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
+import { DashboardInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 export class WalletDatasourceImp extends BaseDatasource implements WalletDatasource {
@@ -10,6 +11,44 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
     constructor() {
         super()
         this.audit_class = "WALLET"
+    }
+    infoWallet(id: number, userId: string): Promise<DashboardInterface | CustomResponse> {
+        return this.handleErrors(async () => {
+            let totalIncome = 0;
+            let totalExpenses = 0;
+
+            const [income, expenses] = await Promise.all([
+                BaseDatasource.prisma.transaction.aggregate({
+                    _sum: {
+                        amount: true
+                    },
+                    where: {
+                        AND: [
+                            { deleted_at: null, userId: userId, type: "INCOME", walletId: id },
+                        ],
+                    },
+                }),
+                BaseDatasource.prisma.transaction.aggregate({
+                    _sum: {
+                        amount: true
+                    },
+                    where: {
+                        AND: [
+                            { deleted_at: null, userId: userId, type: "OUTFLOW", walletId: id },
+                        ],
+                    },
+                }),
+            ]);
+
+
+            totalIncome = income._sum.amount ? income._sum.amount.toNumber() : 0;
+            totalExpenses = expenses._sum.amount ? expenses._sum.amount.toNumber() : 0;
+            return {
+                totalIncome,
+                totalExpenses,
+                availableAmount: (totalIncome - totalExpenses)
+            }
+        })
     }
 
     getAll(userId: string): Promise<CustomResponse | WalletEntity[]> {
