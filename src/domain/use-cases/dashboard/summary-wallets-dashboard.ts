@@ -1,16 +1,17 @@
 import { CustomResponse } from "../../../utils/response/custom.response";
+import { SummaryWalletEntity } from "../../entities/dashboard/summary-wallets.entity";
 import { DasbboardRepository } from "../../repositories/dashboard.repository";
 
-export interface SummaryWaletUseCase {
-    execute(userId: string): Promise<CustomResponse>;
+export interface SummaryWalletUseCase {
+    execute(userId: string): Promise<CustomResponse | SummaryWalletEntity>;
 }
 
-export class SummaryWalet implements SummaryWaletUseCase {
+export class SummaryWallet implements SummaryWalletUseCase {
     constructor(
         private repository: DasbboardRepository,
     ) { }
-    execute(userId: string): Promise<CustomResponse> {
-        throw new Error("Method not implemented.");
+    execute(userId: string): Promise<CustomResponse | SummaryWalletEntity> {
+        return this.repository.summaryWallets(userId)
     }
 
 }

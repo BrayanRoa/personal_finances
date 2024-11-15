@@ -12,6 +12,12 @@ export class DashboardRoutes extends BaseRouter<DashboardController, DashboardMi
 
     routes(): void {
         const prefix = "/dashboard";
+        
+        this.router.get(`${prefix}/summaryWallets`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.summaryWallets
+        )
     }
+
 
 }
