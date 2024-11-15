@@ -53,6 +53,11 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *        schema:
          *          type: number
          *        description: Search for transactions by month
+         *      - in: query
+         *        name: order
+         *        schema:
+         *          type: string
+         *        description: field to order
          *    responses:
          *      '200':
          *        description: Successful operation

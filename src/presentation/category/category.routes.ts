@@ -206,6 +206,46 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.getOne
         )
+
+        /**
+         * @swagger
+         * /category/{walletId}/countTransaction:
+         *  get:
+         *    tags: [Categories]
+         *    summary: Retrieves the count of transactions by category for a specific wallet.
+         *    parameters:
+         *      - in: path
+         *        name: walletId
+         *        schema:
+         *          type: number
+         *        required: true
+         *        description: String ID of the wallet to get the count of transactions by category.
+         *    responses:
+         *      '200':
+         *        description: Successful operation
+         *        content:
+         *          application/json:
+         *            schema:
+         *              type: object
+         *              properties:
+         *                status:
+         *                  type: integer
+         *                statusMsg:
+         *                  type: string
+         *                data:
+         *                  type: object
+         *                  properties:
+         *                      name:
+         *                        type: string
+         *                      transactionCount:
+         *                        type: number  
+        *      '404':
+         *        description: Wallet not found
+         */
+        this.router.get(`${prefix}/:walletId/countTransaction`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.transactionByCategory
+        )
     }
 
 }

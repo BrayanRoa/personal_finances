@@ -18,9 +18,9 @@ export class LoginUser implements LoginUserUseCase {
     constructor(
         private authRepository: AuthRepository,
         private passwordHasher: PasswordHasher
-    ) {}
+    ) { }
 
-    async execute(email: string, password: string): Promise<{ msg: string, token: string } | CustomResponse> {
+    async execute(email: string, password: string): Promise<{ msg: string, token: string, name: string } | CustomResponse> {
         const user = await this.authRepository.getOneUser(email, "LOGIN");
         if (user instanceof UserEntity) {
             const isMatch = await this.passwordHasher.verifyPassword(password, user.password!);
@@ -29,6 +29,7 @@ export class LoginUser implements LoginUserUseCase {
                 if (!token) throw new CustomResponse("Error creating token", 500)
                 return {
                     msg: "user logged successfully",
+                    name: `${user.name}`,
                     token: token.toString(),
                 }
             } else {

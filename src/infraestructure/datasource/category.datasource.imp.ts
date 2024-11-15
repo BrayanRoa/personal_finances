@@ -2,6 +2,7 @@ import { CategoryDatasource } from "../../domain/datasources/category.datasource
 import { CreateCategoryDto } from "../../domain/dtos/category/create-category.dto";
 import { CategoryEntity } from "../../domain/entities/category/category.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
+import { TransactionByCategory } from "../../utils/interfaces/count_transaction_by_category.interface";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 const default_categories = [
@@ -103,6 +104,39 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
             }
         });
         return !!data // Esto devolverá true si data no es nulo y false si data es nulo
+    }
+
+    transactionWithCategoriesAndAmount(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse> {
+        return this.handleErrors(async () => {
+            const data = await BaseDatasource.prisma.category.findMany({
+                select: {
+                    name: true,
+                    Transaction: {
+                        select: {
+                            id: true,
+                            wallet: {
+                                select: {
+                                    id: true,
+                                },
+                            },
+                        },
+                        where: {
+                            deleted_at: null,
+                            walletId // reemplace `yourWalletId` con la ID de la cartera que está buscando
+                        }
+                    },
+                },
+                where: {
+                    userId,
+                    deleted_at: null
+                }
+            });
+            const categoryCounts = data.map(category => ({
+                name: category.name,
+                transactionCount: category.Transaction.length,
+            }))
+            return categoryCounts
+        })
     }
 
 }

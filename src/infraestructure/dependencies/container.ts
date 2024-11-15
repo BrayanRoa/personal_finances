@@ -16,6 +16,8 @@ import { BudgetRepositoryImp } from '../repositories/budget.repository.imp';
 import { BudgetDatasourceImp } from '../datasource/budget.datasource.imp';
 import { NotificationRepositoryImp } from '../repositories/notification.repository.imp';
 import { NotificationDatasourceImp } from '../datasource/notification.datasource.imp';
+import { DashboardDatasourceImp } from '../datasource/dashboard.datasource.imp';
+import { DashboardRepositoryImpl } from '../repositories/dashboard.repository.imp';
 
 interface IContainer {
     passwordHasher: BcryptPasswordHasher,
@@ -33,7 +35,9 @@ interface IContainer {
     budgetDatasource: BudgetDatasourceImp,
     budgetRepository: BudgetRepositoryImp,
     notificationDatasource: NotificationDatasourceImp,
-    notificationRepository: NotificationRepositoryImp
+    notificationRepository: NotificationRepositoryImp,
+    dashboardDatasource: DashboardDatasourceImp,
+    dashboardRepository: DashboardRepositoryImpl
 }
 
 export const container: AwilixContainer<IContainer> = createContainer<IContainer>({
@@ -66,5 +70,8 @@ container.register({
     budgetDatasource: asClass(BudgetDatasourceImp).singleton(),
     budgetRepository: asClass(BudgetRepositoryImp).singleton(),
     notificationDatasource: asClass(NotificationDatasourceImp).singleton(),
-    notificationRepository: asClass(NotificationRepositoryImp).singleton()
+    notificationRepository: asClass(NotificationRepositoryImp).singleton(),
+
+    dashboardDatasource: asClass(DashboardDatasourceImp).singleton(),
+    dashboardRepository: asClass(DashboardRepositoryImpl).singleton()
 });

@@ -59,7 +59,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                         { deleted_at: null }, { userId }
                     ]
                 },
-                include: { transactions: true }
+                // include: { transactions: true }
             })
             return wallets.map(item => WalletEntity.fromObject(item))
         })

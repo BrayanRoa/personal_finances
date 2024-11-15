@@ -6,6 +6,7 @@ import { GetOneCategory } from "../../domain/use-cases/category/get-one-category
 import { GetAllCategories } from "../../domain/use-cases";
 import { DeleteCategory } from "../../domain/use-cases/category/delete-category";
 import { container } from "../../infraestructure/dependencies/container";
+import { CountTransactionByCategory } from "../../domain/use-cases/category/count-transaction-by-category";
 
 export class CategoryController {
 
@@ -42,6 +43,16 @@ export class CategoryController {
         return new DeleteCategory(this.categoryRepository, container.cradle.transactionRepository)
             .execute(+id, userId)
             .then(category => CustomResponse.handleResponse(res, category, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public transactionByCategory = (req: Request, res: Response) => {
+        const { walletId } = req.params
+        const { userId } = req.body
+        console.log(userId);
+        return new CountTransactionByCategory(this.categoryRepository)
+            .execute(userId, +walletId)
+            .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 }

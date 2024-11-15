@@ -2,6 +2,7 @@ import { CreateTransactionDto } from "../../domain/dtos/transaction/create-trans
 import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-transaction.dto";
 import { SharedMiddleware } from "../../utils/middleware/base.middleware";
 
+
 export class TransactionMiddleware extends SharedMiddleware<CreateTransactionDto, UpdateTransactionDto> {
 
     constructor() {

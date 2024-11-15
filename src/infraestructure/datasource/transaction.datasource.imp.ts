@@ -7,7 +7,6 @@ import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 import { calculateNextDateToTransaction } from "../../works/processRecurringTransactions";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -96,7 +95,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         })
     }
 
-    getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number): Promise<CustomResponse | TransactionInterface> {
+    getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<CustomResponse | TransactionInterface> {
         return this.handleErrors(async () => {
 
             let action = [];
@@ -104,8 +103,8 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             let totalExpenses = 0
             let totalIncome = 0
 
-            let startDate = new Date(+year, +month - 1, 1);
-            let endDate = new Date(+year, +month, 0);
+            let startDate = new Date(Date.UTC(year, month - 1, 1));
+            let endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)); console.log("a", startDate);
 
             const commonParams: Prisma.TransactionFindManyArgs = {
                 orderBy: { date: 'desc' },
@@ -119,30 +118,58 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
             const baseCondition = {
                 AND: [
-                    { deleted_at: null, userId: userId, walletId, date: { gte: startDate, lt: endDate } }
+                    {
+                        deleted_at: null,
+                        userId: userId,
+                        walletId, date: { gte: startDate, lt: endDate }
+                    }
                 ],
+            }
+
+            const validOrderFields = ['date', 'description']; // y cualquier otro campo válido
+            if (!validOrderFields.includes(order)) {
+                order = 'date'; // establecer un valor por defecto
             }
 
             if (search) {
                 // Caso con búsqueda
-                action = await BaseDatasource.prisma.transaction.findMany({
-                    where: {
-                        AND: [
-                            baseCondition,
-                            {
-                                OR: [
-                                    { repeat: { contains: `${search}`, mode: 'insensitive' } },
-                                    { description: { contains: `${search}`, mode: 'insensitive' } },
-                                    { type: { contains: `${search}`, mode: 'insensitive' } },
-                                    { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
-                                    { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } },
-                                    { amount: { equals: parseFloat(search) || 0 } },
-                                ],
-                            },
-                        ],
-                    },
-                    ...commonParams
-                });
+                [totalRecords, action] = await Promise.all([
+                    BaseDatasource.prisma.transaction.count({
+                        where: {
+                            AND: [
+                                baseCondition,
+                                {
+                                    OR: [
+                                        { repeat: { contains: `${search}`, mode: 'insensitive' } },
+                                        { description: { contains: `${search}`, mode: 'insensitive' } },
+                                        { type: { contains: `${search}`, mode: 'insensitive' } },
+                                        { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
+                                        { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } },
+                                        { amount: { equals: parseFloat(search) || 0 } },
+                                    ],
+                                },
+                            ],
+                        },
+                    }),
+                    BaseDatasource.prisma.transaction.findMany({
+                        where: {
+                            AND: [
+                                baseCondition,
+                                {
+                                    OR: [
+                                        { repeat: { contains: `${search}`, mode: 'insensitive' } },
+                                        { description: { contains: `${search}`, mode: 'insensitive' } },
+                                        { type: { contains: `${search}`, mode: 'insensitive' } },
+                                        { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
+                                        { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } },
+                                        { amount: { equals: parseFloat(search) || 0 } },
+                                    ],
+                                },
+                            ],
+                        },
+                        ...commonParams
+                    })
+                ])
             } else {
                 // Caso sin búsqueda
                 [totalRecords, action] = await Promise.all([
@@ -152,6 +179,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     BaseDatasource.prisma.transaction.findMany({
                         where: baseCondition,
                         ...commonParams,
+                        orderBy: {
+                            [order]: asc === 'true' ? 'asc' : 'desc',
+                        },
                     }),
                 ]);
 

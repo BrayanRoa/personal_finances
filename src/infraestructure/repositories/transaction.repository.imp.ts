@@ -29,8 +29,8 @@ export class TransactionRepositoryImp extends TransactionRepository {
         }
         return this.transactionDatasource.create(data)
     }
-    getAll(userId: string, search: string| undefined, page:number, per_page:number, year:number, month:number, walletId:number): Promise<CustomResponse | TransactionInterface> {
-        return this.transactionDatasource.getAll(userId, search, page, per_page, year, month, walletId)
+    getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<CustomResponse | TransactionInterface> {
+        return this.transactionDatasource.getAll(userId, search, page, per_page, year, month, walletId, order, asc)
     }
     findById(id: number, userId: string): Promise<CustomResponse | TransactionEntity> {
         return this.transactionDatasource.findById(id, userId)
