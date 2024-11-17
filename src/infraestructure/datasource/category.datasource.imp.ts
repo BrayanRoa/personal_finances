@@ -106,6 +106,8 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
         return !!data // Esto devolverá true si data no es nulo y false si data es nulo
     }
 
+
+    //TODO: ESTA SE PODRIA BORRAR PORQUE YA TENGO UNO EN DASHBOARD
     transactionWithCategoriesAndAmount(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse> {
         return this.handleErrors(async () => {
             const data = await BaseDatasource.prisma.category.findMany({

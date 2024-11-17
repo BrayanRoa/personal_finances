@@ -4,9 +4,9 @@ export class BaseEntity {
 
     constructor(
         public id: string | number, 
-        public created_at: Date,
-        public updated_at: Date,
-        public deleted_at?: Date,
+        public created_at: Date | null,
+        public updated_at: Date | null,
+        public deleted_at?: Date | null,
     ) { }
 
     public static fromObject(obj: { [key: string]: any }): BaseEntity {

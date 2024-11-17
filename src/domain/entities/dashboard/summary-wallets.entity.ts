@@ -1,5 +1,3 @@
-import { BaseEntity } from "../../../utils/entity/base.entity";
-
 export class SummaryWalletEntity {
     constructor(
         private totalIncome:number,
