@@ -89,6 +89,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                         },
                         data
                     })
+                    console.log("aaaaaa",budget);
                     if (budget.count === 0) return new CustomResponse("Budget not found", 404)
                     this.auditSave(id, data, "UPDATE", data.userId)
                     return "Budget update successfully"
@@ -181,7 +182,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                 where: {
                     deleted_at: null,
                     date: { lte: today },
-                    next_date: { gte: today },
+                    end_date: { gte: today },
                     active: true,
                     userId: userid,
                     BudgetCategories: {

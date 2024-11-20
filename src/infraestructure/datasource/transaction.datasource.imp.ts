@@ -107,13 +107,13 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             let endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)); console.log("a", startDate);
 
             const commonParams: Prisma.TransactionFindManyArgs = {
-                orderBy: { date: 'desc' },
+                orderBy: [{ date: 'desc' }, { id: 'asc' }],
                 skip: (page - 1) * per_page,
                 take: per_page,
                 include: {
                     wallet: true,
                     category: true,
-                }
+                },
             };
 
             const baseCondition = {
@@ -121,7 +121,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     {
                         deleted_at: null,
                         userId: userId,
-                        walletId, date: { gte: startDate, lt: endDate }
+                        walletId, date: { gte: startDate, lt: endDate },
                     }
                 ],
             }
@@ -179,9 +179,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     BaseDatasource.prisma.transaction.findMany({
                         where: baseCondition,
                         ...commonParams,
-                        orderBy: {
-                            [order]: asc === 'true' ? 'asc' : 'desc',
-                        },
+                        // orderBy: {
+                        //     [order]: asc === 'true' ? 'asc' : 'desc',
+                        // },
                     }),
                 ]);
 
@@ -203,16 +203,12 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 totalIncome = income._sum.amount ? income._sum.amount.toNumber() : 0;
                 totalExpenses = expenses._sum.amount ? expenses._sum.amount.toNumber() : 0;
             }
+            console.log("LA DATA", action);
             return {
                 transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
                 totalIncome: totalIncome,
                 totalExpenses: totalExpenses,
-                meta: {
-                    totalRecords,
-                    totalPages: Math.ceil(totalRecords / per_page),
-                    currentPage: page,
-                    next_page: totalRecords > page * per_page,
-                }
+                meta: this.calculateMeta(totalRecords, per_page, page)
             }
         });
     }

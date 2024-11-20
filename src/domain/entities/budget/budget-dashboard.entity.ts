@@ -5,7 +5,7 @@ export class BudgetDashboardEntity {
         public limit_amount: number,
         public current_amount: number,
         public percentage: number,
-        public categories: string[],
+        public categories: { name: string, color: string }[], // Cambiado a un arreglo
     ) { }
 
     public static fromObject(obj: { [key: string]: any }): BudgetDashboardEntity {

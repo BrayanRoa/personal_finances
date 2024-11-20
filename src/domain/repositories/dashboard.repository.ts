@@ -3,6 +3,7 @@ import { SummaryWalletEntity } from "../entities/dashboard/summary-wallets.entit
 import { CountTransactionCategoryEntity } from "../entities/dashboard/count-transaction-category.entity";
 import { TransactionMonthEntity } from "../entities/dashboard/transaction-months.entity";
 import { BudgetDashboardEntity } from "../entities/budget/budget-dashboard.entity";
+import { budgetInterface } from "../../utils/interfaces/response_paginate";
 
 export abstract class DasbboardRepository{
 
@@ -18,7 +19,7 @@ export abstract class DasbboardRepository{
     abstract banksInformation(user:string): Promise<CustomResponse>
 
     // tabla con informacion de cada budget
-    abstract summarybudgetsInformation(user:string): Promise<CustomResponse | BudgetDashboardEntity[]>
+    abstract summarybudgetsInformation(page:number, per_page:number,user:string): Promise<CustomResponse | budgetInterface>
 
 
 }

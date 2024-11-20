@@ -12,6 +12,7 @@ interface BaseInterface {
     id?: number | string;
     userId: string;
     description: string;
+    name: string;
     date: Date;
     repeat: string;
     // active: boolean;

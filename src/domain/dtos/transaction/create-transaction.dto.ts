@@ -13,6 +13,10 @@ export class CreateTransactionDto {
     @IsString()
     public description!: string;
 
+    @IsString()
+    @IsNotEmpty()
+    public name!:string;
+
     @IsNotEmpty()
     @IsString()
     @IsEnum(["INCOME", "OUTFLOW"])

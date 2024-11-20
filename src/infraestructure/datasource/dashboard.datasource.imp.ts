@@ -5,6 +5,8 @@ import { TransactionMonthEntity } from "../../domain/entities/dashboard/transact
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
 import { BudgetDashboardEntity } from "../../domain/entities/budget/budget-dashboard.entity";
+import { Prisma } from "@prisma/client";
+import { budgetInterface } from "../../utils/interfaces/response_paginate";
 
 export class DashboardDatasourceImp extends BaseDatasource implements DashboardDatasource {
 
@@ -148,36 +150,55 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
         throw new Error("Method not implemented.");
     }
 
-    summarybudgetsInformation(userId: string): Promise<CustomResponse | BudgetDashboardEntity[]> {
+    summarybudgetsInformation(page: number, per_page: number, userId: string): Promise<CustomResponse | budgetInterface> {
         return this.handleErrors(async () => {
-            const budgets = await BaseDatasource.prisma.budget.findMany({
-                where: {
-                    userId,
-                    deleted_at: null,
-                    active: true
-                },
-                include: {
-                    BudgetCategories: {
-                        include: {
-                            category: true
-                        }
+            let action = [];
+            let totalRecords = 0;
+
+            const baseCondition = {
+                AND: [
+                    {
+                        deleted_at: null,
+                        userId: userId,
+                        active: true,
                     }
+                ],
+            };
+            [totalRecords, action] = await Promise.all([
+                BaseDatasource.prisma.budget.count({
+                    where: baseCondition
+                }),
+                BaseDatasource.prisma.budget.findMany({
+                    where: baseCondition,
+                    include: {
+                        BudgetCategories: {
+                            include: {
+                                category: true,
+                            }
+                        }
+                    },
+                    orderBy: { limit_amount: 'desc' },
+                    skip: (page - 1) * per_page,
+                    take: per_page,
+                })
+            ]);
 
-                }
-            })
+            const budgets = action.map(budget => new BudgetDashboardEntity(
+                budget.name,
+                budget.repeat,
+                budget.limit_amount.toNumber(),
+                budget.current_amount.toNumber(),
+                budget.percentage.toNumber(),
+                budget.BudgetCategories.map(item => ({
+                    name: item.category.name,
+                    color: item.category.color
+                }))
+            ));
 
-            return budgets.map(budget => {
-                const { name, repeat, limit_amount, current_amount, percentage, BudgetCategories, ...rest } = budget
-                return {
-                    name,
-                    repeat,
-                    limit_amount: limit_amount.toNumber(),
-                    current_amount: current_amount.toNumber(),
-                    percentage: percentage.toNumber(),
-                    categories: BudgetCategories.map(item => item.category.name)
-                }
-                // return BudgetEntity.fromObject(budget)
-            })
+            return {
+                budgets,
+                meta: this.calculateMeta(totalRecords, per_page, page)
+            };
         })
     }
 }

@@ -18,6 +18,10 @@ export class UpdateTransactionDto {
     @IsString()
     public description?: string;
 
+    @IsString()
+    @IsOptional()
+    public name?:string;
+
     @IsOptional()
     @IsString()
     @IsEnum(["INCOME", "OUTFLOW"])

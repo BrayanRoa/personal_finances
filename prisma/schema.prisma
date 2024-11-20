@@ -38,6 +38,7 @@ model Transaction {
   id          Int       @id @default(autoincrement())
   date        DateTime
   amount      Decimal
+  name        String
   description String
   type        String
   repeat      String
@@ -79,6 +80,7 @@ model Category {
   id               Int              @id @default(autoincrement())
   name             String
   icon             String           @db.VarChar(100)
+  color            String           @db.VarChar(20) @default("")
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
   deleted_at       DateTime?

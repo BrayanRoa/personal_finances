@@ -39,9 +39,12 @@ export class CreateTransaction implements CreateTransactionUseCase {
 
                 if (item.type === "OUTFLOW") {
                     const budget = await this.budget.get_one_by_date(item.walletId, item.categoryId, item.userId)
+                    console.log("SI", budget);
                     if (budget instanceof Array) {
                         for (const bud of budget) {
                             bud.current_amount = Number(bud.current_amount) + Number(item.amount);
+                            bud.percentage = (Number(bud.current_amount) / Number(bud.limit_amount)) * 100;
+                            console.log("PORCENTAGE", (Number(bud.current_amount) / Number(bud.limit_amount)) * 100);
                             await this.budget.update(+bud.id, bud)
                             if (bud.current_amount > bud.limit_amount) {
                                 this.save_notification(item.userId)

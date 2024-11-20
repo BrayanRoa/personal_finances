@@ -39,8 +39,12 @@ export class DashboardController {
 
     public budgetInformation = (req: Request, res: Response) => {
         const { userId } = req.body
+        const {
+            page = 1,
+            per_page = 1,
+        } = req.query;
         return new SummaryBudgetInformation(this.dashboardRepository)
-            .execute(userId)
+            .execute(+page, +per_page, userId)
             .then(budget => CustomResponse.handleResponse(res, budget, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }

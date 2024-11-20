@@ -6,6 +6,7 @@ import { DasbboardRepository } from "../../domain/repositories/dashboard.reposit
 import { CustomResponse } from "../../utils/response/custom.response";
 import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
 import { BudgetDashboardEntity } from "../../domain/entities/budget/budget-dashboard.entity";
+import { budgetInterface } from "../../utils/interfaces/response_paginate";
 
 export class DashboardRepositoryImpl implements DasbboardRepository {
 
@@ -24,8 +25,8 @@ export class DashboardRepositoryImpl implements DasbboardRepository {
     banksInformation(user: string): Promise<CustomResponse> {
         throw new Error("Method not implemented.");
     }
-    summarybudgetsInformation(user: string): Promise<CustomResponse | BudgetDashboardEntity[]> {
-        return this.dashboardDatasource.summarybudgetsInformation(user);
+    summarybudgetsInformation(page:number, per_page:number, user: string): Promise<CustomResponse | budgetInterface> {
+        return this.dashboardDatasource.summarybudgetsInformation(page, per_page, user);
     }
 
 }

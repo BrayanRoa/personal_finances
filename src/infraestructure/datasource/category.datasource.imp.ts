@@ -6,18 +6,18 @@ import { TransactionByCategory } from "../../utils/interfaces/count_transaction_
 import { CustomResponse } from "../../utils/response/custom.response";
 
 const default_categories = [
-    { "name": "FOOD", "icon": "fast-food-outline" },
-    { "name": "PURCHASING", "icon": "cart-outline" },
-    { "name": "TRANSPORT", "icon": "car-outline" },
-    { "name": "HOME", "icon": "home-outline" },
-    { "name": "INVOICES", "icon": "card-outline" },
-    { "name": "ENTERTAINMENT", "icon": "musical-notes-outline" },
-    { "name": "TRAVEL", "icon": "airplane-outline" },
-    { "name": "FAMILY", "icon": "people-circle-outline" },
-    { "name": "SPORTS", "icon": "american-football-outline" },
-    { "name": "BEAUTY", "icon": "rose-outline" },
-    { "name": "WORK", "icon": "business-outline" },
-    { "name": "OTHERS", "icon": "list-outline" }
+    { "name": "FOOD", "icon": "fast-food-outline", "color": "#FF5733" },
+    { "name": "PURCHASING", "icon": "cart-outline", "color": "#33FF57" },
+    { "name": "TRANSPORT", "icon": "car-outline", "color": "#3357FF" },
+    { "name": "HOME", "icon": "home-outline", "color": "#FF33A1" },
+    { "name": "INVOICES", "icon": "card-outline", "color": "#FFD700" },
+    { "name": "ENTERTAINMENT", "icon": "musical-notes-outline", "color": "#8A2BE2" },
+    { "name": "TRAVEL", "icon": "airplane-outline", "color": "#FF7F50" },
+    { "name": "FAMILY", "icon": "people-circle-outline", "color": "#6495ED" },
+    { "name": "SPORTS", "icon": "american-football-outline", "color": "#7FFF00" },
+    { "name": "BEAUTY", "icon": "rose-outline", "color": "#DC143C" },
+    { "name": "WORK", "icon": "business-outline", "color": "#FF8C00" },
+    { "name": "OTHERS", "icon": "list-outline", "color": "#00CED1" }
 ]
 
 export class CategoryDatasourceImp extends BaseDatasource implements CategoryDatasource {
@@ -46,6 +46,7 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
                         name: category.name,
                         icon: category.icon,
                         userId: userId,
+                        color: category.color,
                     },
                 });
             }

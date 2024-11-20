@@ -13,4 +13,8 @@ export class CreateCategoryDto {
     @IsString()
     @IsOptional()
     public readonly icon!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    public readonly color!: string;
 }
