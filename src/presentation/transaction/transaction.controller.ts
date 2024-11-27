@@ -7,6 +7,7 @@ import { GetAllTransaction } from "../../domain/use-cases/transaction/get-all-tr
 import { UpdateTransaction } from "../../domain/use-cases/transaction/update-transaction";
 import { GetOneTransaction } from "../../domain/use-cases/transaction/get-one-transaction";
 import { container } from "../../infraestructure/dependencies/container";
+import { GetYears } from "../../domain/use-cases/transaction/get-years-transaction";
 
 export class TransactionController {
 
@@ -42,6 +43,7 @@ export class TransactionController {
     }
 
     public getOne = (req: Request, res: Response) => {
+        console.log("object");
         const id = req.params.id
         const { userId } = req.body
         return new GetOneTransaction(this.repository)
@@ -75,5 +77,14 @@ export class TransactionController {
             .execute(+id, req.body.userId)
             .then(del => CustomResponse.handleResponse(res, del, 204))
             .catch(error => CustomResponse.handleResponse(res, error))
+    }
+
+    public getYears = (req: Request, res: Response) => {
+        console.log("AAAAAAAAAAA");
+        const { userId } = req.body
+        return new GetYears(this.repository)
+            .execute(userId)
+            .then(years => CustomResponse.handleResponse(res, years, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
     }
 }

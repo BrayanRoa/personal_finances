@@ -126,6 +126,11 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
             this.controller.getAll
         )
 
+        this.router.get(`${prefix}/get-years`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.getYears
+        )
+
         /**
          * @swagger
          * /transaction/{id}:
@@ -209,6 +214,8 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
          *          schema:
          *            type: object
          *            properties:
+         *              name:
+         *                  type: string
          *              date:
          *                  type: string
          *              amount:
@@ -352,6 +359,8 @@ export class TransactionRoutes extends BaseRouter<TransactionController, Transac
         this.router.delete(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.delete)
+
+        
     }
 
 }

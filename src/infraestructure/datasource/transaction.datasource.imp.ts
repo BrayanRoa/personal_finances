@@ -140,6 +140,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                                 baseCondition,
                                 {
                                     OR: [
+                                        { name: { contains: `${search}`, mode: 'insensitive' } },
                                         { repeat: { contains: `${search}`, mode: 'insensitive' } },
                                         { description: { contains: `${search}`, mode: 'insensitive' } },
                                         { type: { contains: `${search}`, mode: 'insensitive' } },
@@ -157,6 +158,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                                 baseCondition,
                                 {
                                     OR: [
+                                        { name: { contains: `${search}`, mode: 'insensitive' } },
                                         { repeat: { contains: `${search}`, mode: 'insensitive' } },
                                         { description: { contains: `${search}`, mode: 'insensitive' } },
                                         { type: { contains: `${search}`, mode: 'insensitive' } },
@@ -255,6 +257,26 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             if (action.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
             this.auditSave(id, { id }, "DELETE", user_audits)
             return "Transaction deleted successfully"
+        })
+    }
+
+    getYears(user_audits: string): Promise<CustomResponse | number[]> {
+        return this.handleErrors(async () => {
+            const action = await BaseDatasource.prisma.transaction.findMany({
+                select: {
+                    date: true
+                },
+                where: {
+                    userId: user_audits,
+                    deleted_at: null
+                },
+                orderBy: {
+                    created_at: "asc"
+                }
+            })
+            if (action.length === 0) return []
+            const years = action.map(transaction => transaction.date.getFullYear())
+            return [...new Set(years)]
         })
     }
 }

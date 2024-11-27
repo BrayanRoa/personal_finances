@@ -46,4 +46,8 @@ export class TransactionRepositoryImp extends TransactionRepository {
         return this.transactionDatasource.update(id, data,)
     }
 
+    getYears(user_audits: string): Promise<CustomResponse | number[]>{
+        return this.transactionDatasource.getYears(user_audits)
+    }
+
 }
