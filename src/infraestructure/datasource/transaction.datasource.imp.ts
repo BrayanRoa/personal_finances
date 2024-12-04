@@ -104,7 +104,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             let totalIncome = 0
 
             let startDate = new Date(Date.UTC(year, month - 1, 1));
-            let endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)); console.log("a", startDate);
+            let endDate = new Date(Date.UTC(year, month)); 
 
             const commonParams: Prisma.TransactionFindManyArgs = {
                 orderBy: [{ date: 'desc' }, { id: 'asc' }],

@@ -33,12 +33,12 @@ export class Server {
     }
 
     scheduleCronJobs() {
-        cron.schedule('*/50 * * * * *', async () => {
-            await transactionsRecurring()
-        });
-        cron.schedule('*/10 * * * * *', async () => {
-            await budgetsRecurring()
-        })
+        // cron.schedule('* * * * * *', async () => {
+        //     await transactionsRecurring()
+        // });
+        // cron.schedule('* * * * * *', async () => {
+        //     await budgetsRecurring()
+        // })
     }
 
     middlewares() {
