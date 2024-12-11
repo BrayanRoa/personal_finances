@@ -3,6 +3,7 @@ import { CreateTransactionDto } from "../../domain/dtos/transaction/create-trans
 import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-transaction.dto";
 import { TransactionEntity } from "../../domain/entities/transaction/transaction.entity";
 import { TransactionRepository } from "../../domain/repositories/transaction.repository";
+import { FiltersTransaction } from "../../utils/interfaces/filters-transactions.interface";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 
@@ -29,8 +30,12 @@ export class TransactionRepositoryImp extends TransactionRepository {
         }
         return this.transactionDatasource.create(data)
     }
-    getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<CustomResponse | TransactionInterface> {
-        return this.transactionDatasource.getAll(userId, search, page, per_page, year, month, walletId, order, asc)
+    // getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<CustomResponse | TransactionInterface> {
+    //     return this.transactionDatasource.getAll(userId, search, page, per_page, year, month, walletId, order, asc)
+    // }
+
+    getAllWithFilters(userId: string, search: string | undefined, page: number, per_page: number, filters: FiltersTransaction): Promise<TransactionInterface | CustomResponse> {
+        return this.transactionDatasource.getAllWithFilters(userId, search, page, per_page, filters)
     }
     findById(id: number, userId: string): Promise<CustomResponse | TransactionEntity> {
         return this.transactionDatasource.findById(id, userId)
@@ -46,7 +51,7 @@ export class TransactionRepositoryImp extends TransactionRepository {
         return this.transactionDatasource.update(id, data,)
     }
 
-    getYears(user_audits: string): Promise<CustomResponse | number[]>{
+    getYears(user_audits: string): Promise<CustomResponse | number[]> {
         return this.transactionDatasource.getYears(user_audits)
     }
 
