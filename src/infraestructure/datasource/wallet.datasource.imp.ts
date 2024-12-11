@@ -41,8 +41,8 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
             ]);
 
 
-            totalIncome = income._sum.amount ? income._sum.amount.toNumber() : 0;
-            totalExpenses = expenses._sum.amount ? expenses._sum.amount.toNumber() : 0;
+            totalIncome = income._sum.amount ? income._sum.amount : 0;
+            totalExpenses = expenses._sum.amount ? expenses._sum.amount : 0;
             return {
                 totalIncome,
                 totalExpenses,

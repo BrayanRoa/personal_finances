@@ -57,8 +57,8 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
         ])
 
         return {
-            totalIncome: income._sum.amount ? income._sum.amount.toNumber() : 0,
-            totalExpenses: expenses._sum.amount ? expenses._sum.amount.toNumber() : 0,
+            totalIncome: income._sum.amount ? income._sum.amount : 0,
+            totalExpenses: expenses._sum.amount ? expenses._sum.amount : 0,
         }
     }
 
@@ -85,26 +85,27 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
             }
         })
     }
+
     summaryTransactionsByMonth(userId: string, year: number): Promise<CustomResponse | TransactionMonthEntity[]> {
         return this.handleErrors(async () => {
 
             const data: SummaryWalletEntity[] = await BaseDatasource.prisma.$queryRaw`
                 SELECT 
-                TO_CHAR(date, 'YYYY-MM') AS month, -- Formato Año-Mes (YYYY-MM)
-                type,                             -- Tipo de transacción (income o outflow)
-                SUM(amount) AS total              -- Suma total por tipo y mes
-            FROM 
-                "Transaction" t 
-            WHERE 
-                deleted_at IS NULL and             -- Ignorar registros eliminados
-                EXTRACT(YEAR FROM date) = ${year} and
-                "userId" = ${userId}         -- Filtrar por usuario
-            GROUP BY 
-                TO_CHAR(date, 'YYYY-MM'),         -- Agrupar por mes
-                type                              -- Agrupar por tipo (income o outflow)
-            ORDER BY 
-                month ASC                        -- Ordenar por mes
-                --type ASC;                         -- Ordenar por tipo dentro de cada mes
+                    TO_CHAR(date, 'YYYY-MM') AS month, -- Formato Año-Mes (YYYY-MM)
+                    type,                             -- Tipo de transacción (income o outflow)
+                    SUM(amount) AS total              -- Suma total por tipo y mes
+                FROM 
+                    "Transaction" t 
+                WHERE 
+                    deleted_at IS NULL and             -- Ignorar registros eliminados
+                    EXTRACT(YEAR FROM date) = ${year} and
+                    "userId" = ${userId}         -- Filtrar por usuario
+                GROUP BY 
+                    TO_CHAR(date, 'YYYY-MM'),         -- Agrupar por mes
+                    type                              -- Agrupar por tipo (income o outflow)
+                ORDER BY 
+                    month ASC                        -- Ordenar por mes
+                    --type ASC;                         -- Ordenar por tipo dentro de cada mes
             `
             return data.map(data => {
                 return TransactionMonthEntity.fromObject(data)
@@ -116,6 +117,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
             const data = await BaseDatasource.prisma.category.findMany({
                 select: {
                     name: true,
+                    color: true,
                     Transaction: {
                         select: {
                             id: true,
@@ -141,6 +143,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                 return CountTransactionCategoryEntity.fromObject({
                     name: category.name,
                     transactionCount,
+                    color: category.color,
                 })
             })
             // return categoryCounts

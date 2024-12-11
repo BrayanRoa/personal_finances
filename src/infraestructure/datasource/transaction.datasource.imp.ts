@@ -7,6 +7,7 @@ import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 import { calculateNextDateToTransaction } from "../../works/processRecurringTransactions";
+import { FiltersTransaction } from "../../utils/interfaces/filters-transactions.interface";
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -95,7 +96,8 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         })
     }
 
-    getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<CustomResponse | TransactionInterface> {
+    getAllWithFilters(
+        userId: string, search: string | undefined, page: number, per_page: number, filters: FiltersTransaction): Promise<CustomResponse | TransactionInterface> {
         return this.handleErrors(async () => {
 
             let action = [];
@@ -103,9 +105,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             let totalExpenses = 0
             let totalIncome = 0
 
-            let startDate = new Date(Date.UTC(year, month - 1, 1));
-            let endDate = new Date(Date.UTC(year, month)); 
-
+            // base params
             const commonParams: Prisma.TransactionFindManyArgs = {
                 orderBy: [{ date: 'desc' }, { id: 'asc' }],
                 skip: (page - 1) * per_page,
@@ -116,20 +116,38 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 },
             };
 
+            // base conditions
             const baseCondition = {
                 AND: [
                     {
                         deleted_at: null,
                         userId: userId,
-                        walletId, date: { gte: startDate, lt: endDate },
                     }
                 ],
             }
 
-            const validOrderFields = ['date', 'description']; // y cualquier otro campo válido
-            if (!validOrderFields.includes(order)) {
-                order = 'date'; // establecer un valor por defecto
+            // filters added by the user
+
+            // create a new filter 
+            let where: any[] = [];
+
+            if (filters.categoryIds) {
+                where.push(filters.categoryIds && { categoryId: { in: filters.categoryIds } })
             }
+
+            if (filters.walletIds) {
+                where.push(filters.walletIds && { walletId: { in: filters.walletIds } })
+            }
+
+            if (filters.repeats) {
+                where.push(filters.repeats && { repeat: { in: filters.repeats } })
+            }
+
+            if (filters.types) {
+                where.push(filters.types && { type: { in: filters.types } })
+            }
+
+            console.log("EL WHERE", ...where);
 
             if (search) {
                 // Caso con búsqueda
@@ -138,6 +156,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                         where: {
                             AND: [
                                 baseCondition,
+                                ...where,
                                 {
                                     OR: [
                                         { name: { contains: `${search}`, mode: 'insensitive' } },
@@ -156,6 +175,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                         where: {
                             AND: [
                                 baseCondition,
+                                ...where,
                                 {
                                     OR: [
                                         { name: { contains: `${search}`, mode: 'insensitive' } },
@@ -176,10 +196,20 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 // Caso sin búsqueda
                 [totalRecords, action] = await Promise.all([
                     BaseDatasource.prisma.transaction.count({
-                        where: baseCondition,
+                        where: {
+                            AND: [
+                                baseCondition,
+                                ...where,
+                            ]
+                        },
                     }),
                     BaseDatasource.prisma.transaction.findMany({
-                        where: baseCondition,
+                        where: {
+                            AND: [
+                                baseCondition,
+                                ...where,
+                            ]
+                        },
                         ...commonParams,
                         // orderBy: {
                         //     [order]: asc === 'true' ? 'asc' : 'desc',
@@ -202,18 +232,139 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     })
                 ])
 
-                totalIncome = income._sum.amount ? income._sum.amount.toNumber() : 0;
-                totalExpenses = expenses._sum.amount ? expenses._sum.amount.toNumber() : 0;
+                totalIncome = income._sum.amount ? income._sum.amount : 0;
+                totalExpenses = expenses._sum.amount ? expenses._sum.amount : 0;
             }
-            console.log("LA DATA", action);
             return {
                 transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
                 totalIncome: totalIncome,
                 totalExpenses: totalExpenses,
                 meta: this.calculateMeta(totalRecords, per_page, page)
             }
-        });
+        })
     }
+
+    // getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<CustomResponse | TransactionInterface> {
+    //     return this.handleErrors(async () => {
+
+    //         console.log("VAMOOOSSS",
+    //             await this.getAllTest(userId, page, per_page)
+    //         );
+    //         let action = [];
+    //         let totalRecords = 0;
+    //         let totalExpenses = 0
+    //         let totalIncome = 0
+
+    //         let startDate = new Date(Date.UTC(year, month - 1, 1));
+    //         let endDate = new Date(Date.UTC(year, month));
+
+    //         const commonParams: Prisma.TransactionFindManyArgs = {
+    //             orderBy: [{ date: 'desc' }, { id: 'asc' }],
+    //             skip: (page - 1) * per_page,
+    //             take: per_page,
+    //             include: {
+    //                 wallet: true,
+    //                 category: true,
+    //             },
+    //         };
+
+    //         const baseCondition = {
+    //             AND: [
+    //                 {
+    //                     deleted_at: null,
+    //                     userId: userId,
+    //                     walletId, date: { gte: startDate, lt: endDate },
+    //                 }
+    //             ],
+    //         }
+    //         console.log("AAAAAAA", parseFloat(search!));
+    //         const validOrderFields = ['date', 'description']; // y cualquier otro campo válido
+    //         if (!validOrderFields.includes(order)) {
+    //             order = 'date'; // establecer un valor por defecto
+    //         }
+
+    //         if (search) {
+    //             // Caso con búsqueda
+    //             [totalRecords, action] = await Promise.all([
+    //                 BaseDatasource.prisma.transaction.count({
+    //                     where: {
+    //                         AND: [
+    //                             baseCondition,
+    //                             {
+    //                                 OR: [
+    //                                     { name: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { repeat: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { description: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { type: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
+    //                                     { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } },
+    //                                     { amount: { equals: parseFloat(search) || 0 } },
+    //                                 ],
+    //                             },
+    //                         ],
+    //                     },
+    //                 }),
+    //                 BaseDatasource.prisma.transaction.findMany({
+    //                     where: {
+    //                         AND: [
+    //                             baseCondition,
+    //                             {
+    //                                 OR: [
+    //                                     { name: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { repeat: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { description: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { type: { contains: `${search}`, mode: 'insensitive' } },
+    //                                     { category: { name: { contains: `${search}`, mode: 'insensitive' } } },
+    //                                     { wallet: { name: { contains: `${search}`, mode: 'insensitive' } } },
+    //                                     { amount: { equals: parseFloat(search) || 0 } },
+    //                                 ],
+    //                             },
+    //                         ],
+    //                     },
+    //                     ...commonParams
+    //                 })
+    //             ])
+    //         } else {
+    //             // Caso sin búsqueda
+    //             [totalRecords, action] = await Promise.all([
+    //                 BaseDatasource.prisma.transaction.count({
+    //                     where: baseCondition,
+    //                 }),
+    //                 BaseDatasource.prisma.transaction.findMany({
+    //                     where: baseCondition,
+    //                     ...commonParams,
+    //                     // orderBy: {
+    //                     //     [order]: asc === 'true' ? 'asc' : 'desc',
+    //                     // },
+    //                 }),
+    //             ]);
+
+    //             const [expenses, income] = await Promise.all([
+    //                 BaseDatasource.prisma.transaction.aggregate({
+    //                     _sum: {
+    //                         amount: true
+    //                     },
+    //                     where: { ...baseCondition.AND[0], type: "OUTFLOW" },
+    //                 }),
+    //                 BaseDatasource.prisma.transaction.aggregate({
+    //                     _sum: {
+    //                         amount: true
+    //                     },
+    //                     where: { ...baseCondition.AND[0], type: "INCOME" },
+    //                 })
+    //             ])
+
+    //             totalIncome = income._sum.amount ? income._sum.amount : 0;
+    //             totalExpenses = expenses._sum.amount ? expenses._sum.amount : 0;
+    //         }
+    //         return {
+    //             transactions: action.map(transaction => TransactionEntity.fromObject(transaction)),
+    //             totalIncome: totalIncome,
+    //             totalExpenses: totalExpenses,
+    //             meta: this.calculateMeta(totalRecords, per_page, page)
+    //         }
+    //     });
+    // }
 
     getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
         return this.handleErrors(async () => {
