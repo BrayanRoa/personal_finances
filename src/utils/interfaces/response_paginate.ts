@@ -1,6 +1,5 @@
 import { TransactionEntity } from "../../domain/entities";
 import { BudgetDashboardEntity } from "../../domain/entities/budget/budget-dashboard.entity";
-import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
 
 interface GetAllResponse {
     meta:{

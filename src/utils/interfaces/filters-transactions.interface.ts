@@ -3,6 +3,6 @@ export interface FiltersTransaction {
     walletIds?: number[] | null;
     repeats?: string[] | null;
     types?: string[] | null;
-    years?: number[] | null;
+    year?: number | null;
     months?: number[] | null;
 }

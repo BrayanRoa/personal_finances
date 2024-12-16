@@ -78,7 +78,7 @@ export class TransactionController {
                 walletIds: walletIds ? JSON.parse(walletIds as string) : null,
                 repeats: repeats ? JSON.parse(repeats as string) : null,
                 types: types ? JSON.parse(types as string) : null,
-                years: years ? JSON.parse(years as string) : null,
+                year: years ? JSON.parse(years as string) : null,
                 months: months ? JSON.parse(months as string) : null,
             })
             .then(transactions => CustomResponse.handleResponse(res, transactions, 200))

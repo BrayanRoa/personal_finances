@@ -23,10 +23,12 @@ export class TransactionRepositoryImp extends TransactionRepository {
     create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
         if (data instanceof Array) {
             data.forEach(element => {
-                element.date = new Date(element.date)
+                const userDate = new Date(element.date); // Fecha seleccionada por el usuario
+                element.date = new Date(userDate.toISOString()); // Conviértela a UTC
             });
         } else {
-            data.date = new Date(data.date)
+            const userDate = new Date(data.date); // Fecha seleccionada por el usuario
+            data.date = new Date(userDate.toISOString()); // Conviértela a UTC
         }
         return this.transactionDatasource.create(data)
     }

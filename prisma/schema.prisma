@@ -66,6 +66,7 @@ model Wallet {
   name         String
   description  String
   balance      Float
+  type_account String        @default("DEBIT")
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
   deleted_at   DateTime?
@@ -80,7 +81,7 @@ model Category {
   id               Int              @id @default(autoincrement())
   name             String
   icon             String           @db.VarChar(100)
-  color            String           @db.VarChar(20) @default("")
+  color            String           @default("") @db.VarChar(20)
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
   deleted_at       DateTime?

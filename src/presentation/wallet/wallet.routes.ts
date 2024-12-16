@@ -137,6 +137,11 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
             this.controller.create
         )
 
+        this.router.get(`${prefix}/incomes-expenses-by-wallet`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.IncomesAndExpensesByWallet
+        )
+
         /**
          * @swagger
          * /wallet/{id}:
@@ -310,7 +315,7 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
             this.controller.delete
         )
 
-        
+
         /**
          * @swagger
          * /wallet/dashboard/{id}:
@@ -350,5 +355,6 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.dashboardWallet
         )
+
     }
 }

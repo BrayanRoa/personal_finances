@@ -8,6 +8,7 @@ import { UpdateBudgetDto } from '../domain/dtos/budget/update-budget.dto';
 import { CreateBudgetDto } from '../domain/dtos/budget/create-budget.dto';
 import { CreateManyBudget } from '../domain/use-cases/budget/create-many-budgets';
 import { UpdateBudget } from '../domain/use-cases/budget/update-budget';
+import { QueryBuilder } from '../utils/query-builder';
 interface BaseInterface {
     id?: number | string;
     userId: string;
@@ -56,7 +57,7 @@ export function calculateNextDateToTransaction(transaction: Transaction) {
         data.date = new Date(data.next_date.getTime())
     }
 
-    data.next_date = switchTransaction(data.date, data.repeat)!
+    data.next_date = QueryBuilder.switchTransaction(data.date, data.repeat)!
     return {
         ...data,
         // Convertir el objeto Moment a una fecha de JavaScript
@@ -69,63 +70,63 @@ export function calculateNextDateToBudget(budget: BudgetData) {
         data.date = new Date(data.next_date.getTime())
     }
 
-    data.next_date = switchTransaction(data.date, data.repeat)!
+    data.next_date = QueryBuilder.switchTransaction(data.date, data.repeat)!
     return {
         ...data,
         // Convertir el objeto Moment a una fecha de JavaScript
     };
 }
 
-export function switchTransaction(date: Date, repeat: string) {
-    let nextDate;
-    switch (repeat) {
-        case "EVERY DAY":
-            nextDate = moment(date).add(1, 'days');
-            break;
-        case "EVERY TWO DAYS":
-            nextDate = moment(date).add(2, 'days');
-            break;
-        case "EVERY WORKING DAY":
-            const currentDay = moment(date).isoWeekday(); // 0 es lunes 6 es domingo
-            // Si es viernes o fin de semana, se salta al próximo lunes.
-            if (currentDay >= 4) {
-                // 7 es el próximo lunes
-                nextDate = moment(date).isoWeekday(7);
-            } else {
-                // Para los otros días, solo agrega 1.
-                nextDate = moment(date).add(1, 'days');
-            }
-            break;
-        case "EVERY WEEK":
-            nextDate = moment(date).add(1, 'weeks');
-            break;
-        case "EVERY TWO WEEKS":
-            nextDate = moment(date).add(2, 'weeks');
-            break;
-        case "EVERY MONTH":
-            nextDate = moment(date).add(1, 'months');
-            break;
-        case "EVERY TWO MONTHS":
-            nextDate = moment(date).add(2, 'months');
-            break;
-        case "EVERY THREE MONTHS":
-            nextDate = moment(date).add(3, 'months');
-            break;
-        case "EVERY SIX MONTHS":
-            nextDate = moment(date).add(6, 'months');
-            break;
-        case "EVERY YEAR":
-            nextDate = moment(date).add(1, 'years');
-            break;
-        case "NEVER":
-            nextDate = null;
-            break;
-        default:
-            throw new Error(`Invalid repeat value: ${repeat}`);
-    }
+// export function switchTransaction(date: Date, repeat: string) {
+//     let nextDate;
+//     switch (repeat) {
+//         case "EVERY DAY":
+//             nextDate = moment(date).add(1, 'days');
+//             break;
+//         case "EVERY TWO DAYS":
+//             nextDate = moment(date).add(2, 'days');
+//             break;
+//         case "EVERY WORKING DAY":
+//             const currentDay = moment(date).isoWeekday(); // 0 es lunes 6 es domingo
+//             // Si es viernes o fin de semana, se salta al próximo lunes.
+//             if (currentDay >= 4) {
+//                 // 7 es el próximo lunes
+//                 nextDate = moment(date).isoWeekday(7);
+//             } else {
+//                 // Para los otros días, solo agrega 1.
+//                 nextDate = moment(date).add(1, 'days');
+//             }
+//             break;
+//         case "EVERY WEEK":
+//             nextDate = moment(date).add(1, 'weeks');
+//             break;
+//         case "EVERY TWO WEEKS":
+//             nextDate = moment(date).add(2, 'weeks');
+//             break;
+//         case "EVERY MONTH":
+//             nextDate = moment(date).add(1, 'months');
+//             break;
+//         case "EVERY TWO MONTHS":
+//             nextDate = moment(date).add(2, 'months');
+//             break;
+//         case "EVERY THREE MONTHS":
+//             nextDate = moment(date).add(3, 'months');
+//             break;
+//         case "EVERY SIX MONTHS":
+//             nextDate = moment(date).add(6, 'months');
+//             break;
+//         case "EVERY YEAR":
+//             nextDate = moment(date).add(1, 'years');
+//             break;
+//         case "NEVER":
+//             nextDate = null;
+//             break;
+//         default:
+//             throw new Error(`Invalid repeat value: ${repeat}`);
+//     }
 
-    return nextDate?.toDate()
-}
+//     return nextDate?.toDate()
+// }
 
 export const transactionsRecurring = () => {
     return new GetAllTransactionRecurring(container.cradle.transactionRepository)

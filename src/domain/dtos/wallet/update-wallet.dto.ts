@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateWalletDto {
     @IsString()
@@ -16,4 +16,13 @@ export class UpdateWalletDto {
     @IsNumber()
     @IsNotEmpty()
     public readonly balance!: number
+
+    @IsString()
+    @IsNotEmpty()
+    @IsEnum([
+        "CREDIT",
+        "DEBIT",
+    ])
+    public readonly type_account?: string
+
 }

@@ -3,6 +3,7 @@ import { CustomResponse } from "../../utils/response/custom.response";
 import { CreateWalletDto } from "../dtos/wallet/create-wallet.dto";
 import { UpdateWalletDto } from "../dtos/wallet/update-wallet.dto";
 import { WalletEntity } from "../entities/wallet/wallet.entity";
+import { IncomesAndExpensesByWallet } from "../interfaces/wallets/wallets.interface";
 
 export abstract class WalletRepository {
     abstract getAll(userId: string): Promise<WalletEntity[] | CustomResponse>;
@@ -13,6 +14,7 @@ export abstract class WalletRepository {
 
     abstract findByIds(id: number[]): Promise<CustomResponse | WalletEntity[]>
 
-    abstract infoWallet(id: number, userId: string): Promise<DashboardInterface |CustomResponse>
+    abstract infoWallet(id: number, userId: string): Promise<DashboardInterface | CustomResponse>
 
+    abstract totalIncomesAndExpensesByWallet(userId: string): Promise<CustomResponse | IncomesAndExpensesByWallet[]>
 }

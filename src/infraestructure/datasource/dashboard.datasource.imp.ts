@@ -107,6 +107,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                     month ASC                        -- Ordenar por mes
                     --type ASC;                         -- Ordenar por tipo dentro de cada mes
             `
+            console.log("object",data);
             return data.map(data => {
                 return TransactionMonthEntity.fromObject(data)
             })

@@ -25,7 +25,7 @@ export class SummaryTransactionsMonth implements summaryTransactionsMonthUseCase
 
     addMissingMonths = (transactions: TransactionMonthEntity[], year: string): TransactionMonthEntity[] => {
         const allMonths = this.generateYearMonths(year);
-
+        
         return allMonths.flatMap((month) =>
             this.types.map((type) => {
                 const exists = transactions.some((t) => t.month === month && t.type === type);

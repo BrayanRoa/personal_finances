@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateWalletDto {
     @IsString()
@@ -14,6 +14,15 @@ export class CreateWalletDto {
     public readonly description!: string
 
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     public readonly balance!: number
+
+    @IsString()
+    @IsNotEmpty()
+    @IsEnum([
+        "CREDIT",
+        "DEBIT",
+    ])
+    public readonly type_account!: string
+
 }

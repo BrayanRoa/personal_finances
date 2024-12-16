@@ -2,9 +2,12 @@ import { WalletDatasource } from "../../domain/datasources/wallet.datasource";
 import { CreateWalletDto } from "../../domain/dtos/wallet/create-wallet.dto";
 import { UpdateWalletDto } from "../../domain/dtos/wallet/update-wallet.dto";
 import { WalletEntity } from "../../domain/entities/wallet/wallet.entity";
+import { IncomesAndExpensesByWallet } from "../../domain/interfaces/wallets/wallets.interface";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { DashboardInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
+// import _ from 'lodash';
+
 
 export class WalletDatasourceImp extends BaseDatasource implements WalletDatasource {
 
@@ -40,7 +43,6 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                 }),
             ]);
 
-
             totalIncome = income._sum.amount ? income._sum.amount : 0;
             totalExpenses = expenses._sum.amount ? expenses._sum.amount : 0;
             return {
@@ -59,7 +61,6 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                         { deleted_at: null }, { userId }
                     ]
                 },
-                // include: { transactions: true }
             })
             return wallets.map(item => WalletEntity.fromObject(item))
         })
@@ -143,5 +144,53 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
         });
         return !!data // Esto devolverá true si data no es nulo y false si data es nulo
     }
+
+    totalIncomesAndExpensesByWallet(userId: string): Promise<CustomResponse | IncomesAndExpensesByWallet[]> {
+        return this.handleErrors(async () => {
+            const result: IncomesAndExpensesByWallet[] = await BaseDatasource.prisma.$queryRaw`
+                SELECT w."name", t."type", SUM(t."amount") AS total
+                FROM "Wallet" w
+                JOIN "Transaction" t ON t."walletId" = w."id"
+                WHERE w."deleted_at" IS NULL AND t."deleted_at" IS NULL AND t."userId" = ${userId}
+                GROUP BY w."name", t."type"
+                `;
+
+            // const wallets = await this.getAll(userId)
+
+            // if(Array.isArray(wallets)) {
+            //     wallets.map(wallet =>{
+            //         result.flatMap(bank =>{
+            //             if(bank.name === wallet.name){
+            //                 if(bank.type === 'INCOME'){
+            //                     bank.total += wallet.balance
+            //                 }
+            //                 return bank;
+            //             }
+            //         })
+            //     })
+            // }
+            // console.log("aaa",result);
+            return result
+        })
+    }
+
+    // ensureAllTypesWithLodash = (data: IncomesAndExpensesByWallet[]): IncomesAndExpensesByWallet[] => {
+    //     const types: ('INCOME' | 'OUTFLOW')[] = ['INCOME', 'OUTFLOW'];
+
+    //     // Agrupar por banco
+    //     const grouped = _.groupBy(data, 'name');
+
+    //     // Completar los datos faltantes
+    //     return _.flatMap(grouped, (items, name) => {
+    //         return types.map((type) => {
+    //             const existing = _.find(items, { type }); // Buscar si ya existe el tipo
+    //             return {
+    //                 name,
+    //                 type,
+    //                 total: existing ? existing.total : 0, // Si no existe, asignar 0
+    //             };
+    //         });
+    //     });
+    // };
 
 }
