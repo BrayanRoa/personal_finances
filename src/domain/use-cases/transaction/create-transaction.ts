@@ -31,11 +31,18 @@ export class CreateTransaction implements CreateTransactionUseCase {
             let walletData = await this.wallet.findById(item.walletId, item.userId)
 
             if (walletData instanceof WalletEntity) {
-                walletData.balance = item.type === "INCOME"
-                    ? Number(walletData.balance) + Number(item.amount)
-                    : Number(walletData.balance) - Number(item.amount);
 
-                await this.wallet.update(item.walletId, { balance: walletData.balance }, item.userId)
+                const amount = Number(item.amount);
+
+                if (item.type === 'INCOME') {
+                    walletData.incomes += amount;
+                    walletData.balance += amount;
+                } else {
+                    walletData.expenses += amount;
+                    walletData.balance -= amount;
+                }
+
+                await this.wallet.update(item.walletId, { balance: walletData.balance, incomes: walletData.incomes, expenses: walletData.expenses }, item.userId)
 
                 if (item.type === "OUTFLOW") {
                     const budget = await this.budget.get_one_by_date(item.walletId, item.categoryId, item.userId)

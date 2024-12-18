@@ -17,6 +17,7 @@ const default_categories = [
     { "name": "SPORTS", "icon": "american-football-outline", "color": "#7FFF00" },
     { "name": "BEAUTY", "icon": "rose-outline", "color": "#DC143C" },
     { "name": "WORK", "icon": "business-outline", "color": "#FF8C00" },
+    { "name": "INITIAL AMOUNT", "icon": "business-outline", "color": "#FF8C01" },
     { "name": "OTHERS", "icon": "list-outline", "color": "#00CED1" }
 ]
 

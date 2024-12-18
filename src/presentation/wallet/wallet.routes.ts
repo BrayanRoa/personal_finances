@@ -315,6 +315,11 @@ export class WalletRoutes extends BaseRouter<WalletController, WalletMiddleware,
             this.controller.delete
         )
 
+        this.router.get(`${prefix}/montly-balance-wallet/:year`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.monthlyBalanceByWallet
+        )
+
 
         /**
          * @swagger
