@@ -26,7 +26,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             return transaction.length > 0 ? true : false
         })
     }
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number } | CustomResponse | string> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number, typeChange: string } | CustomResponse | string> {
         return this.handleErrors(async () => {
             if (data instanceof Array) {
                 const updateUserOperations = data.map(({ id, userId, ...rest }) => {
@@ -59,6 +59,8 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 const action = transaction.amount !== updateData.amount ?
                     (transaction.amount < updateData?.amount! ? "ADD" : "SUBTRACT") : "";
 
+                const type_change = transaction.type !== updateData.type ? updateData.type : ""
+
                 const amountDifference = Math.abs(transaction.amount - updateData?.amount!);
 
                 const updateTransactionResult = await BaseDatasource.prisma.transaction.updateMany({
@@ -70,7 +72,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
                 this.auditSave(id, updateData, "UPDATE", userId);
 
-                return { action, amountDifference }
+                return { action, amountDifference, typeChange: type_change! }
             }
         })
     }

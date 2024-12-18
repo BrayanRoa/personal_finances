@@ -46,11 +46,11 @@ export class TransactionRepositoryImp extends TransactionRepository {
         return this.transactionDatasource.delete(id, user_audits);
     }
 
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number } | string | CustomResponse> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number, typeChange: string } | string | CustomResponse> {
         if (!(data instanceof Array)) { // aqui pregunto si no es un array
             data.date = new Date(data.date!)
         }
-        return this.transactionDatasource.update(id, data,)
+        return this.transactionDatasource.update(id, data)
     }
 
     getYears(user_audits: string): Promise<CustomResponse | number[]> {
