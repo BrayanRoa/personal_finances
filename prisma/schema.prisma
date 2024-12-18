@@ -62,17 +62,21 @@ model Transaction {
 }
 
 model Wallet {
-  id           Int           @id @default(autoincrement())
-  name         String
-  description  String
-  balance      Float
-  type_account String        @default("DEBIT")
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @updatedAt
-  deleted_at   DateTime?
-  userId       String
-  user         User          @relation(fields: [userId], references: [id])
-  transactions Transaction[]
+  id              Int           @id @default(autoincrement())
+  name            String
+  description     String
+  initial_balance Float         @default(0)
+  balance         Float         @default(0)
+  incomes         Float         @default(0)
+  expenses        Float         @default(0)
+  main_account    Boolean       @default(false)
+  type_account    String        @default("DEBIT")
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  deleted_at      DateTime?
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  transactions    Transaction[]
 
   budgets Budget[] // Este es el campo nuevo que se añade a Wallet
 }

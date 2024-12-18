@@ -2,7 +2,7 @@ import { WalletDatasource } from "../../domain/datasources/wallet.datasource";
 import { CreateWalletDto } from "../../domain/dtos/wallet/create-wallet.dto";
 import { UpdateWalletDto } from "../../domain/dtos/wallet/update-wallet.dto";
 import { WalletEntity } from "../../domain/entities/wallet/wallet.entity";
-import { IncomesAndExpensesByWallet } from "../../domain/interfaces/wallets/wallets.interface";
+import { IMonthlyBalanceByWallet, IncomesAndExpensesByWallet } from "../../domain/interfaces/wallets/wallets.interface";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { DashboardInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
@@ -65,13 +65,13 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
             return wallets.map(item => WalletEntity.fromObject(item))
         })
     }
-    create(data: CreateWalletDto, user_audits: string): Promise<string | CustomResponse> {
+    create(data: CreateWalletDto, user_audits: string): Promise<WalletEntity | CustomResponse> {
         return this.handleErrors(async () => {
             const exist = await this.exist(data.userId, data.name)
             if (exist) return new CustomResponse(`Already exist wallet with name: ${data.name}`, 400)
             const new_wallet = await BaseDatasource.prisma.wallet.create({ data })
             this.auditSave(new_wallet.id, new_wallet, "CREATE", user_audits)
-            return "Wallet created successfully"
+            return WalletEntity.fromObject(new_wallet)
         })
     }
     delete(id: number, user_audits: string): Promise<string | CustomResponse> {
@@ -147,6 +147,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
 
     totalIncomesAndExpensesByWallet(userId: string): Promise<CustomResponse | IncomesAndExpensesByWallet[]> {
         return this.handleErrors(async () => {
+            await this.monthlyBalanceByWallet(userId, 2024)
             const result: IncomesAndExpensesByWallet[] = await BaseDatasource.prisma.$queryRaw`
                 SELECT w."name", t."type", SUM(t."amount") AS total
                 FROM "Wallet" w
@@ -154,43 +155,41 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                 WHERE w."deleted_at" IS NULL AND t."deleted_at" IS NULL AND t."userId" = ${userId}
                 GROUP BY w."name", t."type"
                 `;
-
-            // const wallets = await this.getAll(userId)
-
-            // if(Array.isArray(wallets)) {
-            //     wallets.map(wallet =>{
-            //         result.flatMap(bank =>{
-            //             if(bank.name === wallet.name){
-            //                 if(bank.type === 'INCOME'){
-            //                     bank.total += wallet.balance
-            //                 }
-            //                 return bank;
-            //             }
-            //         })
-            //     })
-            // }
-            // console.log("aaa",result);
             return result
         })
     }
 
-    // ensureAllTypesWithLodash = (data: IncomesAndExpensesByWallet[]): IncomesAndExpensesByWallet[] => {
-    //     const types: ('INCOME' | 'OUTFLOW')[] = ['INCOME', 'OUTFLOW'];
-
-    //     // Agrupar por banco
-    //     const grouped = _.groupBy(data, 'name');
-
-    //     // Completar los datos faltantes
-    //     return _.flatMap(grouped, (items, name) => {
-    //         return types.map((type) => {
-    //             const existing = _.find(items, { type }); // Buscar si ya existe el tipo
-    //             return {
-    //                 name,
-    //                 type,
-    //                 total: existing ? existing.total : 0, // Si no existe, asignar 0
-    //             };
-    //         });
-    //     });
-    // };
-
+    // con este metodo obtengo los balances mensuales de cada uno de los bancos segun el año que quiera el usuario
+    monthlyBalanceByWallet(userId: string, year: number): Promise<CustomResponse | IMonthlyBalanceByWallet[]> {
+        return this.handleErrors(async () => {
+            const result: IMonthlyBalanceByWallet[] = await BaseDatasource.prisma.$queryRaw`
+                SELECT 
+                    month,
+                    name,
+                    SUM(income) - SUM(outflow) AS balance
+                FROM (
+                    SELECT 
+                        w."name" AS name,
+                        to_char(t.date, 'YYYY-MM') AS month,
+                        CASE WHEN t."type" = 'INCOME' THEN SUM(t.amount) ELSE 0 END AS income,
+                        CASE WHEN t."type" = 'OUTFLOW' THEN SUM(t.amount) ELSE 0 END AS outflow
+                    FROM 
+                        "Transaction" t
+                    JOIN 
+                        "Wallet" w ON w.id = t."walletId"
+                    WHERE 
+                        t.deleted_at IS NULL 
+                        AND EXTRACT(YEAR FROM t.date) = ${year}
+                        AND t."userId" = ${userId}
+                    GROUP BY 
+                        w."name", t."type", to_char(t.date, 'YYYY-MM')
+                ) AS subquery
+                GROUP BY 
+                    month, name
+                ORDER BY 
+                    name;
+                `;
+            return result
+        })
+    }
 }

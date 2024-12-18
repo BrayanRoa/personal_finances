@@ -8,6 +8,8 @@ import { UpdateWallet } from "../../domain/use-cases/wallet/update-wallet";
 import { DeleteWallet } from "../../domain/use-cases/wallet/delete-wallet";
 import { DashboardWallet } from "../../domain/use-cases/wallet/dashboard-wallet";
 import { IncomesAndExpensesByWalletType } from "../../domain/use-cases/wallet/incomes-expenses-by-wallet.wallet";
+import { container } from "../../infraestructure/dependencies/container";
+import { MonthlyBalanceByWallet } from "../../domain/use-cases/wallet/monthly-balance-by-wallet.wallet";
 
 export class WalletController {
     constructor(
@@ -33,7 +35,7 @@ export class WalletController {
     }
 
     public create = (req: Request, res: Response) => {
-        return new CreateWallet(this.walletRepository)
+        return new CreateWallet(this.walletRepository, container.cradle.transactionRepository)
             .execute(req.body)
             .then(response => CustomResponse.handleResponse(res, response, 201))
             .catch(err => CustomResponse.handleResponse(res, err))
@@ -65,10 +67,19 @@ export class WalletController {
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
-    public IncomesAndExpensesByWallet = async (req: Request, res: Response) => {
+    public IncomesAndExpensesByWallet = (req: Request, res: Response) => {
         const { userId } = req.body
         return new IncomesAndExpensesByWalletType(this.walletRepository)
             .execute(userId)
+            .then((response) => CustomResponse.handleResponse(res, response, 200))
+            .catch((err) => CustomResponse.handleResponse(res, err))
+    }
+
+    public monthlyBalanceByWallet = (req: Request, res: Response) => {
+        const { userId } = req.body
+        const { year } = req.params
+        return new MonthlyBalanceByWallet(this.walletRepository)
+            .execute(userId, +year)
             .then((response) => CustomResponse.handleResponse(res, response, 200))
             .catch((err) => CustomResponse.handleResponse(res, err))
     }
