@@ -15,59 +15,6 @@ export class UpdateTransaction implements UpdateTransactionUseCase {
         private walletRepositopry: WalletRepository
     ) {
     }
-    // async execute(id: number, dto: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
-    //     const result = await this.repository.update(id, dto)
-    //     if (result instanceof CustomResponse) {
-    //         return result;
-    //     }
-    //     if (result instanceof Object) {
-    //         if (!(dto instanceof Array)) {
-    //             const wallet = await this.walletRepositopry.findById(dto.walletId!, dto.userId)
-    //             if (wallet instanceof CustomResponse) {
-    //                 return wallet;
-    //             }
-    //             console.log("ACTION:", result);
-    //             if (result.action === "ADD" && result.typeChange == "") {
-    //                 wallet.balance += result.amountDifference;
-    //                 wallet.incomes += result.amountDifference;
-    //             } else if (result.action == "SUBTRACT" && result.typeChange == "") {
-    //                 wallet.balance -= result.amountDifference;
-    //                 wallet.expenses += result.amountDifference;
-    //             }
-
-    //             if (result.typeChange === "INCOME" && result.action === "") {
-    //                 wallet.incomes += dto.amount!
-    //                 wallet.expenses -= dto.amount!
-    //                 wallet.balance = wallet.incomes - wallet.expenses
-    //             } else if (result.typeChange === "OUTFLOW" && result.action === "") {
-    //                 wallet.expenses += dto.amount!
-    //                 wallet.incomes -= dto.amount!
-    //                 wallet.balance = wallet.incomes - wallet.expenses
-    //             }
-
-    //             if(result.action === "SUBTRACT" && result.typeChange === 'OUTFLOW'){ // parece estar bien
-    //                 wallet.expenses += (dto.amount!)
-    //                 wallet.incomes -= (dto.amount! + result.amountDifference)
-    //                 wallet.balance = wallet.incomes - wallet.expenses
-    //             }else if(result.action === "SUBTRACT" && result.typeChange === 'INCOME'){ // parece estar bien
-    //                 wallet.incomes += dto.amount!
-    //                 wallet.expenses -= (dto.amount! + result.amountDifference)
-    //                 wallet.balance = wallet.incomes - wallet.expenses
-    //             }else if(result.action === "ADD" && result.typeChange === 'OUTFLOW'){ // parece estar bien
-    //                 wallet.expenses += dto.amount!
-    //                 wallet.incomes -= (dto.amount! - result.amountDifference)
-    //                 wallet.balance = wallet.incomes - wallet.expenses
-    //             }else if(result.action === "ADD" && result.typeChange==='INCOME'){ // 
-    //                 wallet.incomes += (dto.amount!)
-    //                 wallet.expenses -= (dto.amount! - result.amountDifference)
-    //                 wallet.balance = wallet.incomes - wallet.expenses
-    //             }
-    //             const { id, transactions, ...data } = wallet
-    //             await this.walletRepositopry.update(dto.walletId!, data, dto.userId)
-    //         }
-    //     }
-    //     return "transaction update successfully"
-    // }
 
     async execute(id: number, dto: UpdateTransactionDto[] | UpdateTransactionDto): Promise<string | CustomResponse> {
         const result = await this.repository.update(id, dto);

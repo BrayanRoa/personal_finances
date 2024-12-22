@@ -67,3 +67,13 @@
 {"clientVersion":"5.19.1","code":"P2021","level":"error","meta":{"modelName":"Budget","table":"public.Budget"},"name":"PrismaClientKnownRequestError","service":"user-service"}
 {"clientVersion":"5.19.1","code":"P2003","level":"error","meta":{"field_name":"Transaction_walletId_fkey (index)","modelName":"Transaction"},"name":"PrismaClientKnownRequestError","service":"user-service"}
 {"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42702","message":"ERROR: column reference \"userId\" is ambiguous"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"w\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42702","message":"ERROR: column reference \"userId\" is ambiguous"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.19.1","code":"P2010","level":"error","meta":{"code":"42702","message":"ERROR: column reference \"userId\" is ambiguous"},"name":"PrismaClientKnownRequestError","service":"user-service"}

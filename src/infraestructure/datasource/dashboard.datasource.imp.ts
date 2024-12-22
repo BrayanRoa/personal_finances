@@ -96,10 +96,12 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                     SUM(amount) AS total              -- Suma total por tipo y mes
                 FROM 
                     "Transaction" t 
+                join "Wallet" w on w.id = t."walletId"
                 WHERE 
-                    deleted_at IS NULL and             -- Ignorar registros eliminados
-                    EXTRACT(YEAR FROM date) = ${year} and
-                    "userId" = ${userId}         -- Filtrar por usuario
+                    t.deleted_at IS NULL and             -- Ignorar registros eliminados
+                    EXTRACT(YEAR FROM t.date) = ${year} and
+                    t."userId" = ${userId} AND       -- Filtrar por usuario
+                    w.deleted_at IS NULL 
                 GROUP BY 
                     TO_CHAR(date, 'YYYY-MM'),         -- Agrupar por mes
                     type                              -- Agrupar por tipo (income o outflow)
@@ -107,7 +109,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                     month ASC                        -- Ordenar por mes
                     --type ASC;                         -- Ordenar por tipo dentro de cada mes
             `
-            console.log("object",data);
+            console.log("object", data);
             return data.map(data => {
                 return TransactionMonthEntity.fromObject(data)
             })
@@ -115,41 +117,34 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
     }
     summaryTransactionsByCategory(userId: string): Promise<CustomResponse | CountTransactionCategoryEntity[]> {
         return this.handleErrors(async () => {
-            const data = await BaseDatasource.prisma.category.findMany({
-                select: {
-                    name: true,
-                    color: true,
-                    Transaction: {
-                        select: {
-                            id: true,
-                            wallet: {
-                                select: {
-                                    id: true,
-                                },
-                            },
-                        },
-                        where: {
-                            deleted_at: null,
-                            // walletId // reemplace `yourWalletId` con la ID de la cartera que está buscando
-                        }
-                    },
-                },
-                where: {
-                    userId,
-                    deleted_at: null
-                }
-            });
-            return data.map(category => {
-                const transactionCount = category.Transaction.length;
-                return CountTransactionCategoryEntity.fromObject({
+            const data: CountTransactionCategoryEntity[] = await BaseDatasource.prisma.$queryRaw`
+                select c."name" as name, count(t.id) as transactioncount, c."color" as "color" from "Transaction" t
+                join 
+                    "Wallet" w on w.id = t."walletId" 
+                join 
+                    "Category" c on c.id = t."categoryId" 
+                where 
+                    t.deleted_at is null and 
+                    w.deleted_at is null and 
+                    t."userId" = ${userId}
+                group by 
+                    c.name, c.color 
+            `;
+
+            console.log("Antes del return", data);
+
+            return data.map((category) => {
+                return {
                     name: category.name,
-                    transactionCount,
+                    transactioncount: typeof category.transactioncount === 'bigint'
+                        ? Number(category.transactioncount)  // Convierte BigInt a Number
+                        : category.transactioncount,        // Mantén el valor si ya es un número
                     color: category.color,
-                })
-            })
-            // return categoryCounts
-        })
+                };
+            });
+        });
     }
+
     banksInformation(user: string): Promise<CustomResponse> {
         throw new Error("Method not implemented.");
     }

@@ -1,14 +1,14 @@
 export class CountTransactionCategoryEntity {
     constructor(
-        private name: string,
-        private transactionCount: number,
-        private color: string
+        public name: string,
+        public transactioncount: number,
+        public color: string
     ) { }
 
     public static fromObject(obj: { [key: string]: any }): CountTransactionCategoryEntity {
         return new CountTransactionCategoryEntity(
             obj.name,
-            obj.transactionCount,
+            obj.transactioncount,
             obj.color,
         );
     }

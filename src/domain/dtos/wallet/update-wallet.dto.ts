@@ -6,7 +6,7 @@ export class UpdateWalletDto {
     public name?: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     public readonly userId?: string
 
     @IsString()
@@ -14,7 +14,7 @@ export class UpdateWalletDto {
     public readonly description?: string
 
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     public readonly balance?: number
 
     @IsBoolean()
@@ -34,7 +34,7 @@ export class UpdateWalletDto {
     public readonly expenses?: number
     
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @IsEnum([
         "CREDIT",
         "DEBIT",

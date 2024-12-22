@@ -178,7 +178,8 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                     JOIN 
                         "Wallet" w ON w.id = t."walletId"
                     WHERE 
-                        t.deleted_at IS NULL 
+                        t.deleted_at IS NULL AND 
+                        w.deleted_at IS NULL
                         AND EXTRACT(YEAR FROM t.date) = ${year}
                         AND t."userId" = ${userId}
                     GROUP BY 

@@ -10,7 +10,9 @@ export class CountCategoryTransaction implements CountCategoryTransactionUseCase
     constructor(
         private repository: DasbboardRepository,
     ) { }
-    execute(userId: string): Promise<CustomResponse | CountTransactionCategoryEntity[]> {
-        return this.repository.summaryTransactionsByCategory(userId)
+    async execute(userId: string): Promise<CustomResponse | CountTransactionCategoryEntity[]> {
+        const a = await this.repository.summaryTransactionsByCategory(userId)
+        console.log("VAMOS",a);
+        return a
     }
 }
