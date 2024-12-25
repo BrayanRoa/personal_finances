@@ -5,7 +5,6 @@ import { TransactionMonthEntity } from "../../domain/entities/dashboard/transact
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
 import { BudgetDashboardEntity } from "../../domain/entities/budget/budget-dashboard.entity";
-import { Prisma } from "@prisma/client";
 import { budgetInterface } from "../../utils/interfaces/response_paginate";
 
 export class DashboardDatasourceImp extends BaseDatasource implements DashboardDatasource {
@@ -18,16 +17,16 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
         super();
         this.audit_class = "DASHBOARD";
     }
-    summaryWallets(userId: string): Promise<CustomResponse | SummaryWalletEntity> {
+    summaryWalletsCards(userId: string): Promise<CustomResponse | SummaryWalletEntity> {
 
         return this.handleErrors(async () => {
             const { totalIncome, totalExpenses } = await this.totalIncomesAndOutfllows(userId)
             const budgetsActives = await this.activeBudgets(userId)
-            const totalTransactions = await this.totalTransactions(userId) // del mes actual
+            // const totalTransactions = await this.totalTransactions(userId) // del mes actual
 
             this.summaryTransactionsByMonth(userId, 2024)
             return SummaryWalletEntity.fromObject(
-                { totalIncome, totalExpenses, budgetsActives, totalTransactions }
+                { totalIncome, totalExpenses, budgetsActives }
             )
         })
     }
@@ -74,6 +73,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
         })
     }
 
+    // the application does not use it
     private async totalTransactions(userId: string): Promise<number> {
         return await BaseDatasource.prisma.transaction.count({
             where: {

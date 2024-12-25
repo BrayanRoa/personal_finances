@@ -11,7 +11,7 @@ export class SummaryWallet implements SummaryWalletUseCase {
         private repository: DasbboardRepository,
     ) { }
     execute(userId: string): Promise<CustomResponse | SummaryWalletEntity> {
-        return this.repository.summaryWallets(userId)
+        return this.repository.summaryWalletsCards(userId)
     }
 
 }

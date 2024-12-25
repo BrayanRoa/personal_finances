@@ -8,7 +8,7 @@ import { budgetInterface } from "../../utils/interfaces/response_paginate";
 export abstract class DashboardDatasource{
 
     // informacion del header, para las cards
-    abstract summaryWallets(userId: string): Promise<CustomResponse | SummaryWalletEntity>;
+    abstract summaryWalletsCards(userId: string): Promise<CustomResponse | SummaryWalletEntity>;
 
     // grafico de barras de los 12 meses
     abstract summaryTransactionsByMonth(userId: string, year:number): Promise<CustomResponse | TransactionMonthEntity[]>;

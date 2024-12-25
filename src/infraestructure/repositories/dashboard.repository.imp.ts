@@ -13,8 +13,8 @@ export class DashboardRepositoryImpl implements DasbboardRepository {
     constructor(
         private readonly dashboardDatasource: DashboardDatasource
     ) { }
-    summaryWallets(userId: string): Promise<CustomResponse | SummaryWalletEntity> {
-        return this.dashboardDatasource.summaryWallets(userId)
+    summaryWalletsCards(userId: string): Promise<CustomResponse | SummaryWalletEntity> {
+        return this.dashboardDatasource.summaryWalletsCards(userId)
     }
     summaryTransactionsByMonth(userId: string, year: number): Promise<CustomResponse | TransactionMonthEntity[]> {
         return this.dashboardDatasource.summaryTransactionsByMonth(userId, year)
