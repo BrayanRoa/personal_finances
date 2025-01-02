@@ -18,6 +18,10 @@ export class BudgetEntity extends BaseEntity {
         public categories: string,
         public repeat: string,
         public walletId: number,
+        public BudgetCategories: {
+            budgetId: number;
+            categoryId: number;
+        }[],
         public created_at: Date,
         public updated_at: Date,
         public deleted_at?: Date,
@@ -41,6 +45,7 @@ export class BudgetEntity extends BaseEntity {
             obj.categories,
             obj.repeat,
             obj.walletId,
+            obj.BudgetCategories,
             obj.created_at,
             obj.updated_at,
             obj.deleted_at

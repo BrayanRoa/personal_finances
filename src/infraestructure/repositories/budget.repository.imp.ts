@@ -2,7 +2,9 @@ import { BudgetDatasource } from "../../domain/datasources/budget.datasource";
 import { CreateBudgetDto } from "../../domain/dtos/budget/create-budget.dto";
 import { UpdateBudgetDto } from "../../domain/dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
+import { ITransactionByBudget } from "../../domain/interfaces/budgets/transaction-by-budget.interface";
 import { BudgetRepository } from "../../domain/repositories/budget.repository";
+import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 export class BudgetRepositoryImp implements BudgetRepository {
@@ -10,6 +12,15 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    updateAmounts(userId: string, data: UpdateBudgetDto, budgetId: number): Promise<boolean | CustomResponse> {
+        return this.budgetDatasource.updateAmounts(userId, data, budgetId)
+    }
+    transactionByBudget(page: number, per_page: number, userId: string, categories: number[], startDate: Date, endDate: Date): Promise<CustomResponse | TransactionInterface> {
+        return this.budgetDatasource.transactionByBudget(page, per_page, userId, categories, startDate, endDate)
+    }
+    getAllTransactionToBeDeactive(): Promise<BudgetEntity[] | CustomResponse> {
+        return this.budgetDatasource.getAllTransactionToBeDeactive()
+    }
     delete(id: number, userId: string): Promise<string | CustomResponse> {
         return this.budgetDatasource.delete(id, userId)
     }
@@ -22,8 +33,8 @@ export class BudgetRepositoryImp implements BudgetRepository {
     update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
         return this.budgetDatasource.update(id, data)
     }
-    get_one_by_date(walletid: number, categoryid: number, userid: string): Promise<BudgetEntity[] | CustomResponse> {
-        return this.budgetDatasource.get_one_by_date(walletid, categoryid, userid)
+    get_one_by_date(walletid: number, categoryid: number[], userid: string, date: Date): Promise<BudgetEntity[] | CustomResponse> {
+        return this.budgetDatasource.get_one_by_date(walletid, categoryid, userid, date)
     }
     getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
         return this.budgetDatasource.getOne(id, userId)

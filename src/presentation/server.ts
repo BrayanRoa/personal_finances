@@ -10,7 +10,7 @@ import { CategoryRoutes } from './category/category.routes';
 import { TransactionRoutes } from './transaction/transaction.routes';
 import { WalletRoutes } from './wallet/wallet.routes';
 import cron from 'node-cron';
-import { budgetsRecurring, transactionsRecurring } from '../works/processRecurringTransactions';
+import { budgetsRecurring, budgetsToBeDeactivated, transactionsRecurring } from '../works/processRecurringTransactions';
 import { BudgetRoutes } from './budget/budget.routes';
 import { DashboardRoutes } from './dashboard/dashboard.routes';
 
@@ -39,6 +39,10 @@ export class Server {
         // cron.schedule('* * * * * *', async () => {
         //     await budgetsRecurring()
         // })
+        // cron.schedule('* * * * * *', async () => {
+        //     await budgetsToBeDeactivated()
+        // })
+
     }
 
     middlewares() {

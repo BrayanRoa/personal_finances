@@ -19,8 +19,8 @@ export class UpdateBudgetDto {
     public readonly limit_amount?: number;
 
     @IsString()
-    @IsNotEmpty()
-    public readonly userId!: string
+    @IsOptional()
+    public readonly userId?: string
 
     @IsString()
     @IsOptional()

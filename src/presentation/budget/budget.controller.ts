@@ -5,6 +5,7 @@ import { GetAllBudgets } from "../../domain/use-cases/budget/get-all-budget";
 import { CreateBudget } from "../../domain/use-cases/budget/create-budget";
 import { UpdateBudget } from "../../domain/use-cases/budget/update-budget";
 import { DeleteBudget } from "../../domain/use-cases/budget/delete-budget";
+import { TransactionByBudget } from "../../domain/use-cases/budget/transaction-by-budget";
 
 export class BudgetController {
 
@@ -47,5 +48,25 @@ export class BudgetController {
             .execute(+id, req.body)
             .then(budget => CustomResponse.handleResponse(res, budget, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public transactionsByBudget = (req: Request, res: Response) => {
+        const { userId } = req.body
+        const { categories, start, end } = req.query
+
+        console.log(start);
+        console.log(end);
+
+        let numArray
+        // Asegurarte de que es un string antes de usar `split`
+        if (typeof categories === 'string') {
+            numArray = categories.split(',').map(Number); // Convierte el string en un array de números
+            return new TransactionByBudget(this.repository)
+                .execute(1, 5, userId, numArray!, start?.toString()!, end?.toString()!)
+                .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
+                .catch(err => CustomResponse.handleResponse(res, err))
+        } else {
+            res.status(400).json({ error: 'categoryIds debe ser un string separado por comas' });
+        }
     }
 }

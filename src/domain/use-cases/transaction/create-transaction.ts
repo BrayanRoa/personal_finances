@@ -45,17 +45,18 @@ export class CreateTransaction implements CreateTransactionUseCase {
                 await this.wallet.update(item.walletId, { balance: walletData.balance, incomes: walletData.incomes, expenses: walletData.expenses }, item.userId)
 
                 if (item.type === "OUTFLOW") {
-                    const budget = await this.budget.get_one_by_date(item.walletId, item.categoryId, item.userId)
-                    console.log("SI", budget);
+                    const budget = await this.budget.get_one_by_date(
+                        item.walletId, [item.categoryId], item.userId, item.date
+                    )
                     if (budget instanceof Array) {
                         for (const bud of budget) {
-                            bud.current_amount = Number(bud.current_amount) + Number(item.amount);
-                            bud.percentage = (Number(bud.current_amount) / Number(bud.limit_amount)) * 100;
-                            console.log("PORCENTAGE", (Number(bud.current_amount) / Number(bud.limit_amount)) * 100);
-                            await this.budget.update(+bud.id, bud)
-                            if (bud.current_amount > bud.limit_amount) {
+                            const { id, userId, BudgetCategories, ...data } = bud
+                            data.current_amount = Number(data.current_amount) + Number(item.amount);
+                            data.percentage = +((Number(data.current_amount) / Number(data.limit_amount)) * 100).toFixed(2);
+                            await this.budget.updateAmounts(userId, data, id)
+                            if (bud.current_amount > data.limit_amount) {
                                 this.save_notification(item.userId)
-                                this.send_email(item.userId, bud.name, bud.limit_amount, bud.current_amount)
+                                this.send_email(item.userId, data.name, data.limit_amount, data.current_amount)
                             }
                         }
                     }
