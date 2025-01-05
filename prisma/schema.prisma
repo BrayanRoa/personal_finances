@@ -137,8 +137,11 @@ model Budget {
 model BudgetCategory {
   budgetId   Int
   categoryId Int
-  budget     Budget   @relation(fields: [budgetId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  budget     Budget    @relation(fields: [budgetId], references: [id])
+  category   Category  @relation(fields: [categoryId], references: [id])
 
   @@id([budgetId, categoryId])
 }

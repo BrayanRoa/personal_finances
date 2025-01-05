@@ -1,22 +1,31 @@
-import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export class UpdateBudgetDto {
 
-    @IsOptional()
-    @IsNumber()
-    id?: number
-
     @IsString()
     @IsOptional()
-    public readonly name?: string;
+    public name?: string;
 
     @IsString()
     @IsOptional()
     public description?: string;
 
+    @IsOptional()
+    @IsDateString()
+    public date?: Date;
+
+    @IsOptional()
+    @IsDateString()
+    public end_date?: Date;
+
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
+    public readonly limit_amount?: number;
+
     @IsNumber()
     @IsOptional()
-    public readonly limit_amount?: number;
+    public readonly current_amount?: number;
 
     @IsString()
     @IsOptional()
@@ -36,6 +45,14 @@ export class UpdateBudgetDto {
     ])
     public readonly repeat?: string;
 
+    @IsString()
+    @IsOptional()
+    public readonly categories?: string;
+
+    @IsNumber()
+    @IsOptional()
+    public readonly walletId?: number;
+
     @IsNumber()
     @IsOptional()
     public readonly percentage?: number;
@@ -46,10 +63,6 @@ export class UpdateBudgetDto {
 
     @IsOptional()
     @IsDateString()
-    public readonly next_date?: Date | null
-
-    @IsString()
-    @IsOptional()
-    public readonly categories?: string;
+    public next_date?: Date
 
 }

@@ -220,16 +220,16 @@ export function calculateNextDateToTransaction(transaction: Transaction) {
     return { ...data };
 }
 
-export function calculateNextDateToBudget(budget: BudgetData) {
-    const { id, created_at, updated_at, deleted_at, ...data } = budget;
+export function calculateNextDateToBudget(strat_date: Date, repeat: string) {
+    // const { id, created_at, updated_at, deleted_at, ...data } = budget;
 
-    if (data.next_date) {
-        data.date = new Date(data.next_date.getTime());
-    }
+    // if (data.next_date) {
+    //     data.date = new Date(data.next_date.getTime());
+    // }
 
-    data.next_date = QueryBuilder.switchTransaction(data.date, data.repeat)!;
+    const next_date = QueryBuilder.switchTransaction(strat_date, repeat)!;
 
-    return { ...data };
+    return next_date;
 }
 
 // Funciones: Operaciones con Transacciones
@@ -256,27 +256,27 @@ export const transactionsRecurring = async () => {
 };
 
 // Funciones: Operaciones con Presupuestos
-export const budgetsRecurring = async () => {
-    try {
-        const budgets = await new GetAllBudgetsRecurring(container.cradle.budgetRepository).execute();
+// export const budgetsRecurring = async () => {
+//     try {
+//         const budgets = await new GetAllBudgetsRecurring(container.cradle.budgetRepository).execute();
 
-        if (budgets instanceof Array) {
-            const modifiedBudgets = budgets.map(calculateNextDateToBudget);
+//         if (budgets instanceof Array) {
+//             const modifiedBudgets = budgets.map(calculateNextDateToBudget);
 
-            if (modifiedBudgets) {
-                saveBudget(modifiedBudgets);
-                budgets.forEach(budget => (budget.active = false));
-                updateBudgets(budgets);
-            }
+//             if (modifiedBudgets) {
+//                 saveBudget(modifiedBudgets);
+//                 budgets.forEach(budget => (budget.active = false));
+//                 updateBudgets(budgets);
+//             }
 
-            // TODO: Log de éxito/fallo para presupuestos procesados
-            return budgets;
-        }
-    } catch (error) {
-        console.error('An error occurred:', error);
-        return error;
-    }
-};
+//             // TODO: Log de éxito/fallo para presupuestos procesados
+//             return budgets;
+//         }
+//     } catch (error) {
+//         console.error('An error occurred:', error);
+//         return error;
+//     }
+// };
 
 // Desactivar presupuestos vencidos
 export const budgetsToBeDeactivated = async () => {

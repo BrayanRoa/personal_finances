@@ -62,6 +62,15 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.getAll
         )
+        this.router.get(`${prefix}/transactions`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.transactionsByBudget
+        )
+
+        this.router.get(`${prefix}/:id`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.getOne
+        )
 
         /**
          * @swagger
@@ -124,10 +133,6 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
             this.controller.Create
         )
 
-        this.router.get(`${prefix}/transactions`,
-            (req, res, next) => this.middleware.validarJwt(req, res, next),
-            this.controller.transactionsByBudget
-        )
 
         /**
          * @swagger
@@ -212,7 +217,7 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
             this.controller.delete
         )
 
-        
+
     }
 
 }

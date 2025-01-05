@@ -55,48 +55,106 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             return new_budget.map(budget => BudgetEntity.fromObject(budget))
         })
     }
-    update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<string | CustomResponse> {
+    // update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<string | CustomResponse> {
+    //     return this.handleErrors(async () => {
+    //         if (data instanceof Array) {
+    //             const updateUserOperations = data.map(({ id, userId, categories, ...rest }) => {
+    //                 if (rest.repeat === "NEVER") {
+    //                     rest.active = false
+    //                     rest.next_date = null
+    //                 }
+    //                 return BaseDatasource.prisma.budget.update({
+    //                     where: { id },
+    //                     data: rest
+    //                 })
+    //             })
+    //             const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
+    //             action.forEach(data => {
+    //                 this.auditSave(data.id, data, "UPDATE", data.userId)
+    //             })
+    //             return "Budget updated successfully"
+    //         } else {
+    //             const getOne = await this.getOne(id, data.userId!)
+    //             if (getOne instanceof CustomResponse) {
+    //                 return getOne
+    //             } else {
+    //                 if (data.limit_amount) {
+    //                     if (data.limit_amount! < getOne.limit_amount) {
+    //                         return new CustomResponse("Limit amount should be greater or equal to the current amount", 400)
+    //                     }
+    //                 }
+    //                 const budget = await BaseDatasource.prisma.budget.updateMany({
+    //                     where: {
+    //                         id,
+    //                         userId: data.userId,
+    //                         active: true
+    //                     },
+    //                     data
+    //                 })
+    //                 console.log("aaaaaa", budget);
+    //                 if (budget.count === 0) return new CustomResponse("Budget not found", 404)
+    //                 this.auditSave(id, data, "UPDATE", data.userId!)
+    //                 return "Budget update successfully"
+    //             }
+    //         }
+    //     })
+    // }
+
+    update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            if (data instanceof Array) {
-                const updateUserOperations = data.map(({ id, userId, categories, ...rest }) => {
-                    if (rest.repeat === "NEVER") {
-                        rest.active = false
-                        rest.next_date = null
-                    }
-                    return BaseDatasource.prisma.budget.update({
-                        where: { id },
-                        data: rest
-                    })
-                })
-                const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
-                action.forEach(data => {
-                    this.auditSave(data.id, data, "UPDATE", data.userId)
-                })
-                return "Budget updated successfully"
-            } else {
-                const getOne = await this.getOne(id, data.userId!)
-                if (getOne instanceof CustomResponse) {
-                    return getOne
-                } else {
-                    if (data.limit_amount) {
-                        if (data.limit_amount! < getOne.limit_amount) {
-                            return new CustomResponse("Limit amount should be greater or equal to the current amount", 400)
-                        }
-                    }
-                    const budget = await BaseDatasource.prisma.budget.updateMany({
-                        where: {
-                            id,
-                            userId: data.userId,
-                            active: true
-                        },
-                        data
-                    })
-                    console.log("aaaaaa", budget);
-                    if (budget.count === 0) return new CustomResponse("Budget not found", 404)
-                    this.auditSave(id, data, "UPDATE", data.userId!)
-                    return "Budget update successfully"
+            const getOne = await this.getOne(id, data.userId!);
+
+            const { categories, ...info } = data
+
+            if (getOne instanceof CustomResponse) {
+                return getOne
+            }
+
+            if (info.date !== getOne.date || info.repeat !== getOne.repeat) {
+                console.log("SI CAMBIO", info);
+                if (info.repeat !== "NEVER") {
+                    info.next_date = calculateNextDateToBudget(info.date!, info.repeat || getOne.repeat)
+                    info.end_date = new Date(info.next_date.getTime() - 1)
+                    info.date = new Date(info.date!)
+                }
+
+            }
+            await BaseDatasource.prisma.budget.update({
+                where: { id },
+                data: {
+                    ...info,
+                }
+            })
+
+            if (categories) {
+                // Convertir las categorías en una lista
+                const newCategories = categories.split(',');
+
+                // Obtener las categorías actuales de la tabla intermedia
+                const currentBudgetCategories = await this.getManyBudgetCategory(id);
+
+                // Categorías actuales en un formato manejable
+                if (currentBudgetCategories instanceof CustomResponse) {
+                    return currentBudgetCategories;
+                }
+                const currentCategoryIds = currentBudgetCategories.map(c => c.categoryId);
+
+                // Determinar categorías a agregar y eliminar
+                const categoriesToAdd = newCategories.filter(c => !currentCategoryIds.includes(+c));
+                const categoriesToRemove = currentCategoryIds.filter(c => !newCategories.includes(c.toString()));
+
+                // Agregar nuevas categorías
+                if (categoriesToAdd.length > 0) {
+                    await this.createBudgetCategories(id, categoriesToAdd);
+                }
+
+                // Eliminar categorías no seleccionadas
+                if (categoriesToRemove.length > 0) {
+                    await this.removeBudgetCategories(id, categoriesToRemove);
                 }
             }
+
+            return "Budget Updated successfully"
         })
     }
 
@@ -116,6 +174,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         })
     }
     getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
+        console.log("SOY",id);
         return this.handleErrors(async () => {
             const budget = await BaseDatasource.prisma.budget.findFirst({
                 where: {
@@ -124,6 +183,12 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                         { deleted_at: null },
                         { userId }
                     ]
+                }, include: {
+                    BudgetCategories: {
+                        include: {
+                            category: true
+                        }
+                    }
                 }
             })
             if (!budget) return new CustomResponse("Budget not found", 404)
@@ -156,8 +221,8 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         return this.handleErrors(async () => {
             let { categories, ...rest } = data
             if (rest.repeat !== "NEVER") {
-                const { categories, ...info } = calculateNextDateToBudget(data)
-                rest = info
+                rest.next_date = calculateNextDateToBudget(rest.date, rest.repeat)
+                rest.end_date = new Date(rest.next_date.getTime() - 1)
             }
             const new_budget = await BaseDatasource.prisma.budget.create({
                 data: {
@@ -165,21 +230,51 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                 }
             })
             const budgetCategories = categories.split(",")
-            if (budgetCategories.length >= 1) {
-                for (const category of budgetCategories) {
-                    await BaseDatasource.prisma.budgetCategory.create({
-                        data: {
-                            categoryId: +category,
-                            budgetId: new_budget.id
-                        }
-                    })
-                }
-            }
+            await this.createBudgetCategories(new_budget.id, budgetCategories)
             await this.auditSave(new_budget.id, new_budget, "CREATE", new_budget.userId)
             return "budget created successfully"
         })
     }
 
+    createBudgetCategories(budgetId: number, idCategories: string[]) {
+        return this.handleErrors(async () => {
+            for (const category of idCategories) {
+                await BaseDatasource.prisma.budgetCategory.create({
+                    data: {
+                        categoryId: +category,
+                        budgetId
+                    }
+                })
+            }
+        })
+    }
+
+    removeBudgetCategories(budgetId: number, idCategories: number[]) {
+        return this.handleErrors(async () => {
+            for (const category of idCategories) {
+                await BaseDatasource.prisma.budgetCategory.deleteMany({
+                    where: {
+                        budgetId,
+                        categoryId: category
+                    }
+                })
+
+            }
+        })
+    }
+
+    getManyBudgetCategory(budgetId: number): Promise<{ budgetId: number, categoryId: number }[] | CustomResponse> {
+        return this.handleErrors(async () => {
+            const budgetCategories = await BaseDatasource.prisma.budgetCategory.findMany({
+                where: {
+                    budgetId
+                },
+            })
+            return budgetCategories
+        })
+    }
+
+    // ! PARECE QUE SE PUEDE BORRAR
     createMany(data: CreateBudgetDto[]): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             if (data instanceof Array) {

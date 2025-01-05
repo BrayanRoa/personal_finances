@@ -6,6 +6,7 @@ import { CreateBudget } from "../../domain/use-cases/budget/create-budget";
 import { UpdateBudget } from "../../domain/use-cases/budget/update-budget";
 import { DeleteBudget } from "../../domain/use-cases/budget/delete-budget";
 import { TransactionByBudget } from "../../domain/use-cases/budget/transaction-by-budget";
+import { GetOneBudget } from "../../domain/use-cases/budget/get-one-budget";
 
 export class BudgetController {
 
@@ -30,7 +31,12 @@ export class BudgetController {
 
 
     public getOne = (req: Request, res: Response) => {
-
+        const { id } = req.params
+        const { userId } = req.body
+        return new GetOneBudget(this.repository)
+            .execute(+id, userId)
+            .then(budget => CustomResponse.handleResponse(res, budget, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
     }
 
     public delete = (req: Request, res: Response) => {
