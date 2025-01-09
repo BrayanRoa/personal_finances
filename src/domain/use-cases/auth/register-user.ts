@@ -16,26 +16,17 @@ export class RegisterUser implements RegisterUserUseCase {
         // Paso 1: Registrar el usuario
         const user = await this.authRepository.registerUser(dto);
         if (user instanceof CustomResponse) {
-            console.log({user});
             return user;
         }
 
         try {
-            // Paso 2: Generar y guardar el código de verificación
-            const plainCode = this.generateVerificationCode(); // Código separado en función
-            const saveResult = await this.authRepository.saveVerificationCode(user.id, plainCode);
+            // Paso 2: Enviar correo
+            await this.emailService.welcomeEmail(dto.email, dto.name, user.verificationCode);
 
-            if (saveResult instanceof CustomResponse) {
-                return saveResult;
-            }
+            // Paso 3: Actualizar estado de email enviado
+            await this.authRepository.updateUser(user.userId, { email_sent: true });
 
-            // Paso 3: Enviar correo
-            await this.emailService.welcomeEmail(dto.email, dto.name, plainCode);
-
-            // Paso 4: Actualizar estado de email enviado
-            await this.authRepository.updateUser(user.id, { email_sent: true });
-
-            return user.id
+            return user.userId
         } catch (error) {
             // Registro del error en un sistema de logs
             console.error("Error sending email:", error); // Reemplazar con un sistema como Winston o Bunyan
@@ -43,20 +34,4 @@ export class RegisterUser implements RegisterUserUseCase {
             return new CustomResponse(`Failed to send verification email. Please try again later.`, 500);
         }
     }
-
-    /**
-     * Función para generar un código de verificación único
-     * @returns Código de 4 dígitos como string
-     */
-    private generateVerificationCode(): string {
-        let uniqueCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generación simple
-
-        while (uniqueCode.length < 4) {
-            Math.floor(1000 + Math.random() * 9000).toString();
-        }
-
-        return uniqueCode
-    }
-
-
 }

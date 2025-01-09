@@ -7,7 +7,7 @@ import { VerificationCodeEntity } from "../entities/verification_code/verificati
 
 export abstract class AuthDatasource {
 
-    abstract registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse>;
+    abstract registerUser(data: CreateUserDto): Promise<{ userId: string, verificationCode: string } | CustomResponse>;
     abstract findOneUser(param: string, type?: string): Promise<UserEntity | CustomResponse>;
     abstract updateUSer(id: string, data: UpdateUserDto): Promise<boolean | CustomResponse>
 
@@ -16,5 +16,8 @@ export abstract class AuthDatasource {
     abstract getVerificationCode(userId: string): Promise<VerificationCodeEntity | CustomResponse>
 
     abstract updateVerificationCode(id: number): Promise<boolean | CustomResponse>
+
+    abstract resendCode(userId: string): Promise<string | CustomResponse>
+
 
 }

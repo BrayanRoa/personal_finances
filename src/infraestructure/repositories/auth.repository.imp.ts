@@ -12,8 +12,11 @@ export class AuthRepositoryImpl implements AuthRepository {
         private authDatasource: AuthDatasource,
         private passwordHasher: PasswordHasher,
     ) { }
+    resendCode(userId: string): Promise<string | CustomResponse> {
+        return this.authDatasource.resendCode(userId)
+    }
     updateVerificationCode(id: number): Promise<boolean | CustomResponse> {
-        return this.authDatasource.updateVerificationCode(id    )
+        return this.authDatasource.updateVerificationCode(id)
     }
     getVerificationCode(userId: string): Promise<VerificationCodeEntity | CustomResponse> {
         return this.authDatasource.getVerificationCode(userId)
@@ -28,7 +31,7 @@ export class AuthRepositoryImpl implements AuthRepository {
     getOneUser(param: string, type?: string): Promise<UserEntity | CustomResponse> {
         return this.authDatasource.findOneUser(param, type)
     }
-    async registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse> {
+    async registerUser(data: CreateUserDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
         const hashedPassword = await this.passwordHasher.hashPassword(data.password)
         data.password = hashedPassword
         return this.authDatasource.registerUser(data);

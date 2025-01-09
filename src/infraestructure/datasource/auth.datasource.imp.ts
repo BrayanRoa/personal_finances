@@ -30,8 +30,9 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
                 : new CustomResponse("email not found", 404);
         })
     }
-    registerUser(data: CreateUserDto): Promise<UserEntity | CustomResponse> {
+    registerUser(data: CreateUserDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
         return this.handleErrors(async () => {
+            // Paso 1: Verificar que el email no exista
             const exist = await BaseDatasource.prisma.user.findFirst({
                 where: {
                     email: data.email,
@@ -40,10 +41,20 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
             if (exist) {
                 return new CustomResponse("email already exists", 409);
             }
+            // Paso 2: Generar y guardar la contraseña encriptada
             const new_user = await BaseDatasource.prisma.user.create({
                 data,
             });
-            return UserEntity.fromObject(new_user);
+            // Paso 3: Generar y guardar el código de verificación
+            const code = await this.generateAndSaveVerificationCode(new_user.id)
+            if (code instanceof CustomResponse) {
+                return code
+            }
+            return {
+                userId: new_user.id,
+                verificationCode: code
+            }
+            // return UserEntity.fromObject(new_user);
         });
     }
 
@@ -99,5 +110,44 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
             })
             return true
         })
+    }
+
+    async generateAndSaveVerificationCode(serId: string): Promise<string | CustomResponse> {
+        // Paso 3: Generar y guardar el código de verificación
+        const plainCode = this.generateVerificationCode(); // Código separado en función
+
+        // Paso 4: Obtener código de verificación activos
+        const saveResult = await this.saveVerificationCode(serId, plainCode);
+        if (saveResult instanceof CustomResponse) {
+            return saveResult
+        }
+        return saveResult
+    }
+
+    async resendCode(userId: string): Promise<string | CustomResponse> {
+
+        const getCodes = await this.getVerificationCode(userId)
+
+        if (getCodes instanceof CustomResponse) {
+            return getCodes
+        }
+        await this.updateVerificationCode(getCodes.id)
+        const new_code = this.generateAndSaveVerificationCode(userId)
+
+        return new_code
+    }
+
+    /**
+     * Función para generar un código de verificación único
+     * @returns Código de 4 dígitos como string
+     */
+    private generateVerificationCode(): string {
+        let uniqueCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generación simple
+
+        while (uniqueCode.length < 4) {
+            Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        return uniqueCode
     }
 }
