@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome</title>
+    <title>Verify Your Email</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,7 +24,7 @@
             width: 100%;
             padding-top: 20px;
         }
-        .main{
+        .main {
             box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.1);
             border-radius: 8px;
             padding: 40px;
@@ -32,6 +32,7 @@
             font-size: 14px;
             line-height: 20px;
             background-color: white;
+            text-align: center;
         }
         .main h1 {
             font-size: 24px;
@@ -40,6 +41,13 @@
         }
         .main p {
             color: #333333;
+            margin-bottom: 20px;
+        }
+        .verification-code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #405189;
+            margin: 20px 0;
         }
         .footer {
             text-align: center;
@@ -47,15 +55,6 @@
         }
         .footer p {
             color: #405189;
-        }
-        .cta-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #405189;
-            color: white;
-            text-decoration: none;
         }
     </style>
 </head>
@@ -69,24 +68,29 @@
                             <table class="main" width="100%">
                                 <tr>
                                     <td>
-                                        <h1>¡Bienvenid@ {{name}} a Nuestra Aplicación!</h1>
+                                        <h1>Welcome, {{name}}!</h1>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <p>Estamos emocionados de tenerte aquí. Empieza a explorar todas nuestras características.</p>
+                                        <p>We are excited to have you with us. To verify your email, please use the code below:</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <a href="{{link}}" class="cta-button">Activar cuenta</a>
+                                        <div class="verification-code">{{code}}</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p>If you didn’t request this code, please ignore this email.</p>
                                     </td>
                                 </tr>
                             </table>
                             <table class="footer" width="100%">
                                 <tr>
                                     <td>
-                                        <p>Si tienes alguna pregunta, no dudes en comunicarte con nosotros.</p>
+                                        <p>If you have any questions, feel free to contact us at any time.</p>
                                     </td>
                                 </tr>
                             </table>

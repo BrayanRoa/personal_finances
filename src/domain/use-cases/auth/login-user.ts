@@ -24,17 +24,22 @@ export class LoginUser implements LoginUserUseCase {
         const user = await this.authRepository.getOneUser(email, "LOGIN");
         if (user instanceof UserEntity) {
             const isMatch = await this.passwordHasher.verifyPassword(password, user.password!);
-            if (isMatch) {
-                const token = await JwtAdapter.generateToken({ id: user.id })
-                if (!token) throw new CustomResponse("Error creating token", 500)
-                return {
-                    msg: "user logged successfully",
-                    name: `${user.name}`,
-                    token: token.toString(),
-                }
-            } else {
-                return new CustomResponse("invalid password", 400);
+            if (!isMatch) {
+                return new CustomResponse("Email or password invalid", 400);
             }
+            const token = await JwtAdapter.generateToken({ id: user.id })
+            if (!token) throw new CustomResponse("Error creating token", 500)
+
+            if (!user.emailValidated) {
+                return new CustomResponse("Email not validated", 403)
+            }
+
+            return {
+                msg: "user logged successfully",
+                name: `${user.name}`,
+                token: token.toString(),
+            }
+
         }
         return user
     }

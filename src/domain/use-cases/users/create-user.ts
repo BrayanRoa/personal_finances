@@ -16,12 +16,14 @@ export class CreateUser implements CreateUserUseCase {
         private emailService: EmailService
     ) {
     }
+
+    //TODO: ESTO NO DEBERIA FUNCIONA PORQUE CAMBIE LA FORMA COMO SE VERIFICA EL EMAIL, ESTE MODULO NO TIENE MUCHO SENTIDO EN ESTA APP
     async execute(dto: CreateUserDto, user_audits: string): Promise<UserEntity | string | CustomResponse> {
         const create = await this.repository.create(dto, user_audits)
         if (create instanceof CustomResponse) return create
 
         try {
-            await this.emailService.welcomeEmail(create.id, dto.email, dto.name)
+            await this.emailService.welcomeEmail(dto.email, dto.name, "")
             await this.repository.update(create.id, { email_sent: true }, user_audits)
             return "User registered successfully, please verify your email address"
         } catch (error) {

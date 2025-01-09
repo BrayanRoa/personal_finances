@@ -24,14 +24,29 @@ model User {
   updated_at     DateTime  @updatedAt
   deleted_at     DateTime?
 
-  transactions Transaction[] // a user can have multiple transactions
-  wallets      Wallet[] // a user can have several wallets
-  categories   Category[] // a user can have several categories
-  tags         Tag[] // a user can have several tags
-  budget       Budget[]
-  Notification Notification[]
+  transactions       Transaction[] // a user can have multiple transactions
+  wallets            Wallet[] // a user can have several wallets
+  categories         Category[] // a user can have several categories
+  tags               Tag[] // a user can have several tags
+  budget             Budget[]
+  Notification       Notification[]
+  Verification_codes Verification_codes[]
 
   @@map(name: "users")
+}
+
+model Verification_codes {
+  id         Int      @id @default(autoincrement())
+  code       String
+  expired_at DateTime
+  used       Boolean?
+  active     Boolean
+  userId     String //* Esta columna almacenará la clave foránea (foreign key)
+  user       User     @relation(fields: [userId], references: [id])
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 }
 
 model Transaction {

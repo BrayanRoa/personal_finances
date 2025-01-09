@@ -13,18 +13,50 @@ export class RegisterUser implements RegisterUserUseCase {
         private emailService: EmailService
     ) { }
     async execute(dto: CreateUserDto): Promise<string | CustomResponse> {
-        const resp = await this.authRepository.registerUser(dto)
-        if (resp instanceof CustomResponse) return resp
+        // Paso 1: Registrar el usuario
+        const user = await this.authRepository.registerUser(dto);
+        if (user instanceof CustomResponse) {
+            console.log({user});
+            return user;
+        }
+
         try {
-            await this.emailService.welcomeEmail(resp.id, dto.email, dto.name)
-            resp.email_sent = true
-            await this.authRepository.updateUser(resp.id, { email_sent: true })
-            return "User registered successfully, please verify your email address"
+            // Paso 2: Generar y guardar el código de verificación
+            const plainCode = this.generateVerificationCode(); // Código separado en función
+            const saveResult = await this.authRepository.saveVerificationCode(user.id, plainCode);
+
+            if (saveResult instanceof CustomResponse) {
+                return saveResult;
+            }
+
+            // Paso 3: Enviar correo
+            await this.emailService.welcomeEmail(dto.email, dto.name, plainCode);
+
+            // Paso 4: Actualizar estado de email enviado
+            await this.authRepository.updateUser(user.id, { email_sent: true });
+
+            return user.id
         } catch (error) {
-            return new CustomResponse(`mail could not be sent`, 500)
-            // TODO AQUI DEBERIA ALMACENAR EN UN LOG Y NO MOSTRARLE AL USUARIO EL PROBLEMA
-            // return new CustomResponse(`Failed to send email: ${error}`, 500)
+            // Registro del error en un sistema de logs
+            console.error("Error sending email:", error); // Reemplazar con un sistema como Winston o Bunyan
+
+            return new CustomResponse(`Failed to send verification email. Please try again later.`, 500);
         }
     }
+
+    /**
+     * Función para generar un código de verificación único
+     * @returns Código de 4 dígitos como string
+     */
+    private generateVerificationCode(): string {
+        let uniqueCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generación simple
+
+        while (uniqueCode.length < 4) {
+            Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        return uniqueCode
+    }
+
 
 }

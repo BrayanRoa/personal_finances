@@ -290,4 +290,47 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             return [...new Set(years)]
         })
     }
+
+    transactionByBudget(page: number, per_page: number, userId: string, categories: number[], startDate: Date, endDate: Date): Promise<CustomResponse | TransactionInterface> {
+        return this.handleErrors(async () => {
+
+            const commonParams: Prisma.TransactionFindManyArgs = {
+                orderBy: [{ date: 'desc' }, { id: 'asc' }],
+                skip: (page - 1) * per_page,
+                take: per_page,
+                include: {
+                    wallet: true,
+                    category: true,
+                },
+            };
+
+            const baseCondition = {
+                deleted_at: null,
+                userId,
+                type: 'OUTFLOW',
+                categoryId: {
+                    in: categories
+                },
+                date: {
+                    gte: startDate, lte: endDate
+                }
+            }
+
+            const [data, totalRecords] = await Promise.all([
+                BaseDatasource.prisma.transaction.findMany({
+                    where: baseCondition,
+                    ...commonParams,
+                }),
+                BaseDatasource.prisma.transaction.count({
+                    where: baseCondition,
+                })
+            ])
+
+            return {
+                transactions: data.map(transaction => TransactionEntity.fromObject(transaction)),
+                meta: this.calculateMeta(totalRecords, per_page, page),
+            }
+
+        });
+    }
 }

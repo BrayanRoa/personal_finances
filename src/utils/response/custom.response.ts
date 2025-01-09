@@ -8,6 +8,7 @@ export enum HttpStatus {
     UNAUTHORIZED = 401,
     FORBIDDEN = 403,
     NOT_FOUND = 404,
+    CONFLICT = 409,
     INTERNAR_SERVER_ERROR = 500
 }
 
@@ -28,8 +29,12 @@ export class CustomResponse extends Error {
                     return this.BadRequest(res, error.message);
                 case 401:
                     return this.Unauthorized(res, error.message);
+                case 403:
+                    return this.Forbidden(res, error.message);
                 case 404:
                     return this.NotFound(res, error.message);
+                case 409:
+                    return this.Conflict(res, error.message);
                 default:
                     return this.Error(res, error.message);
             }
@@ -90,10 +95,26 @@ export class CustomResponse extends Error {
         })
     }
 
+    static Forbidden(res: Response, data: any): Response {
+        return res.status(HttpStatus.FORBIDDEN).json({
+            status: HttpStatus.FORBIDDEN,
+            statusMsg: "FORBIDDEN",
+            data
+        })
+    }
+
     static NotFound(res: Response, data: any): Response {
         return res.status(HttpStatus.NOT_FOUND).json({
             status: HttpStatus.NOT_FOUND,
             statusMsg: "NOT FOUND",
+            data
+        })
+    }
+
+    static Conflict(res: Response, data: any): Response {
+        return res.status(HttpStatus.CONFLICT).json({
+            status: HttpStatus.CONFLICT,
+            statusMsg: "CONFLICT",
             data
         })
     }

@@ -107,7 +107,9 @@ export class AuthRoutes extends BaseRouter<AuthController, AuthMiddleware, AuthR
             (req, res, next) => this.middleware.validateDto(req, res, next, "create"),
             this.controller.register
         )
+        this.router.get(`${prefix}/resend-code/:userId`, this.controller.resendCode)
 
-        this.router.get(`${prefix}/validate-email/:token`, this.controller.validateEmail)
+        this.router.get(`${prefix}/validate-email/:userId/:token`, this.controller.validateEmail)
+
     }
 }
