@@ -175,6 +175,10 @@ import { CreateBudgetDto } from '../domain/dtos/budget/create-budget.dto';
 
 // Importaciones: Utilidades
 import { QueryBuilder } from '../utils/query-builder';
+import { UpdateManyBudgets } from '../domain/use-cases/budget/update-many-budgets';
+
+
+import moment from "moment";
 
 // Interfaces
 interface BaseInterface {
@@ -255,28 +259,44 @@ export const transactionsRecurring = async () => {
     }
 };
 
+//TODO: OJO ESTOS DOS Y EL ULTIMO METODO DEBO ACOMODARLOS
 // Funciones: Operaciones con Presupuestos
-// export const budgetsRecurring = async () => {
-//     try {
-//         const budgets = await new GetAllBudgetsRecurring(container.cradle.budgetRepository).execute();
+export const budgetsRecurring = async () => {
+    try {
+        const budgets = await new GetAllBudgetsRecurring(container.cradle.budgetRepository).execute();
 
-//         if (budgets instanceof Array) {
-//             const modifiedBudgets = budgets.map(calculateNextDateToBudget);
+        if (budgets instanceof Array) {
+            const today = moment.utc().startOf('day').toDate();
 
-//             if (modifiedBudgets) {
-//                 saveBudget(modifiedBudgets);
-//                 budgets.forEach(budget => (budget.active = false));
-//                 updateBudgets(budgets);
-//             }
+            const updatedBudgets = budgets.map(budget => {
+                // Calcular end_date basado en la repetición
+                const newEndDate = calculateNextDateToBudget(today, budget.repeat);
 
-//             // TODO: Log de éxito/fallo para presupuestos procesados
-//             return budgets;
-//         }
-//     } catch (error) {
-//         console.error('An error occurred:', error);
-//         return error;
-//     }
-// };
+                const { BudgetCategories, id, ...info } = budget
+                // Calcular next_date
+                // const newNextDate = calculateNextDateToBudget(newEndDate, budget.repeat);
+
+                // Crear nuevo presupuesto con las fechas ajustadas
+                return {
+                    ...info,
+                    date: today, // Fecha de hoy como inicio
+                    end_date: newEndDate, // Nueva fecha de fin
+                    next_date: newEndDate, // Próxima repetición
+                };
+            });
+            saveBudget(updatedBudgets)
+            console.log({ updatedBudgets });
+
+            // Aquí podrías guardar los nuevos presupuestos en la base de datos
+            // await saveBudget(updatedBudgets);
+
+            return updatedBudgets;
+        }
+    } catch (error) {
+        console.error("An error occurred:", error);
+        return error;
+    }
+};
 
 // Desactivar presupuestos vencidos
 export const budgetsToBeDeactivated = async () => {
@@ -308,4 +328,4 @@ const updateTransactions = (transactions: UpdateTransactionDto[]) =>
     new UpdateTransaction(container.cradle.transactionRepository, container.cradle.walletRepository).execute(0, transactions);
 
 const updateBudgets = (budgets: UpdateBudgetDto[]) =>
-    new UpdateBudget(container.cradle.budgetRepository).execute(0, budgets);
+    new UpdateManyBudgets(container.cradle.budgetRepository).execute(0, budgets);

@@ -45,7 +45,6 @@ export class TransactionController {
     public getAll = (req: Request, res: Response) => {
         // * ESTE ES UN EJEMPLO
         // localhost:3000/api/v1/transaction?page=1&per_page=5&categoryIds=[1,6]&walletIds=[1]&repeats=["EVERY%20DAY"]
-        const today = new Date();
         const { userId } = req.body
         const {
             search,
@@ -59,18 +58,10 @@ export class TransactionController {
             months
         } = req.query;
 
-        console.log("queries", req.query);
-
         // Comprobar si search es una cadena de texto o undefined
         if (search && typeof search !== 'string') {
             return res.status(400).json({ error: 'Invalid search parameter.' });
         }
-
-        // const categories = categoryIds ? JSON.parse(categoryIds as string) : null;
-        // const wallets = walletIds ? JSON.parse(walletIds as string) : null;
-        // const repeat = repeats ? JSON.parse(repeats as string) : null;
-        // const typeTransaction = types ? JSON.parse(types as string) : null;
-        // const years = years ? JSON.parse(years as string) : null;
 
         return new GetAllTransaction(this.repository)
             .execute(userId, search, +page, +per_page, {
@@ -86,7 +77,6 @@ export class TransactionController {
     }
 
     public getOne = (req: Request, res: Response) => {
-        console.log("object");
         const id = req.params.id
         const { userId } = req.body
         return new GetOneTransaction(this.repository)
@@ -123,7 +113,6 @@ export class TransactionController {
     }
 
     public getYears = (req: Request, res: Response) => {
-        console.log("AAAAAAAAAAA");
         const { userId } = req.body
         return new GetYears(this.repository)
             .execute(userId)

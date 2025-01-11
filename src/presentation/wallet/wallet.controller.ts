@@ -35,7 +35,7 @@ export class WalletController {
     }
 
     public create = (req: Request, res: Response) => {
-        return new CreateWallet(this.walletRepository, container.cradle.transactionRepository)
+        return new CreateWallet(this.walletRepository, container.cradle.transactionRepository, container.cradle.categoryRepository)
             .execute(req.body)
             .then(response => CustomResponse.handleResponse(res, response, 201))
             .catch(err => CustomResponse.handleResponse(res, err))

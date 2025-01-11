@@ -12,7 +12,6 @@ export class CountTransactionByCategory implements CountTransactionByCategoryUse
         public repository: CategoryRepository
     ) { }
     execute(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse> {
-        console.log(userId, walletId);
         return this.repository.transactionWithCategoriesAndAmount(userId, walletId)
     }
 }

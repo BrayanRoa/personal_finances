@@ -24,11 +24,9 @@ export class AuthController {
         new RegisterUser(this.authRepository, container.cradle.emailService)
             .execute(req.body)
             .then(auth => {
-                console.log({ auth });
                 CustomResponse.handleResponse(res, auth, 201)
             })
             .catch(err => {
-                console.log("soy el error", err);
                 CustomResponse.handleResponse(res, err)
             });
     }
@@ -43,7 +41,6 @@ export class AuthController {
 
     public resendCode = async (req: Request, res: Response) => {
         const { userId } = req.params
-        console.log({userId});
         new ResendCode(this.authRepository, container.cradle.emailService)
             .execute(userId)
             .then(msg => CustomResponse.handleResponse(res, msg, 200))

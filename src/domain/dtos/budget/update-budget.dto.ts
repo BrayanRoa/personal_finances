@@ -25,7 +25,7 @@ export class UpdateBudgetDto {
 
     @IsNumber()
     @IsOptional()
-    public readonly current_amount?: number;
+    public current_amount?: number;
 
     @IsString()
     @IsOptional()
@@ -55,7 +55,7 @@ export class UpdateBudgetDto {
 
     @IsNumber()
     @IsOptional()
-    public readonly percentage?: number;
+    public percentage?: number;
 
     @IsBoolean()
     @IsOptional()

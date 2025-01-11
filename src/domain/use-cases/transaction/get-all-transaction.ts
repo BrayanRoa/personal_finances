@@ -21,7 +21,6 @@ export class GetAllTransaction implements GetAllTransactionUseCase {
     ) {
     }
     execute(userId: string, search: string | undefined, page: number, per_page: number, filters: FiltersTransaction): Promise<TransactionInterface | CustomResponse> {
-        console.log("FILTROS",filters);
         return this.repository.getAllWithFilters(userId, search, page, per_page, filters)
     }
 }

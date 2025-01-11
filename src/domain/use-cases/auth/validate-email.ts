@@ -30,13 +30,9 @@ export class ValidateEmail implements ValidateEmailUseCase {
         }
 
         const verificarionCode = await this.authRepository.getVerificationCode(userId)
-        console.log({verificarionCode});
         if (verificarionCode instanceof CustomResponse) {
             throw new CustomResponse("Verification code not found", 404)
         }
-
-        console.log({token});
-        console.log(verificarionCode.code);
 
         if (verificarionCode.code !== token) {
             throw new CustomResponse("Invalid verification code", 400)

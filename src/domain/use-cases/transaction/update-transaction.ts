@@ -77,7 +77,6 @@ export class UpdateTransaction implements UpdateTransactionUseCase {
 
             // Genera la clave para la tabla de decisión
             const key = `${result.action || ""}_${result.typeChange || ""}`;
-            console.log("key", key);
             // Ejecuta la función correspondiente si existe
             const updateFn = updateRules[key];
             if (updateFn) {

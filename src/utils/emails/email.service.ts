@@ -44,44 +44,8 @@ export class EmailService {
         });
     }
 
-    // async welcomeEmail(id: string, email: string, name: string) {
-    //     fs.readFile('src/templates/welcomeEmail/email-template.html', 'utf-8', async (err, source) => {
-    //         const token = await JwtAdapter.generateToken({ id });
-    //         const link = `${envs.WEB_SERVICE_URL}/auth/validate-email/${token}`
-
-    //         if (err) throw err;
-
-    //         const template = handlebars.compile(source);
-    //         const replacements = {
-    //             name,
-    //             link
-    //         };
-    //         const htmlToSend = template(replacements);
-
-    //         const mailOptions = {
-    //             to: email,
-    //             subject: 'Welcome!',
-    //             html: htmlToSend
-    //         };
-
-    //         this.transporter.sendMail(mailOptions, function (err, info) {
-    //             if (err) {
-    //                 console.log(err);
-    //             } else {
-    //                 console.log('Email sent: ' + info.response);
-    //             }
-    //         });
-    //     });
-    // }
-
     async welcomeEmail(email: string, name: string, code: string) {
         fs.readFile('src/templates/welcomeEmail/email-template.html', 'utf-8', async (err, source) => {
-            // let number = Math.round(Math.random() * 10000)
-            // while (number < 4) {
-            //     number = Math.round(Math.random() * 10000)
-            // }
-            // const token = await JwtAdapter.generateToken({ id });
-            // const link = `${envs.WEB_SERVICE_URL}/auth/validate-email/${token}`
 
             if (err) throw err;
 
@@ -89,7 +53,6 @@ export class EmailService {
             const replacements = {
                 name,
                 code
-                // link
             };
             const htmlToSend = template(replacements);
 

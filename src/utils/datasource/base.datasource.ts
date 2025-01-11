@@ -23,7 +23,6 @@ export class BaseDatasource {
                 logger.error(error)
                 throw this.validationDb.validate(error);
             } else {
-                console.log(error);
                 throw error;
             }
         }

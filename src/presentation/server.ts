@@ -13,6 +13,7 @@ import cron from 'node-cron';
 // import { budgetsRecurring, budgetsToBeDeactivated, transactionsRecurring } from '../works/processRecurringTransactions';
 import { BudgetRoutes } from './budget/budget.routes';
 import { DashboardRoutes } from './dashboard/dashboard.routes';
+import { budgetsRecurring, budgetsToBeDeactivated, transactionsRecurring } from '../works/processRecurringTransactions';
 
 export class Server {
 
@@ -33,9 +34,9 @@ export class Server {
     }
 
     scheduleCronJobs() {
-        // cron.schedule('* * * * * *', async () => {
-        //     await transactionsRecurring()
-        // });
+        cron.schedule('* * * * * *', async () => {
+            await transactionsRecurring()
+        });
         // cron.schedule('* * * * * *', async () => {
         //     await budgetsRecurring()
         // })

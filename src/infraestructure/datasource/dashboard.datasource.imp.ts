@@ -109,7 +109,6 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                     month ASC                        -- Ordenar por mes
                     --type ASC;                         -- Ordenar por tipo dentro de cada mes
             `
-            console.log("object", data);
             return data.map(data => {
                 return TransactionMonthEntity.fromObject(data)
             })
@@ -130,8 +129,6 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                 group by 
                     c.name, c.color 
             `;
-
-            console.log("Antes del return", data);
 
             return data.map((category) => {
                 return {

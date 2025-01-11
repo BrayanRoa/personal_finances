@@ -49,7 +49,6 @@ export class CategoryController {
     public transactionByCategory = (req: Request, res: Response) => {
         const { walletId } = req.params
         const { userId } = req.body
-        console.log(userId);
         return new CountTransactionByCategory(this.categoryRepository)
             .execute(userId, +walletId)
             .then(transactions => CustomResponse.handleResponse(res, transactions, 200))

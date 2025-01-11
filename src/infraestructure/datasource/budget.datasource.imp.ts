@@ -111,7 +111,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             }
 
             if (info.date !== getOne.date || info.repeat !== getOne.repeat) {
-                console.log("SI CAMBIO", info);
                 if (info.repeat !== "NEVER") {
                     info.next_date = calculateNextDateToBudget(info.date!, info.repeat || getOne.repeat)
                     info.end_date = new Date(info.next_date.getTime() - 1)
@@ -158,10 +157,29 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         })
     }
 
+    async updateMany(data: UpdateBudgetDto) {
+        if (data instanceof Array) {
+            const updateUserOperations = data.map(({ id, userId, categories, ...rest }) => {
+                if (rest.repeat === "NEVER") {
+                    rest.active = false
+                    rest.next_date = null
+                }
+                return BaseDatasource.prisma.budget.update({
+                    where: { id },
+                    data: rest
+                })
+            })
+            const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
+            action.forEach(data => {
+                this.auditSave(data.id, data, "UPDATE", data.userId)
+            })
+            return "Budget updated successfully"
+        }
+    }
+
     updateAmounts(userId: string, data: UpdateBudgetDto, budgetId: number): Promise<boolean | CustomResponse> {
         return this.handleErrors(async () => {
-            console.log("AA", data);
-            const budget = await BaseDatasource.prisma.budget.update({
+            await BaseDatasource.prisma.budget.update({
                 where: {
                     id: budgetId,
                     userId,
@@ -169,12 +187,10 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                 },
                 data
             })
-            console.log("TODO BIEN");
             return true
         })
     }
     getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
-        console.log("SOY",id);
         return this.handleErrors(async () => {
             const budget = await BaseDatasource.prisma.budget.findFirst({
                 where: {
@@ -213,7 +229,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                     }
                 }
             })
-            console.log(JSON.stringify(budgets));
             return budgets.map(budget => BudgetEntity.fromObject(budget))
         })
     }

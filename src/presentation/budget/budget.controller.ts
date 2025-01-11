@@ -60,9 +60,6 @@ export class BudgetController {
         const { userId } = req.body
         const { categories, start, end } = req.query
 
-        console.log(start);
-        console.log(end);
-
         let numArray
         // Asegurarte de que es un string antes de usar `split`
         if (typeof categories === 'string') {

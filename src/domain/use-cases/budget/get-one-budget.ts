@@ -13,7 +13,6 @@ export class GetOneBudget implements GetOneUseCase {
     ) { }
 
     async execute(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
-        console.log("MEJOR",id);
         return this.repository.getOne(id, userId)
     }
 }

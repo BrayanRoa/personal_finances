@@ -11,8 +11,6 @@ export class CountCategoryTransaction implements CountCategoryTransactionUseCase
         private repository: DasbboardRepository,
     ) { }
     async execute(userId: string): Promise<CustomResponse | CountTransactionCategoryEntity[]> {
-        const a = await this.repository.summaryTransactionsByCategory(userId)
-        console.log("VAMOS",a);
-        return a
+        return this.repository.summaryTransactionsByCategory(userId)
     }
 }

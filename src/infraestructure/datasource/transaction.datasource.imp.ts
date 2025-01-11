@@ -79,7 +79,6 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
     create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            // console.log("soy la data entrante",{data});
             if (data instanceof Array) {
                 const createUserOperations = data.map(item =>
                     BaseDatasource.prisma.transaction.create({ data: item })
@@ -281,12 +280,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 }
             })
             if (action.length === 0) return []
-            console.log("YEARS", action.length);
             const years = action.map(transaction => {
-                // console.log("año", transaction.date);
                 return transaction.date.getUTCFullYear()
             })
-            console.log(years.length);
             return [...new Set(years)]
         })
     }

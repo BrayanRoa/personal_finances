@@ -20,7 +20,6 @@ export class DashboardController {
     }
 
     public transactionMonths = (req: Request, res: Response) => {
-        console.log("object");
         const { userId } = req.body
         const { year } = req.params
         return new SummaryTransactionsMonth(this.dashboardRepository)
