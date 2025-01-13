@@ -1,6 +1,10 @@
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export class UpdateBudgetDto {
+
+    @IsNumber()
+    @IsNotEmpty()
+    public id?: number;
 
     @IsString()
     @IsOptional()
@@ -63,6 +67,6 @@ export class UpdateBudgetDto {
 
     @IsOptional()
     @IsDateString()
-    public next_date?: Date
+    public next_date?: Date | null
 
 }

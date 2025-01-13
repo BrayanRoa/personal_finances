@@ -8,6 +8,7 @@ import { CustomResponse } from "../../utils/response/custom.response";
 import { calculateNextDateToBudget } from "../../works/processRecurringTransactions";
 import { TransactionEntity } from "../../domain/entities";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
+import { QueryBuilder } from "../../utils/query-builder";
 
 export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasource {
 
@@ -55,50 +56,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             return new_budget.map(budget => BudgetEntity.fromObject(budget))
         })
     }
-    // update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<string | CustomResponse> {
-    //     return this.handleErrors(async () => {
-    //         if (data instanceof Array) {
-    //             const updateUserOperations = data.map(({ id, userId, categories, ...rest }) => {
-    //                 if (rest.repeat === "NEVER") {
-    //                     rest.active = false
-    //                     rest.next_date = null
-    //                 }
-    //                 return BaseDatasource.prisma.budget.update({
-    //                     where: { id },
-    //                     data: rest
-    //                 })
-    //             })
-    //             const action = await BaseDatasource.prisma.$transaction(updateUserOperations)
-    //             action.forEach(data => {
-    //                 this.auditSave(data.id, data, "UPDATE", data.userId)
-    //             })
-    //             return "Budget updated successfully"
-    //         } else {
-    //             const getOne = await this.getOne(id, data.userId!)
-    //             if (getOne instanceof CustomResponse) {
-    //                 return getOne
-    //             } else {
-    //                 if (data.limit_amount) {
-    //                     if (data.limit_amount! < getOne.limit_amount) {
-    //                         return new CustomResponse("Limit amount should be greater or equal to the current amount", 400)
-    //                     }
-    //                 }
-    //                 const budget = await BaseDatasource.prisma.budget.updateMany({
-    //                     where: {
-    //                         id,
-    //                         userId: data.userId,
-    //                         active: true
-    //                     },
-    //                     data
-    //                 })
-    //                 console.log("aaaaaa", budget);
-    //                 if (budget.count === 0) return new CustomResponse("Budget not found", 404)
-    //                 this.auditSave(id, data, "UPDATE", data.userId!)
-    //                 return "Budget update successfully"
-    //             }
-    //         }
-    //     })
-    // }
 
     update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
@@ -113,7 +70,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             if (info.date !== getOne.date || info.repeat !== getOne.repeat) {
                 if (info.repeat !== "NEVER") {
                     info.next_date = calculateNextDateToBudget(info.date!, info.repeat || getOne.repeat)
-                    info.end_date = new Date(info.next_date.getTime() - 1)
+                    info.end_date = new Date(info.next_date)
                     info.date = new Date(info.date!)
                 }
 
@@ -157,7 +114,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         })
     }
 
-    async updateMany(data: UpdateBudgetDto) {
+    async updateMany(data: UpdateBudgetDto[]): Promise<string | CustomResponse> {
         if (data instanceof Array) {
             const updateUserOperations = data.map(({ id, userId, categories, ...rest }) => {
                 if (rest.repeat === "NEVER") {
@@ -173,8 +130,8 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             action.forEach(data => {
                 this.auditSave(data.id, data, "UPDATE", data.userId)
             })
-            return "Budget updated successfully"
         }
+        return "Budget updated successfully"
     }
 
     updateAmounts(userId: string, data: UpdateBudgetDto, budgetId: number): Promise<boolean | CustomResponse> {
@@ -236,8 +193,9 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         return this.handleErrors(async () => {
             let { categories, ...rest } = data
             if (rest.repeat !== "NEVER") {
-                rest.next_date = calculateNextDateToBudget(rest.date, rest.repeat)
-                rest.end_date = new Date(rest.next_date.getTime() - 1)
+                // rest.next_date = calculateNextDateToBudget(rest.date, rest.repeat)
+                rest.end_date = QueryBuilder.switchTransaction(rest.date, rest.repeat, false)!
+                rest.next_date = new Date(rest.end_date.setDate(rest.end_date.getDate() + 1))
             }
             const new_budget = await BaseDatasource.prisma.budget.create({
                 data: {

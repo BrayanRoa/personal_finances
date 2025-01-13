@@ -12,6 +12,9 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    updateMany(data: UpdateBudgetDto[]): Promise<string | CustomResponse> {
+        return this.budgetDatasource.updateMany(data)
+    }
     updateAmounts(userId: string, data: UpdateBudgetDto, budgetId: number): Promise<boolean | CustomResponse> {
         return this.budgetDatasource.updateAmounts(userId, data, budgetId)
     }

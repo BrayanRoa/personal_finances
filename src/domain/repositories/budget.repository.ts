@@ -15,6 +15,9 @@ export abstract class BudgetRepository {
     abstract get_one_by_date(walletid: number, categoryid: number[], userid: string, date: Date): Promise<BudgetEntity[] | CustomResponse>
 
     abstract update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<string | CustomResponse>
+
+    abstract updateMany(data: UpdateBudgetDto[]): Promise<string | CustomResponse>
+
     abstract getAllRecurring(): Promise<CustomResponse | BudgetEntity[]>
     abstract delete(id: number, userId: string): Promise<string | CustomResponse>
 
