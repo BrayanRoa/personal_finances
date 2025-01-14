@@ -2,7 +2,7 @@ import { container } from "../../../infraestructure/dependencies/container";
 import { EmailService } from "../../../utils/emails/email.service";
 import { CustomResponse } from "../../../utils/response/custom.response";
 import { CreateTransactionDto } from "../../dtos/transaction/create-transaction.dto";
-import { WalletEntity } from "../../entities";
+import { TransactionEntity, WalletEntity } from "../../entities";
 import { BudgetRepository } from "../../repositories/budget.repository";
 import { TransactionRepository } from "../../repositories/transaction.repository";
 import { WalletRepository } from "../../repositories/wallet.repository";
@@ -48,24 +48,31 @@ export class CreateTransaction implements CreateTransactionUseCase {
                     const budget = await this.budget.get_one_by_date(
                         item.walletId, [item.categoryId], item.userId, item.date
                     )
+
+                    console.log({budget});
                     if (budget instanceof Array) {
                         for (const bud of budget) {
-                            const { id, userId, BudgetCategories, ...data } = bud
-                            data.current_amount = Number(data.current_amount) + Number(item.amount);
-                            data.percentage = +((Number(data.current_amount) / Number(data.limit_amount)) * 100).toFixed(2);
-                            await this.budget.updateAmounts(userId, data, id)
-                            if (bud.current_amount > data.limit_amount) {
-                                this.save_notification(item.userId)
-                                this.send_email(item.userId, data.name, data.limit_amount, data.current_amount)
+                            // const { id, userId, BudgetCategories, ...data } = bud
+                            // data.current_amount = Number(data.current_amount) + Number(item.amount);
+                            // data.percentage = +((Number(data.current_amount) / Number(data.limit_amount)) * 100).toFixed(2);
+                            // await this.budget.updateAmounts(userId, data, id)
+                            // if (bud.current_amount > data.limit_amount) {
+                            //     this.save_notification(item.userId)
+                            //     this.send_email(item.userId, data.name, data.limit_amount, data.current_amount)
+                            // }
+                            console.log("HASTA AQUI BIEN");
+                            console.log(bud);
+                            console.log(transaction);
+                            // agregamos la transacción a uno ovarios budgets
+                            if (transaction instanceof TransactionEntity) {
+                                await this.repository.createTransactionBudget(bud.id, transaction.id)
                             }
                         }
                     }
                 }
             }
         }
-
-        return transaction
-
+        return "transaction created successfully"
     }
 
     async save_notification(user: string) {

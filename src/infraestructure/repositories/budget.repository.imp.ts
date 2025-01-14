@@ -2,7 +2,7 @@ import { BudgetDatasource } from "../../domain/datasources/budget.datasource";
 import { CreateBudgetDto } from "../../domain/dtos/budget/create-budget.dto";
 import { UpdateBudgetDto } from "../../domain/dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
-import { ITransactionByBudget } from "../../domain/interfaces/budgets/transaction-by-budget.interface";
+import { IGetAllBudgets } from "../../domain/interfaces/budgets/transaction-by-budget.interface";
 import { BudgetRepository } from "../../domain/repositories/budget.repository";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
@@ -42,7 +42,7 @@ export class BudgetRepositoryImp implements BudgetRepository {
     getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse> {
         return this.budgetDatasource.getOne(id, userId)
     }
-    getAll(userId: string): Promise<BudgetEntity[] | CustomResponse> {
+    getAll(userId: string): Promise<IGetAllBudgets[] | CustomResponse> {
         return this.budgetDatasource.getAll(userId)
     }
 

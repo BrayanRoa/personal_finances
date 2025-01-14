@@ -77,8 +77,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         })
     }
 
-    create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
+    create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | TransactionEntity | CustomResponse> {
         return this.handleErrors(async () => {
+            let transaction;
             if (data instanceof Array) {
                 const createUserOperations = data.map(item =>
                     BaseDatasource.prisma.transaction.create({ data: item })
@@ -91,8 +92,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 if (data.repeat !== "NEVER") {
                     data = calculateNextDateToTransaction(data)
                 }
-                const transaction = await BaseDatasource.prisma.transaction.create({ data })
+                transaction = await BaseDatasource.prisma.transaction.create({ data })
                 this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
+                return TransactionEntity.fromObject(transaction)
             }
             return "Transaction created successfully"
         })
@@ -328,5 +330,29 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             }
 
         });
+    }
+
+    createTransactionBudget(idBudget: number, idTransaction: number): Promise<boolean | CustomResponse> {
+        return this.handleErrors(async () => {
+            const exist = await BaseDatasource.prisma.budgetTransaction.findFirst({
+                where: {
+                    budgetId: idBudget,
+                    transactionId: idTransaction
+                }
+            })
+
+            if (exist) {
+                return new CustomResponse("Already exist this transaction associated with this budget", 400)
+            }
+
+            await BaseDatasource.prisma.budgetTransaction.create({
+                data: {
+                    budgetId: idBudget,
+                    transactionId: idTransaction
+                }
+            })
+
+            return true
+        })
     }
 }

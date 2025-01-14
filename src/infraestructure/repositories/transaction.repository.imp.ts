@@ -14,13 +14,16 @@ export class TransactionRepositoryImp extends TransactionRepository {
     ) {
         super()
     }
+    createTransactionBudget(idBudget: number, idTransaction: number): Promise<boolean | CustomResponse> {
+        return this.transactionDatasource.createTransactionBudget(idBudget, idTransaction)
+    }
     transactionWithCategories(idCategory: number, userId: string): Promise<CustomResponse | boolean> {
         return this.transactionDatasource.transactionWithCategories(idCategory, userId)
     }
     getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
         return this.transactionDatasource.getAllRecurring()
     }
-    create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse> {
+    create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | TransactionEntity | CustomResponse> {
         if (data instanceof Array) {
             data.forEach(element => {
                 const userDate = new Date(element.date); // Fecha seleccionada por el usuario

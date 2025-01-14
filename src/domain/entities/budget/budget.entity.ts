@@ -1,4 +1,5 @@
 import { BaseEntity } from "../../../utils/entity/base.entity";
+import { TransactionEntity } from "../transaction/transaction.entity";
 
 
 
@@ -22,6 +23,12 @@ export class BudgetEntity extends BaseEntity {
             budgetId: number;
             categoryId: number;
         }[],
+        public BudgetTransaction: {
+            budgetId: number,
+            transactionId: number,
+            transaction: TransactionEntity[]
+        },
+        public transaction: TransactionEntity[],
         public created_at: Date,
         public updated_at: Date,
         public deleted_at?: Date,
@@ -46,6 +53,7 @@ export class BudgetEntity extends BaseEntity {
             obj.repeat,
             obj.walletId,
             obj.BudgetCategories,
+            obj.BudgetTransaction,
             obj.created_at,
             obj.updated_at,
             obj.deleted_at

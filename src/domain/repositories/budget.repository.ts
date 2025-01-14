@@ -3,11 +3,11 @@ import { CustomResponse } from "../../utils/response/custom.response";
 import { CreateBudgetDto } from "../dtos/budget/create-budget.dto";
 import { UpdateBudgetDto } from "../dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../entities/budget/budget.entity";
-import { ITransactionByBudget } from "../interfaces/budgets/transaction-by-budget.interface";
+import { IGetAllBudgets } from "../interfaces/budgets/transaction-by-budget.interface";
 
 export abstract class BudgetRepository {
 
-    abstract getAll(userId: string): Promise<BudgetEntity[] | CustomResponse>;
+    abstract getAll(userId: string): Promise<IGetAllBudgets[] | CustomResponse>;
     abstract create(data: CreateBudgetDto): Promise<string | CustomResponse>;
     abstract createMany(data: CreateBudgetDto[] | CreateBudgetDto): Promise<string | CustomResponse>
 

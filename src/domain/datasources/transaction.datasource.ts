@@ -7,7 +7,7 @@ import { CreateTransactionDto } from './../dtos/transaction/create-transaction.d
 
 export abstract class TransactionDatasource {
 
-    abstract create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | CustomResponse>
+    abstract create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | TransactionEntity | CustomResponse>
     // abstract getAll(userId: string, search: string | undefined, page: number, per_page: number, year: number, month: number, walletId: number, order: string, asc: string): Promise<TransactionInterface | CustomResponse>
     abstract getAllWithFilters(userId: string, search: string | undefined, page: number, per_page: number, filters: FiltersTransaction): Promise<TransactionInterface | CustomResponse>
     abstract findById(id: number, userId: string): Promise<TransactionEntity | CustomResponse>
@@ -16,4 +16,6 @@ export abstract class TransactionDatasource {
     abstract getAllRecurring(): Promise<CustomResponse | TransactionEntity[]>
     abstract transactionWithCategories(idCategory: number, userId: string): Promise<CustomResponse | boolean>
     abstract getYears(user_audits: string): Promise<CustomResponse | number[]>
+    abstract createTransactionBudget(idBudget: number, idTransaction: number): Promise<boolean | CustomResponse>
+
 }

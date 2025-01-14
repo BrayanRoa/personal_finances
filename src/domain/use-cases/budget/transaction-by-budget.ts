@@ -1,6 +1,5 @@
 import { TransactionInterface } from "../../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../../utils/response/custom.response";
-import { ITransactionByBudget } from "../../interfaces/budgets/transaction-by-budget.interface";
 import { BudgetRepository } from "../../repositories/budget.repository";
 
 export interface TransactionByBudgetUseCase {

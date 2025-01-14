@@ -73,7 +73,8 @@ model Transaction {
   categoryId Int // Clave foránea
   category   Category @relation(fields: [categoryId], references: [id])
 
-  tags Tag[]
+  tags              Tag[]
+  BudgetTransaction BudgetTransaction[]
 }
 
 model Wallet {
@@ -145,8 +146,9 @@ model Budget {
   User             User?            @relation(fields: [userId], references: [id])
   BudgetCategories BudgetCategory[]
 
-  walletId Int // Esto es nuevo
-  Wallet   Wallet @relation(fields: [walletId], references: [id]) // Y esto también es nuevo
+  walletId          Int // Esto es nuevo
+  Wallet            Wallet              @relation(fields: [walletId], references: [id]) // Y esto también es nuevo
+  BudgetTransaction BudgetTransaction[]
 }
 
 model BudgetCategory {
@@ -159,6 +161,20 @@ model BudgetCategory {
   category   Category  @relation(fields: [categoryId], references: [id])
 
   @@id([budgetId, categoryId])
+}
+
+model BudgetTransaction {
+  id            Int      @id @default(autoincrement())
+  budgetId      Int // Relación con Budget
+  transactionId Int // Relación con Transaction
+  createdAt     DateTime @default(now())
+
+  // Relaciones
+  budget      Budget      @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@unique([budgetId, transactionId]) // Evita duplicados
+  @@map("budget_transaction") // Nombre de la tabla en la base de datos
 }
 
 model Audists {

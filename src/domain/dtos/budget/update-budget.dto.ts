@@ -3,7 +3,7 @@ import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPo
 export class UpdateBudgetDto {
 
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     public id?: number;
 
     @IsString()

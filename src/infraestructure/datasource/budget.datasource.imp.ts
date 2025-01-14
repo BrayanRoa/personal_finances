@@ -5,10 +5,10 @@ import { UpdateBudgetDto } from "../../domain/dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
 import { CustomResponse } from "../../utils/response/custom.response";
-import { calculateNextDateToBudget } from "../../works/processRecurringTransactions";
 import { TransactionEntity } from "../../domain/entities";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { QueryBuilder } from "../../utils/query-builder";
+import { IGetAllBudgets } from "../../domain/interfaces/budgets/transaction-by-budget.interface";
 
 export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasource {
 
@@ -59,58 +59,64 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
 
     update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
-            const getOne = await this.getOne(id, data.userId!);
+            try {
 
-            const { categories, ...info } = data
+                console.log("AAA", id, data);
+                const getOne = await this.getOne(id, data.userId!);
 
-            if (getOne instanceof CustomResponse) {
-                return getOne
+                const { categories, ...info } = data
+
+                if (getOne instanceof CustomResponse) {
+                    return getOne
+                }
+
+                if (info.date !== getOne.date || info.repeat !== getOne.repeat) {
+                    if (info.repeat !== "NEVER") {
+                        info.next_date = QueryBuilder.switchTransaction(info.date!, info.repeat || getOne.repeat, false)!
+                        info.end_date = new Date(info.next_date)
+                        info.date = new Date(info.date!)
+                    }
+                }
+                await BaseDatasource.prisma.budget.update({
+                    where: { id },
+                    data: {
+                        ...info,
+                    }
+                })
+
+                if (categories) {
+                    // Convertir las categorías en una lista
+                    const newCategories = categories.split(',');
+
+                    // Obtener las categorías actuales de la tabla intermedia
+                    const currentBudgetCategories = await this.getManyBudgetCategory(id);
+
+                    // Categorías actuales en un formato manejable
+                    if (currentBudgetCategories instanceof CustomResponse) {
+                        return currentBudgetCategories;
+                    }
+                    const currentCategoryIds = currentBudgetCategories.map(c => c.categoryId);
+
+                    // Determinar categorías a agregar y eliminar
+                    const categoriesToAdd = newCategories.filter(c => !currentCategoryIds.includes(+c));
+                    const categoriesToRemove = currentCategoryIds.filter(c => !newCategories.includes(c.toString()));
+
+                    // Agregar nuevas categorías
+                    if (categoriesToAdd.length > 0) {
+                        await this.createBudgetCategories(id, categoriesToAdd);
+                    }
+
+                    // Eliminar categorías no seleccionadas
+                    if (categoriesToRemove.length > 0) {
+                        await this.removeBudgetCategories(id, categoriesToRemove);
+                    }
+                }
+
+                return "Budget Updated successfully"
+            } catch (error) {
+                console.log(error);
+                return new CustomResponse("error", 400)
             }
-
-            if (info.date !== getOne.date || info.repeat !== getOne.repeat) {
-                if (info.repeat !== "NEVER") {
-                    info.next_date = calculateNextDateToBudget(info.date!, info.repeat || getOne.repeat)
-                    info.end_date = new Date(info.next_date)
-                    info.date = new Date(info.date!)
-                }
-
-            }
-            await BaseDatasource.prisma.budget.update({
-                where: { id },
-                data: {
-                    ...info,
-                }
-            })
-
-            if (categories) {
-                // Convertir las categorías en una lista
-                const newCategories = categories.split(',');
-
-                // Obtener las categorías actuales de la tabla intermedia
-                const currentBudgetCategories = await this.getManyBudgetCategory(id);
-
-                // Categorías actuales en un formato manejable
-                if (currentBudgetCategories instanceof CustomResponse) {
-                    return currentBudgetCategories;
-                }
-                const currentCategoryIds = currentBudgetCategories.map(c => c.categoryId);
-
-                // Determinar categorías a agregar y eliminar
-                const categoriesToAdd = newCategories.filter(c => !currentCategoryIds.includes(+c));
-                const categoriesToRemove = currentCategoryIds.filter(c => !newCategories.includes(c.toString()));
-
-                // Agregar nuevas categorías
-                if (categoriesToAdd.length > 0) {
-                    await this.createBudgetCategories(id, categoriesToAdd);
-                }
-
-                // Eliminar categorías no seleccionadas
-                if (categoriesToRemove.length > 0) {
-                    await this.removeBudgetCategories(id, categoriesToRemove);
-                }
-            }
-
-            return "Budget Updated successfully"
         })
     }
 
@@ -134,6 +140,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         return "Budget updated successfully"
     }
 
+    // TODO: PUEDO BORRAR ESTE METODO
     updateAmounts(userId: string, data: UpdateBudgetDto, budgetId: number): Promise<boolean | CustomResponse> {
         return this.handleErrors(async () => {
             await BaseDatasource.prisma.budget.update({
@@ -161,6 +168,17 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                         include: {
                             category: true
                         }
+                    },
+                    BudgetTransaction: {
+                        include: {
+                            transaction: {
+                                include: {
+                                    category: true,
+                                    wallet: true
+                                }
+                            },
+
+                        }
                     }
                 }
             })
@@ -168,32 +186,46 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             return BudgetEntity.fromObject(budget)
         })
     }
-    getAll(userId: string): Promise<BudgetEntity[] | CustomResponse> {
+    getAll(userId: string): Promise<IGetAllBudgets[] | CustomResponse> {
         return this.handleErrors(async () => {
-            // await this.transactionByWallet(userId)
-            await this.getAllTransactionToBeDeactive()
-            const budgets = await BaseDatasource.prisma.budget.findMany({
-                where: {
-                    userId,
-                    deleted_at: null,
-                    active: true
-                },
-                include: {
-                    BudgetCategories: {
-                        include: {
-                            category: true
-                        }
-                    }
-                }
-            })
-            return budgets.map(budget => BudgetEntity.fromObject(budget))
+            const result: IGetAllBudgets[] = await BaseDatasource.prisma.$queryRaw`
+                select 
+                    b.id,
+                    b.name as name,
+                    b.date,
+                    b.end_date,
+                    b.limit_amount,
+                    b.repeat,
+                    coalesce(( -- Subconsulta para calcular el SUM único de transacciones
+                        select sum(t.amount)
+                        from budget_transaction bt
+                        join "Transaction" t on bt."transactionId" = t.id
+                        where bt."budgetId" = b.id
+                        and t."deleted_at" is null
+                    ), 0) as current_amount,
+                    coalesce(array_agg(distinct c.name), '{}') as categories -- Subconsulta para las categorías únicas
+                from "Budget" b
+                left join "BudgetCategory" bc on bc."budgetId" = b.id
+                left join "Category" c on bc."categoryId" = c.id
+                where b."deleted_at" is null 
+                and b."userId" = ${userId} 
+                and b."active" = true -- Solo presupuestos activos
+                group by 
+                    b.id,
+                    b.name, 
+                    b.date, 
+                    b.end_date, 
+                    b.limit_amount, 
+                    b.repeat;
+            `;
+            console.log(result);
+            return result;
         })
     }
     create(data: CreateBudgetDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             let { categories, ...rest } = data
             if (rest.repeat !== "NEVER") {
-                // rest.next_date = calculateNextDateToBudget(rest.date, rest.repeat)
                 rest.end_date = QueryBuilder.switchTransaction(rest.date, rest.repeat, false)!
                 rest.next_date = new Date(rest.end_date.setDate(rest.end_date.getDate() + 1))
             }
@@ -343,6 +375,9 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                 BaseDatasource.prisma.transaction.findMany({
                     where: baseCondition,
                     ...commonParams,
+                    include: {
+
+                    }
                 }),
                 BaseDatasource.prisma.transaction.count({
                     where: baseCondition,
