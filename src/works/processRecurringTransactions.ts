@@ -142,7 +142,7 @@ const saveBudget = (budgets: CreateBudgetDto[]) =>
     new CreateManyBudget(container.cradle.budgetRepository, container.cradle.walletRepository).execute(budgets);
 
 const updateTransactions = (transactions: UpdateTransactionDto[]) =>
-    new UpdateTransaction(container.cradle.transactionRepository, container.cradle.walletRepository).execute(0, transactions);
+    new UpdateTransaction(container.cradle.transactionRepository, container.cradle.walletRepository, container.cradle.budgetRepository).execute(0, transactions);
 
 const updateBudgets = (budgets: UpdateBudgetDto[]) =>
     new UpdateManyBudgets(container.cradle.budgetRepository).execute(0, budgets);

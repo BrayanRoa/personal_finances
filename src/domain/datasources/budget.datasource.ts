@@ -8,7 +8,7 @@ import { IGetAllBudgets } from "../interfaces/budgets/transaction-by-budget.inte
 export abstract class BudgetDatasource {
 
     abstract getAll(userId: string): Promise<IGetAllBudgets[] | CustomResponse>;
-    abstract create(data: CreateBudgetDto): Promise<string | CustomResponse>;
+    abstract create(data: CreateBudgetDto): Promise<BudgetEntity | CustomResponse>;
     abstract createMany(data: CreateBudgetDto[]): Promise<string | CustomResponse>
 
     abstract getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse>

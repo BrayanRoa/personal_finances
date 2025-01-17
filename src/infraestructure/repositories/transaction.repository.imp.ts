@@ -1,6 +1,7 @@
 import { TransactionDatasource } from "../../domain/datasources/transaction.datasource";
 import { CreateTransactionDto } from "../../domain/dtos/transaction/create-transaction.dto";
 import { UpdateTransactionDto } from "../../domain/dtos/transaction/update-transaction.dto";
+import { BudgetTransactionEntity } from "../../domain/entities/budget/budget-transactions.entity";
 import { TransactionEntity } from "../../domain/entities/transaction/transaction.entity";
 import { TransactionRepository } from "../../domain/repositories/transaction.repository";
 import { FiltersTransaction } from "../../utils/interfaces/filters-transactions.interface";
@@ -8,11 +9,20 @@ import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 export class TransactionRepositoryImp extends TransactionRepository {
-
     constructor(
         private readonly transactionDatasource: TransactionDatasource
     ) {
         super()
+    }
+    markBudgetTransactionAsDeleted(budgetId: number, transactionId: number): Promise<boolean | CustomResponse> {
+        return this.transactionDatasource.markBudgetTransactionAsDeleted(budgetId, transactionId)
+    }
+
+    getAllTransactionBudget(transactionId: number): Promise<BudgetTransactionEntity[] | CustomResponse> {
+        return this.transactionDatasource.getAllTransactionBudget(transactionId)
+    }
+    transactionByDate(userId: string, start_date: Date, end_date: Date, categoryId: number): Promise<TransactionEntity[] | CustomResponse> {
+        return this.transactionDatasource.transactionByDate(userId, start_date, end_date, categoryId)
     }
     createTransactionBudget(idBudget: number, idTransaction: number): Promise<boolean | CustomResponse> {
         return this.transactionDatasource.createTransactionBudget(idBudget, idTransaction)
@@ -49,7 +59,7 @@ export class TransactionRepositoryImp extends TransactionRepository {
         return this.transactionDatasource.delete(id, user_audits);
     }
 
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number, typeChange: string } | string | CustomResponse> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<TransactionEntity | string | CustomResponse> {
         if (!(data instanceof Array)) { // aqui pregunto si no es un array
             data.date = new Date(data.date!)
         }

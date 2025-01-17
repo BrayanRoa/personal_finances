@@ -7,6 +7,7 @@ import { UpdateBudget } from "../../domain/use-cases/budget/update-budget";
 import { DeleteBudget } from "../../domain/use-cases/budget/delete-budget";
 import { TransactionByBudget } from "../../domain/use-cases/budget/transaction-by-budget";
 import { GetOneBudget } from "../../domain/use-cases/budget/get-one-budget";
+import { container } from "../../infraestructure/dependencies/container";
 
 export class BudgetController {
 
@@ -15,7 +16,7 @@ export class BudgetController {
     ) { }
 
     public Create = (req: Request, res: Response) => {
-        return new CreateBudget(this.repository)
+        return new CreateBudget(this.repository, container.cradle.transactionRepository)
             .execute(req.body)
             .then(budget => CustomResponse.handleResponse(res, budget, 201))
             .catch()

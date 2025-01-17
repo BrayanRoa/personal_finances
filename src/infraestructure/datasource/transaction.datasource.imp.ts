@@ -9,6 +9,7 @@ import { CustomResponse } from "../../utils/response/custom.response";
 import { calculateNextDateToTransaction } from "../../works/processRecurringTransactions";
 import { FiltersTransaction } from "../../utils/interfaces/filters-transactions.interface";
 import { QueryBuilder } from "../../utils/query-builder";
+import { BudgetTransactionEntity } from "../../domain/entities/budget/budget-transactions.entity";
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -26,7 +27,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             return transaction.length > 0 ? true : false
         })
     }
-    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<{ action: string, amountDifference: number, typeChange: string } | CustomResponse | string> {
+    update(id: number, data: UpdateTransactionDto[] | UpdateTransactionDto): Promise<TransactionEntity | CustomResponse | string> {
         return this.handleErrors(async () => {
             if (data instanceof Array) {
                 const updateUserOperations = data.map(({ id, userId, ...rest }) => {
@@ -56,23 +57,14 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     return transaction;
                 }
 
-                const action = transaction.amount !== updateData.amount ?
-                    (transaction.amount < updateData?.amount! ? "ADD" : "SUBTRACT") : "";
-
-                const type_change = transaction.type !== updateData.type ? updateData.type : ""
-
-                const amountDifference = Math.abs(transaction.amount - updateData?.amount!);
-
-                const updateTransactionResult = await BaseDatasource.prisma.transaction.updateMany({
-                    where: { AND: [{ id }, { userId }] },
+                const upd = await BaseDatasource.prisma.transaction.update({
+                    where: { id },
                     data: updateData
                 })
 
-                if (updateTransactionResult.count === 0) return new CustomResponse(`Don't exist transaction with this id ${id}`, 404)
+                await this.auditSave(id, updateData, "UPDATE", userId);
 
-                this.auditSave(id, updateData, "UPDATE", userId);
-
-                return { action, amountDifference, typeChange: type_change! }
+                return TransactionEntity.fromObject(upd)
             }
         })
     }
@@ -289,6 +281,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         })
     }
 
+    //ESTE SERVICIO NO SE ESTA USANDO PERO LO DEJO PORUQE ME PUEDE SERVIR
     transactionByBudget(page: number, per_page: number, userId: string, categories: number[], startDate: Date, endDate: Date): Promise<CustomResponse | TransactionInterface> {
         return this.handleErrors(async () => {
 
@@ -332,27 +325,85 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
         });
     }
 
+    transactionByDate(userId: string, start_date: Date, end_date: Date, categoryId: number): Promise<TransactionEntity[] | CustomResponse> {
+        return this.handleErrors(async () => {
+            const transactions = await BaseDatasource.prisma.transaction.findMany({
+                where: {
+                    userId,
+                    date: { gte: start_date, lte: end_date },
+                    deleted_at: null,
+                    categoryId
+                }
+            })
+            console.log({ transactions });
+            return transactions.map(transaction => TransactionEntity.fromObject(transaction))
+        })
+    }
+
     createTransactionBudget(idBudget: number, idTransaction: number): Promise<boolean | CustomResponse> {
         return this.handleErrors(async () => {
             const exist = await BaseDatasource.prisma.budgetTransaction.findFirst({
                 where: {
                     budgetId: idBudget,
-                    transactionId: idTransaction
+                    transactionId: idTransaction,
+                    deleted_at: null
                 }
             })
 
             if (exist) {
+                console.log({ exist });
                 return new CustomResponse("Already exist this transaction associated with this budget", 400)
             }
 
-            await BaseDatasource.prisma.budgetTransaction.create({
+            const a = await BaseDatasource.prisma.budgetTransaction.create({
                 data: {
                     budgetId: idBudget,
                     transactionId: idTransaction
                 }
             })
-
+            console.log(a);
             return true
+        })
+    }
+
+    markBudgetTransactionAsDeleted(budgetId: number, transactionId: number): Promise<boolean | CustomResponse> {
+        return this.handleErrors(async () => {
+            const action = await BaseDatasource.prisma.budgetTransaction.updateMany({
+                where: {
+                    budgetId,
+                    transactionId
+                },
+                data: {
+                    deleted_at: new Date()
+                }
+            })
+
+            if (action.count > 0) {
+                return true
+            } else {
+                return new CustomResponse("", 400)
+            }
+        })
+    }
+
+    // obtengo los registros de la tabla intermedia
+    getAllTransactionBudget(transactionId: number): Promise<BudgetTransactionEntity[] | CustomResponse> {
+        return this.handleErrors(async () => {
+            const data = await BaseDatasource.prisma.budgetTransaction.findMany({
+                where: {
+                    transactionId
+                },
+                include: {
+                    budget: true,
+                }
+            })
+
+            if (data.length > 0) {
+                return data.map(t => {
+                    return BudgetTransactionEntity.fromObject(t)
+                })
+            }
+            return new CustomResponse("Data not found", 404)
         })
     }
 }

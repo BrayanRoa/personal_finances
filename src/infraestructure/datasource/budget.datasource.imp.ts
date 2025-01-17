@@ -200,7 +200,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                         select sum(t.amount)
                         from budget_transaction bt
                         join "Transaction" t on bt."transactionId" = t.id
-                        where bt."budgetId" = b.id
+                        where bt."budgetId" = b.id and bt."deleted_at" is null
                         and t."deleted_at" is null
                     ), 0) as current_amount,
                     coalesce(array_agg(distinct c.name), '{}') as categories -- Subconsulta para las categorías únicas
@@ -222,7 +222,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             return result;
         })
     }
-    create(data: CreateBudgetDto): Promise<string | CustomResponse> {
+    create(data: CreateBudgetDto): Promise<BudgetEntity | CustomResponse> {
         return this.handleErrors(async () => {
             let { categories, ...rest } = data
             if (rest.repeat !== "NEVER") {
@@ -237,7 +237,8 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             const budgetCategories = categories.split(",")
             await this.createBudgetCategories(new_budget.id, budgetCategories)
             await this.auditSave(new_budget.id, new_budget, "CREATE", new_budget.userId)
-            return "budget created successfully"
+            console.log({new_budget});
+            return BudgetEntity.fromObject(new_budget)
         })
     }
 
@@ -390,6 +391,10 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             }
 
         });
+    }
+
+    getAllBudgetsByCategory(){
+
     }
 
 }

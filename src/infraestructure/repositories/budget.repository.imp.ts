@@ -46,7 +46,7 @@ export class BudgetRepositoryImp implements BudgetRepository {
         return this.budgetDatasource.getAll(userId)
     }
 
-    create(data: CreateBudgetDto): Promise<string | CustomResponse> {
+    create(data: CreateBudgetDto): Promise<BudgetEntity | CustomResponse> {
         if (data instanceof Array) {
             data.forEach(element => {
                 element.date = new Date(element.date)
