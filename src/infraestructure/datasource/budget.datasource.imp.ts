@@ -57,7 +57,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         })
     }
 
-    update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
+    update(id: number, data: UpdateBudgetDto): Promise<BudgetEntity | CustomResponse> {
         return this.handleErrors(async () => {
             try {
 
@@ -77,7 +77,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                         info.date = new Date(info.date!)
                     }
                 }
-                await BaseDatasource.prisma.budget.update({
+                const dataUpdated = await BaseDatasource.prisma.budget.update({
                     where: { id },
                     data: {
                         ...info,
@@ -112,7 +112,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                     }
                 }
 
-                return "Budget Updated successfully"
+                return BudgetEntity.fromObject(dataUpdated)
             } catch (error) {
                 console.log(error);
                 return new CustomResponse("error", 400)
@@ -237,7 +237,7 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             const budgetCategories = categories.split(",")
             await this.createBudgetCategories(new_budget.id, budgetCategories)
             await this.auditSave(new_budget.id, new_budget, "CREATE", new_budget.userId)
-            console.log({new_budget});
+            console.log({ new_budget });
             return BudgetEntity.fromObject(new_budget)
         })
     }
@@ -280,7 +280,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         })
     }
 
-    // ! PARECE QUE SE PUEDE BORRAR
     createMany(data: CreateBudgetDto[]): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             if (data instanceof Array) {
@@ -393,8 +392,9 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         });
     }
 
-    getAllBudgetsByCategory(){
+    summaryBudgetsInformation() {
+        return this.handleErrors(async () => {
 
+        })
     }
-
 }

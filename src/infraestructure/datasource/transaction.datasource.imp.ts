@@ -387,17 +387,21 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
     }
 
     // obtengo los registros de la tabla intermedia
-    getAllTransactionBudget(transactionId: number): Promise<BudgetTransactionEntity[] | CustomResponse> {
+    getAllTransactionBudget(id: number): Promise<BudgetTransactionEntity[] | CustomResponse> {
         return this.handleErrors(async () => {
             const data = await BaseDatasource.prisma.budgetTransaction.findMany({
                 where: {
-                    transactionId
+                    OR: [
+                        { transactionId: id },
+                        { budgetId: id },
+                    ],
                 },
                 include: {
                     budget: true,
+                    transaction:true
                 }
             })
-
+            console.log({data});
             if (data.length > 0) {
                 return data.map(t => {
                     return BudgetTransactionEntity.fromObject(t)

@@ -14,7 +14,7 @@ export abstract class BudgetDatasource {
     abstract getOne(id: number, userId: string): Promise<BudgetEntity | CustomResponse>
     abstract get_one_by_date(walletid: number, categoryid: number[], userid: string, date: Date): Promise<BudgetEntity[] | CustomResponse>
 
-    abstract update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<string | CustomResponse>
+    abstract update(id: number, data: UpdateBudgetDto[] | UpdateBudgetDto): Promise<BudgetEntity | CustomResponse>
 
     abstract updateMany(data: UpdateBudgetDto[]): Promise<string | CustomResponse>
 
@@ -30,6 +30,7 @@ export abstract class BudgetDatasource {
 
     abstract updateAmounts(userId: string, data: UpdateBudgetDto, budgetId: number): Promise<boolean | CustomResponse>
 
+    abstract getManyBudgetCategory(budgetId: number): Promise<{ budgetId: number, categoryId: number }[] | CustomResponse>
     // abstract defaultCategories(userId: string): Promise<string | CustomResponse>
 
 }

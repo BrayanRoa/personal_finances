@@ -51,7 +51,7 @@ export class BudgetController {
 
     public update = (req: Request, res: Response) => {
         const { id } = req.params
-        return new UpdateBudget(this.repository)
+        return new UpdateBudget(this.repository, container.cradle.transactionRepository)
             .execute(+id, req.body)
             .then(budget => CustomResponse.handleResponse(res, budget, 200))
             .catch(err => CustomResponse.handleResponse(res, err))

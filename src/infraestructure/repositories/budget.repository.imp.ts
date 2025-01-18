@@ -12,6 +12,9 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    getManyBudgetCategory(budgetId: number): Promise<{ budgetId: number; categoryId: number; }[] | CustomResponse> {
+        return this.budgetDatasource.getManyBudgetCategory(budgetId)
+    }
     updateMany(data: UpdateBudgetDto[]): Promise<string | CustomResponse> {
         return this.budgetDatasource.updateMany(data)
     }
@@ -33,7 +36,7 @@ export class BudgetRepositoryImp implements BudgetRepository {
     getAllRecurring(): Promise<CustomResponse | BudgetEntity[]> {
         return this.budgetDatasource.getAllRecurring()
     }
-    update(id: number, data: UpdateBudgetDto): Promise<string | CustomResponse> {
+    update(id: number, data: UpdateBudgetDto): Promise<BudgetEntity | CustomResponse> {
         return this.budgetDatasource.update(id, data)
     }
     get_one_by_date(walletid: number, categoryid: number[], userid: string, date: Date): Promise<BudgetEntity[] | CustomResponse> {
