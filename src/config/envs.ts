@@ -34,6 +34,7 @@ import { get } from 'env-var';
 
 // Cargar las variables de entorno de Railway, si se están utilizando
 dotenv.config();
+console.log("JWT: ",process.env.JWT_SEED); // Verifica si la variable está disponible
 
 // Ahora puedes acceder a las variables de entorno
 export const envs = {
