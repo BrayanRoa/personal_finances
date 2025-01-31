@@ -21,8 +21,10 @@ export class BaseDatasource {
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 logger.error(error)
+                console.log(error);
                 throw this.validationDb.validate(error);
             } else {
+                console.log(error);
                 throw error;
             }
         }

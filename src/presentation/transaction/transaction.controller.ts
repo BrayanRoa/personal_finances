@@ -15,32 +15,6 @@ export class TransactionController {
         private readonly repository: TransactionRepository,
     ) { }
 
-    // public getAll = (req: Request, res: Response) => {
-    //     const today = new Date();
-    //     const { userId } = req.body
-    //     const {
-    //         search,
-    //         page = 1,
-    //         per_page = 10,
-    //         year = today.getFullYear(),
-    //         month = today.getMonth() + 1,
-    //         walletId = 0,
-    //         order = 'date',
-    //         asc = 'false'
-    //     } = req.query;
-
-    //     console.log(req.query);
-
-    //     // Comprobar si search es una cadena de texto o undefined
-    //     if (search && typeof search !== 'string') {
-    //         return res.status(400).json({ error: 'Invalid search parameter.' });
-    //     }
-
-    //     return new GetAllTransaction(this.repository)
-    //         .execute(userId, search, +page, +per_page, +year, +month, +walletId, order.toString(), asc.toString())
-    //         .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
-    //         .catch(err => CustomResponse.handleResponse(res, err))
-    // }
 
     public getAll = (req: Request, res: Response) => {
         // * ESTE ES UN EJEMPLO

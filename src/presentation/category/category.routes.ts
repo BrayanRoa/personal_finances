@@ -13,6 +13,17 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
     routes(): void {
         const prefix = "/category"
 
+        this.router.get(`${prefix}/icons`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.getIcons
+        )
+
+        this.router.get(`${prefix}/colors`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.getColors
+        )
+
+
         /**
          * @swagger
          * /category:
@@ -91,10 +102,15 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
          *      '404':
          *        description: Budget not found
          */
+        this.router.delete(`${prefix}/:id`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.delete
+        )
+
         this.router.patch(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
-            // (req, res, next) => this.middleware.validateDto(req, res, next, "update"),
-            this.controller.delete
+            (req, res, next) => this.middleware.validateDto(req, res, next, "update"),
+            this.controller.update
         )
 
         /**
@@ -207,6 +223,9 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
             this.controller.getOne
         )
 
+
+
+
         /**
          * @swagger
          * /category/{walletId}/countTransaction:
@@ -242,10 +261,10 @@ export class CategoryRoutes extends BaseRouter<CategoryController, CategoryMiddl
         *      '404':
          *        description: Wallet not found
          */
-        this.router.get(`${prefix}/:walletId/countTransaction`,
-            (req, res, next) => this.middleware.validarJwt(req, res, next),
-            this.controller.transactionByCategory
-        )
+        // this.router.get(`${prefix}/:walletId/countTransaction`,
+        //     (req, res, next) => this.middleware.validarJwt(req, res, next),
+        //     this.controller.transactionByCategory
+        // )
     }
 
 }

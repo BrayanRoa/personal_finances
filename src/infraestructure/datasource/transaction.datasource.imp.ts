@@ -127,7 +127,12 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 take: per_page,
                 include: {
                     wallet: true,
-                    category: true,
+                    category: {
+                        include: {
+                            icon: true,
+                            color: true,
+                        }
+                    }
                 },
             };
 
@@ -335,7 +340,6 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     categoryId
                 }
             })
-            console.log({ transactions });
             return transactions.map(transaction => TransactionEntity.fromObject(transaction))
         })
     }
@@ -351,7 +355,6 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             })
 
             if (exist) {
-                console.log({ exist });
                 return new CustomResponse("Already exist this transaction associated with this budget", 400)
             }
 
@@ -361,7 +364,6 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     transactionId: idTransaction
                 }
             })
-            console.log(a);
             return true
         })
     }
@@ -398,10 +400,9 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 },
                 include: {
                     budget: true,
-                    transaction:true
+                    transaction: true
                 }
             })
-            console.log({data});
             if (data.length > 0) {
                 return data.map(t => {
                     return BudgetTransactionEntity.fromObject(t)

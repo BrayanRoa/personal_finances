@@ -117,19 +117,23 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
     summaryTransactionsByCategory(userId: string): Promise<CustomResponse | CountTransactionCategoryEntity[]> {
         return this.handleErrors(async () => {
             const data: CountTransactionCategoryEntity[] = await BaseDatasource.prisma.$queryRaw`
-                select c."name" as name, count(t.id) as transactioncount, c."color" as "color" from "Transaction" t
+                select c."name" as name, count(t.id) as transactioncount, i."path" as "icon", cl."hex" as color from "Transaction" t
                 join 
                     "Wallet" w on w.id = t."walletId" 
                 join 
                     "Category" c on c.id = t."categoryId" 
+                join 
+                    "Color" cl on cl.id = c."colorId"
+                join 
+                    "Icon" i on i.id = c."iconId"
                 where 
                     t.deleted_at is null and 
                     w.deleted_at is null and 
                     t."userId" = ${userId}
                 group by 
-                    c.name, c.color 
+                    c.name, i."path", cl."hex"
             `;
-
+            console.dir(data);
             return data.map((category) => {
                 return {
                     name: category.name,
@@ -137,6 +141,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                         ? Number(category.transactioncount)  // Convierte BigInt a Number
                         : category.transactioncount,        // Mantén el valor si ya es un número
                     color: category.color,
+                    icon: category.icon
                 };
             });
         });
@@ -187,7 +192,7 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                 budget.percentage.toNumber(),
                 budget.BudgetCategories.map(item => ({
                     name: item.category.name,
-                    color: item.category.color
+                    color: ""
                 }))
             ));
 

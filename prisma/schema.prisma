@@ -100,8 +100,10 @@ model Wallet {
 model Category {
   id               Int              @id @default(autoincrement())
   name             String
-  icon             String           @db.VarChar(100)
-  color            String           @default("") @db.VarChar(20)
+  iconId           Int? // Relación con Icon
+  colorId          Int? // Relación con Color
+  icon             Icon?            @relation(fields: [iconId], references: [id])
+  color            Color?           @relation(fields: [colorId], references: [id])
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
   deleted_at       DateTime?
@@ -109,6 +111,19 @@ model Category {
   User             User?            @relation(fields: [userId], references: [id])
   Transaction      Transaction[]
   BudgetCategories BudgetCategory[]
+}
+
+model Icon {
+  id         Int        @id @default(autoincrement())
+  path       String     @db.Text // Podría ser un SVG o referencia de ruta
+  categories Category[] // Relación con Category
+}
+
+model Color {
+  id         Int        @id @default(autoincrement())
+  name       String     @default("")
+  hex        String     @db.VarChar(7) // Código HEX del color
+  categories Category[] // Relación con Category
 }
 
 model Tag {

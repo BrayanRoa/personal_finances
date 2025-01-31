@@ -6,7 +6,10 @@ import { GetOneCategory } from "../../domain/use-cases/category/get-one-category
 import { GetAllCategories } from "../../domain/use-cases";
 import { DeleteCategory } from "../../domain/use-cases/category/delete-category";
 import { container } from "../../infraestructure/dependencies/container";
-import { CountTransactionByCategory } from "../../domain/use-cases/category/count-transaction-by-category";
+import { GetAllIcons } from "../../domain/use-cases/category/get-all-icon";
+import { GetAllColors } from "../../domain/use-cases/category/get-all-colors";
+import { UpdateCategory } from "../../domain/use-cases/category/update-category";
+// import { CountTransactionByCategory } from "../../domain/use-cases/category/count-transaction-by-category";
 
 export class CategoryController {
 
@@ -46,12 +49,26 @@ export class CategoryController {
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
-    public transactionByCategory = (req: Request, res: Response) => {
-        const { walletId } = req.params
-        const { userId } = req.body
-        return new CountTransactionByCategory(this.categoryRepository)
-            .execute(userId, +walletId)
-            .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
+    public update = (req: Request, res: Response) => {
+        const { id } = req.params
+        const { userId, ...data } = req.body
+        return new UpdateCategory(this.categoryRepository)
+            .execute(+id, data, userId)
+            .then(category => CustomResponse.handleResponse(res, category, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public getIcons = (req: Request, res: Response) => {
+        return new GetAllIcons(this.categoryRepository)
+            .execute()
+            .then(icons => CustomResponse.handleResponse(res, icons, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public getColors = (req: Request, res: Response) => {
+        return new GetAllColors(this.categoryRepository)
+            .execute()
+            .then(icons => CustomResponse.handleResponse(res, icons, 200))
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 }

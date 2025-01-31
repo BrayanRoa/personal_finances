@@ -12,7 +12,7 @@ export class CreateCategory implements CreateCategoryUseCase {
     constructor(
         public repository: CategoryRepository
     ) { }
-    execute(dto: CreateCategoryDto): Promise<CategoryEntity | string | CustomResponse> {
-        return this.repository.create(dto, dto.userId)
+    async execute(dto: CreateCategoryDto): Promise<CategoryEntity | string | CustomResponse> {
+        return this.repository.create(dto)
     }
 }

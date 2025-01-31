@@ -1,25 +1,31 @@
 import { CategoryDatasource } from "../../domain/datasources/category.datasource";
+import { UpdateCategoryDto } from "../../domain/dtos";
 import { CreateCategoryDto } from "../../domain/dtos/category/create-category.dto";
 import { CategoryEntity } from "../../domain/entities/category/category.entity";
+import { ColorEntity } from "../../domain/entities/category/color.entity";
+import { IconEntity } from "../../domain/entities/category/icon.entity";
 import { BaseDatasource } from "../../utils/datasource/base.datasource";
-import { TransactionByCategory } from "../../utils/interfaces/count_transaction_by_category.interface";
 import { CustomResponse } from "../../utils/response/custom.response";
 
 const default_categories = [
-    { "name": "FOOD", "icon": "fast-food-outline", "color": "#FF5733" },
-    { "name": "PURCHASING", "icon": "cart-outline", "color": "#33FF57" },
-    { "name": "TRANSPORT", "icon": "car-outline", "color": "#3357FF" },
-    { "name": "HOME", "icon": "home-outline", "color": "#FF33A1" },
-    { "name": "INVOICES", "icon": "card-outline", "color": "#FFD700" },
-    { "name": "ENTERTAINMENT", "icon": "musical-notes-outline", "color": "#8A2BE2" },
-    { "name": "TRAVEL", "icon": "airplane-outline", "color": "#FF7F50" },
-    { "name": "FAMILY", "icon": "people-circle-outline", "color": "#6495ED" },
-    { "name": "SPORTS", "icon": "american-football-outline", "color": "#7FFF00" },
-    { "name": "BEAUTY", "icon": "rose-outline", "color": "#DC143C" },
-    { "name": "WORK", "icon": "business-outline", "color": "#FF8C00" },
-    { "name": "INITIAL AMOUNT", "icon": "business-outline", "color": "#FF8C01" },
-    { "name": "OTHERS", "icon": "list-outline", "color": "#00CED1" }
-]
+    { "name": "FOOD", "icon": "fa-utensils", "color_name": "Blue", "color": "#1c80cf" },
+    { "name": "PURCHASING", "icon": "fa-cart-shopping", "color_name": "Indigo", "color": "#36459a" },
+    { "name": "TRANSPORT", "icon": "fa-bus", "color_name": "Purple", "color": "#852196" },
+    { "name": "HOME", "icon": "fa-house-chimney", "color_name": "Pink", "color": "#c61a54" },
+    { "name": "INVOICES", "icon": "fa-receipt", "color_name": "Red", "color": "#d9362b" },
+    { "name": "ENTERTAINMENT", "icon": "fa-film", "color_name": "Orange", "color": "#d06900" },
+    { "name": "TRAVEL", "icon": "fa-plane", "color_name": "Amber", "color": "#FFC107" },
+    { "name": "FAMILY", "icon": "fa-users", "color_name": "Yellow", "color": "#d5a326" },
+    { "name": "SPORTS", "icon": "fa-medal", "color_name": "Lime", "color": "#CDDC39" },
+    { "name": "BEAUTY", "icon": "fa-wand-magic-sparkles", "color_name": "Green", "color": "#419544" },
+    { "name": "WORK", "icon": "fa-building", "color_name": "Teal", "color": "#008074" },
+    { "name": "INITIAL AMOUNT", "icon": "fa-money-check-dollar", "color_name": "Cyan", "color": "#00a0b4" },
+    { "name": "HEALTH", "icon": "fa-heart-pulse", "color_name": "Gray 1", "color": "#526a76" }, // 🏥 Nueva categoría
+    { "name": "EDUCATION", "icon": "fa-graduation-cap", "color_name": "Gray 2", "color": "#607D8B" }, // 📚 Nueva categoría
+    { "name": "GIFTS", "icon": "fa-gift", "color_name": "Brown", "color": "#795548" }, // 🎁 Nueva categoría
+    { "name": "OTHERS", "icon": "fa-border-all", "color_name": "Black", "color": "#333333" } // 🏷️ Solo un "OTHERS"
+];
+
 
 export class CategoryDatasourceImp extends BaseDatasource implements CategoryDatasource {
 
@@ -42,18 +48,49 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
     defaultCategories(userId: string): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             for (const category of default_categories) {
+                // Buscar el color en la base de datos
+                let color = await BaseDatasource.prisma.color.findFirst({
+                    where: { hex: category.color }
+                });
+
+                // Si el color no existe, crearlo
+                if (!color) {
+                    color = await BaseDatasource.prisma.color.create({
+                        data: {
+                            hex: category.color,
+                            name: category.color_name,
+                        },
+                    });
+                }
+
+                // Buscar el icono en la base de datos
+                let icon = await BaseDatasource.prisma.icon.findFirst({
+                    where: { path: category.icon }
+                });
+
+                // Si el icono no existe, crearlo
+                if (!icon) {
+                    icon = await BaseDatasource.prisma.icon.create({
+                        data: {
+                            path: category.icon,
+                        },
+                    });
+                }
+
+                // Crear la categoría para el usuario
                 await BaseDatasource.prisma.category.create({
                     data: {
                         name: category.name,
-                        icon: category.icon,
                         userId: userId,
-                        color: category.color,
+                        colorId: color.id,
+                        iconId: icon.id,
                     },
                 });
             }
-            return "OK"
-        })
+            return "OK";
+        });
     }
+
     getOne(id: number, userId: string): Promise<CategoryEntity | CustomResponse> {
         return this.handleErrors(async () => {
             const category = await BaseDatasource.prisma.category.findFirst({
@@ -76,20 +113,32 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
                     AND: [
                         { deleted_at: null }, { userId }
                     ]
-                }
+                },
+                include: {
+                    _count: {
+                        select: { Transaction: true },
+                    },
+                    color: true,
+                    icon: true,
+                },
             })
             return data.map(item => CategoryEntity.fromObject(item))
         })
     }
-    create(data: CreateCategoryDto, user_audits: string): Promise<string | CustomResponse> {
+    create(data: CreateCategoryDto): Promise<string | CustomResponse> {
         return this.handleErrors(async () => {
             const exist = await this.exist(data.userId, data.name)
             if (exist) return new CustomResponse(`Already exist category with name: ${data.name}`, 400)
             const new_category = await BaseDatasource.prisma.category.create({
-                data,
+                data: {
+                    userId: data.userId,
+                    name: data.name.toUpperCase(),
+                    colorId: data.colorId,
+                    iconId: data.iconId,
+                },
             });
             const info = CategoryEntity.fromObject(new_category);
-            this.auditSave(info.id, info, "CREATE", user_audits)
+            // this.auditSave(info.id, info, "CREATE", user_audits)
             return "Category created successfully"
         })
     }
@@ -108,39 +157,32 @@ export class CategoryDatasourceImp extends BaseDatasource implements CategoryDat
         return !!data // Esto devolverá true si data no es nulo y false si data es nulo
     }
 
-
-    //TODO: ESTA SE PODRIA BORRAR PORQUE YA TENGO UNO EN DASHBOARD
-    transactionWithCategoriesAndAmount(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse> {
+    update(id: number, dto: UpdateCategoryDto, user_id: string): Promise<CustomResponse | CategoryEntity> {
         return this.handleErrors(async () => {
-            const data = await BaseDatasource.prisma.category.findMany({
-                select: {
-                    name: true,
-                    Transaction: {
-                        select: {
-                            id: true,
-                            wallet: {
-                                select: {
-                                    id: true,
-                                },
-                            },
-                        },
-                        where: {
-                            deleted_at: null,
-                            walletId // reemplace `yourWalletId` con la ID de la cartera que está buscando
-                        }
-                    },
-                },
-                where: {
-                    userId,
-                    deleted_at: null
-                }
-            });
-            const categoryCounts = data.map(category => ({
-                name: category.name,
-                transactionCount: category.Transaction.length,
-            }))
-            return categoryCounts
+            const data = await BaseDatasource.prisma.category.update({
+                where: { id },
+                data: dto
+            })
+            if (!data) return new CustomResponse(`Don't exist category with id ${id}`, 404)
+            this.auditSave(id, data, "UPDATE", user_id)
+            return CategoryEntity.fromObject(data)
         })
     }
+
+    getIcons(): Promise<CustomResponse | IconEntity[]> {
+        return this.handleErrors(async () => {
+            const data = await BaseDatasource.prisma.icon.findMany()
+            return data.map(icon => IconEntity.fromObject(icon))
+        })
+    }
+
+    getColors(): Promise<CustomResponse | ColorEntity[]> {
+        return this.handleErrors(async () => {
+            const data = await BaseDatasource.prisma.color.findMany()
+            return data.map(color => ColorEntity.fromObject(color))
+        })
+    }
+
+
 
 }

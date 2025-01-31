@@ -1,17 +1,17 @@
-import { TransactionByCategory } from "../../../utils/interfaces/count_transaction_by_category.interface";
-import { CustomResponse } from "../../../utils/response/custom.response";
-import { CategoryRepository } from "../../repositories/category.repository";
+// import { TransactionByCategory } from "../../../utils/interfaces/count_transaction_by_category.interface";
+// import { CustomResponse } from "../../../utils/response/custom.response";
+// import { CategoryRepository } from "../../repositories/category.repository";
 
-export interface CountTransactionByCategoryUseCase {
-    execute(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse>;
-}
+// export interface CountTransactionByCategoryUseCase {
+//     execute(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse>;
+// }
 
-export class CountTransactionByCategory implements CountTransactionByCategoryUseCase {
+// export class CountTransactionByCategory implements CountTransactionByCategoryUseCase {
 
-    constructor(
-        public repository: CategoryRepository
-    ) { }
-    execute(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse> {
-        return this.repository.transactionWithCategoriesAndAmount(userId, walletId)
-    }
-}
+//     constructor(
+//         public repository: CategoryRepository
+//     ) { }
+//     execute(userId: string, walletId: number): Promise<TransactionByCategory[] | CustomResponse> {
+//         // return this.repository.transactionWithCategoriesAndAmount(userId, walletId)
+//     }
+// }

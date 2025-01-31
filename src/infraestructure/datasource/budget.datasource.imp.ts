@@ -61,7 +61,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         return this.handleErrors(async () => {
             try {
 
-                console.log("AAA", id, data);
                 const getOne = await this.getOne(id, data.userId!);
 
                 const { categories, ...info } = data
@@ -114,7 +113,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
 
                 return BudgetEntity.fromObject(dataUpdated)
             } catch (error) {
-                console.log(error);
                 return new CustomResponse("error", 400)
             }
         })
@@ -218,7 +216,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                     b.limit_amount, 
                     b.repeat;
             `;
-            console.log(result);
             return result;
         })
     }
@@ -226,9 +223,11 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
         return this.handleErrors(async () => {
             let { categories, ...rest } = data
             if (rest.repeat !== "NEVER") {
-                rest.end_date = QueryBuilder.switchTransaction(rest.date, rest.repeat, false)!
-                rest.next_date = new Date(rest.end_date.setDate(rest.end_date.getDate() + 1))
+                rest.end_date = QueryBuilder.switchTransaction(rest.date, rest.repeat, false)!;
+                rest.next_date = new Date(rest.end_date); // Copia la fecha sin modificar end_date
+                rest.next_date.setDate(rest.next_date.getDate() + 1);
             }
+
             const new_budget = await BaseDatasource.prisma.budget.create({
                 data: {
                     ...rest,
@@ -237,7 +236,6 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             const budgetCategories = categories.split(",")
             await this.createBudgetCategories(new_budget.id, budgetCategories)
             await this.auditSave(new_budget.id, new_budget, "CREATE", new_budget.userId)
-            console.log({ new_budget });
             return BudgetEntity.fromObject(new_budget)
         })
     }
@@ -390,11 +388,5 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             }
 
         });
-    }
-
-    summaryBudgetsInformation() {
-        return this.handleErrors(async () => {
-
-        })
     }
 }

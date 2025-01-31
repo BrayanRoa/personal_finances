@@ -12,7 +12,7 @@ export class GetAllCategories implements GetAllCategoriesUseCase {
     constructor(
         private readonly repository: CategoryRepository
     ) { }
-    execute(userId: string): Promise<CustomResponse | CategoryEntity[]> {
+    async execute(userId: string): Promise<CustomResponse | CategoryEntity[]> {
         return this.repository.getAll(userId)
     }
 

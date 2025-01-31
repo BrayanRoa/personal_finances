@@ -2,7 +2,8 @@ export class CountTransactionCategoryEntity {
     constructor(
         public name: string,
         public transactioncount: number,
-        public color: string
+        public color: string,
+        public icon: string
     ) { }
 
     public static fromObject(obj: { [key: string]: any }): CountTransactionCategoryEntity {
@@ -10,6 +11,7 @@ export class CountTransactionCategoryEntity {
             obj.name,
             obj.transactioncount,
             obj.color,
+            obj.icon,
         );
     }
 }

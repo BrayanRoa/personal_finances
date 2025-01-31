@@ -14,9 +14,7 @@ export class GetAllBudgets implements GetAllBudgetUseCase {
         private readonly repository: BudgetRepository
     ) { }
     async execute(userId: string): Promise<CustomResponse | IGetAllBudgets[]> {
-        const a  = await this.repository.getAll(userId)
-        console.log(JSON.stringify(a));
-        return a
+        return this.repository.getAll(userId)
     }
 
 }
