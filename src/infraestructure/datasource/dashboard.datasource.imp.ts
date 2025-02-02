@@ -133,7 +133,6 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                 group by 
                     c.name, i."path", cl."hex"
             `;
-            console.dir(data);
             return data.map((category) => {
                 return {
                     name: category.name,

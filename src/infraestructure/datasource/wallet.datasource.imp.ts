@@ -57,7 +57,10 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
         return this.handleErrors(async () => {
             const wallets: WalletEntity[] = await BaseDatasource.prisma.$queryRaw`            
                 SELECT 
+                    w."id",
                     w."name", 
+                    sum(CASE WHEN t."type" = 'INCOME' THEN t."amount" ELSE 0 END) as "incomes",
+                    SUM(CASE WHEN t."type" = 'OUTFLOW' THEN t."amount" ELSE 0 END) as "expenses",
                     w."main_account", 
                     w."type_account", 
                     SUM(CASE WHEN t."type" = 'INCOME' THEN t."amount" ELSE 0 END) 
@@ -68,7 +71,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                 JOIN "Transaction" t ON t."walletId" = w."id"
                 WHERE w."deleted_at" IS NULL AND w."userId" = ${userId}
                 AND t."deleted_at" IS NULL 
-                GROUP BY w."name", w."main_account", w."type_account";
+                GROUP BY w."id", w."name", w."main_account", w."type_account", w."incomes", w."expenses";
             `
 
             return wallets.map(item => WalletEntity.fromObject(item))
