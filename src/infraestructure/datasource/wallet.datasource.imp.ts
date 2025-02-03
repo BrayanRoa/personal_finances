@@ -62,6 +62,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                     sum(CASE WHEN t."type" = 'INCOME' THEN t."amount" ELSE 0 END) as "incomes",
                     SUM(CASE WHEN t."type" = 'OUTFLOW' THEN t."amount" ELSE 0 END) as "expenses",
                     w."main_account", 
+                    w."initial_balance",
                     w."type_account", 
                     SUM(CASE WHEN t."type" = 'INCOME' THEN t."amount" ELSE 0 END) 
                     - 

@@ -10,7 +10,7 @@ export interface loginResponse {
 }
 
 export interface LoginUserUseCase {
-    execute(email: string, password: string): Promise<{ msg: string, token: string } | CustomResponse>;
+    execute(email: string, password: string): Promise<{ msg: string, token: string, name: string, email: string } | CustomResponse>;
 }
 
 export class LoginUser implements LoginUserUseCase {
@@ -20,7 +20,7 @@ export class LoginUser implements LoginUserUseCase {
         private passwordHasher: PasswordHasher
     ) { }
 
-    async execute(email: string, password: string): Promise<{ msg: string, token: string, name: string } | CustomResponse> {
+    async execute(email: string, password: string): Promise<{ msg: string, token: string, name: string, email: string } | CustomResponse> {
         const user = await this.authRepository.getOneUser(email, "LOGIN");
         if (user instanceof UserEntity) {
             const isMatch = await this.passwordHasher.verifyPassword(password, user.password!);
@@ -36,7 +36,8 @@ export class LoginUser implements LoginUserUseCase {
 
             return {
                 msg: "user logged successfully",
-                name: `${user.name}`,
+                name: user.name,
+                email: user.email,
                 token: token.toString(),
             }
 
