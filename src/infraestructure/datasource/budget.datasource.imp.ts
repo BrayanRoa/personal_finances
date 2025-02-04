@@ -401,9 +401,9 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                 SUM(CASE WHEN t."type" = 'OUTFLOW' THEN t."amount" ELSE 0 END) AS "spent"
             FROM "Budget" b 
             LEFT JOIN budget_transaction bt ON b.id = bt."budgetId" AND bt.deleted_at IS NULL
-            LEFT JOIN "Transaction" t ON bt."transactionId" = t.id 
-            LEFT JOIN "BudgetCategory" bc ON bc."budgetId" = b.id 
-            LEFT JOIN "Category" c ON bc."categoryId" = c.id 
+            LEFT JOIN "Transaction" t ON bt."transactionId" = t.id AND t.deleted_at IS NULL
+            LEFT JOIN "BudgetCategory" bc ON bc."budgetId" = b.id AND bc.deleted_at IS NULL
+            LEFT JOIN "Category" c ON bc."categoryId" = c.id AND c.deleted_at IS NULL
             WHERE 
                 b.active 
                 AND b."userId" = ${userId}
