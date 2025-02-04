@@ -67,6 +67,11 @@ export class BudgetRoutes extends BaseRouter<BudgetController, BudgetMiddleware,
             this.controller.transactionsByBudget
         )
 
+        this.router.get(`${prefix}/summary`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.summaryBudget
+        )
+
         this.router.get(`${prefix}/:id`,
             (req, res, next) => this.middleware.validarJwt(req, res, next),
             this.controller.getOne

@@ -2,6 +2,7 @@ import { BudgetDatasource } from "../../domain/datasources/budget.datasource";
 import { CreateBudgetDto } from "../../domain/dtos/budget/create-budget.dto";
 import { UpdateBudgetDto } from "../../domain/dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../../domain/entities/budget/budget.entity";
+import { ISummaryBudget } from "../../domain/interfaces/budgets/summary-budgets";
 import { IGetAllBudgets } from "../../domain/interfaces/budgets/transaction-by-budget.interface";
 import { BudgetRepository } from "../../domain/repositories/budget.repository";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
@@ -12,6 +13,9 @@ export class BudgetRepositoryImp implements BudgetRepository {
     constructor(
         private readonly budgetDatasource: BudgetDatasource
     ) { }
+    summaryBudgets(userId: string): Promise<CustomResponse | ISummaryBudget> {
+        return this.budgetDatasource.summaryBudgets(userId)
+    }
     getManyBudgetCategory(budgetId: number): Promise<{ budgetId: number; categoryId: number; }[] | CustomResponse> {
         return this.budgetDatasource.getManyBudgetCategory(budgetId)
     }

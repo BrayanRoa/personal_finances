@@ -9,6 +9,7 @@ import { TransactionEntity } from "../../domain/entities";
 import { TransactionInterface } from "../../utils/interfaces/response_paginate";
 import { QueryBuilder } from "../../utils/query-builder";
 import { IGetAllBudgets } from "../../domain/interfaces/budgets/transaction-by-budget.interface";
+import { ISummaryBudget } from "../../domain/interfaces/budgets/summary-budgets";
 
 export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasource {
 
@@ -388,5 +389,36 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
             }
 
         });
+    }
+
+    // this service is in charge of obtaining the total spent and the total budgeted.
+    // with this I can display the necessary information on the cards. 
+    summaryBudgets(userId: string): Promise<CustomResponse | ISummaryBudget> {
+        return this.handleErrors(async () => {
+            const data: { budgeted: number, spent: number }[] = await BaseDatasource.prisma.$queryRaw`
+            SELECT 
+                SUM(b.limit_amount) AS "budgeted",
+                SUM(CASE WHEN t."type" = 'OUTFLOW' THEN t."amount" ELSE 0 END) AS "spent"
+            FROM "Budget" b 
+            LEFT JOIN budget_transaction bt ON b.id = bt."budgetId" AND bt.deleted_at IS NULL
+            LEFT JOIN "Transaction" t ON bt."transactionId" = t.id 
+            LEFT JOIN "BudgetCategory" bc ON bc."budgetId" = b.id 
+            LEFT JOIN "Category" c ON bc."categoryId" = c.id 
+            WHERE 
+                b.active 
+                AND b."userId" = ${userId}
+                AND b.deleted_at IS NULL 
+                AND (bc.deleted_at IS NULL OR bc.deleted_at IS NULL) 
+                -- Filtro para evitar transacciones de otras fechas
+                AND (t.date BETWEEN b.date AND b.end_date OR t.id IS NULL) 
+                -- Asegurar que la transacción pertenece a una categoría del budget
+                AND (t."categoryId" = c.id OR t.id IS NULL);
+            `
+            return {
+                budgeted: data[0].budgeted || 0,
+                spent: data[0].spent || 0,
+                percentage: Math.round((data[0].spent / data[0].budgeted) * 100)
+            }
+        })
     }
 }

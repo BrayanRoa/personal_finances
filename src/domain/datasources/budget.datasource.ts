@@ -3,6 +3,7 @@ import { CustomResponse } from "../../utils/response/custom.response";
 import { CreateBudgetDto } from "../dtos/budget/create-budget.dto";
 import { UpdateBudgetDto } from "../dtos/budget/update-budget.dto";
 import { BudgetEntity } from "../entities/budget/budget.entity";
+import { ISummaryBudget } from "../interfaces/budgets/summary-budgets";
 import { IGetAllBudgets } from "../interfaces/budgets/transaction-by-budget.interface";
 
 export abstract class BudgetDatasource {
@@ -32,5 +33,6 @@ export abstract class BudgetDatasource {
 
     abstract getManyBudgetCategory(budgetId: number): Promise<{ budgetId: number, categoryId: number }[] | CustomResponse>
     // abstract defaultCategories(userId: string): Promise<string | CustomResponse>
+    abstract summaryBudgets(userId: string): Promise<CustomResponse | ISummaryBudget>
 
 }

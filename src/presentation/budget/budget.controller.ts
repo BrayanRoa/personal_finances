@@ -8,6 +8,7 @@ import { DeleteBudget } from "../../domain/use-cases/budget/delete-budget";
 import { TransactionByBudget } from "../../domain/use-cases/budget/transaction-by-budget";
 import { GetOneBudget } from "../../domain/use-cases/budget/get-one-budget";
 import { container } from "../../infraestructure/dependencies/container";
+import { GetSummaryBudget } from "../../domain/use-cases/budget/summary-budgets";
 
 export class BudgetController {
 
@@ -72,5 +73,14 @@ export class BudgetController {
         } else {
             res.status(400).json({ error: 'categoryIds debe ser un string separado por comas' });
         }
+    }
+
+    public summaryBudget = (req: Request, res: Response) => {
+        const { userId } = req.body
+
+        return new GetSummaryBudget(this.repository)
+            .execute(userId)
+            .then(transactions => CustomResponse.handleResponse(res, transactions, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
     }
 }
