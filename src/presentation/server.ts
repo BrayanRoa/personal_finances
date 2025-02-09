@@ -1,4 +1,4 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { UserRoutes } from './users/users.routes';
@@ -50,23 +50,8 @@ export class Server {
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }))
         this.app.use(express.static(this.public_path));
+        this.app.use(cors())
         this.app.use(morgan("dev"))
-        this.app.use(
-            cors({
-                origin: "https://personal-finances-front.web.app", // ⚠ Especifica el dominio de tu frontend
-                methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-                allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-                credentials: true, // Necesario si usas autenticación con Firebase
-            })
-        );
-
-        this.app.use((req: Request, res: Response, next: NextFunction) => {
-            console.log("📢 Solicitud recibida:");
-            console.log("🔹 Método:", req.method);
-            console.log("🔹 URL:", req.originalUrl);
-            console.log("🔹 Headers:", req.headers);
-            next();
-        });
     }
 
     routers(): express.Router[] {
