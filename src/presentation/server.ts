@@ -67,9 +67,10 @@ export class Server {
     }
 
     listen() {
-        this.serverListener = this.app.listen(this.port, () => {
-            console.log(`Server running on port: ${this.port} - http://localhost:${this.port}`);
-        })
+        this.serverListener = this.app.listen(this.port, "0.0.0.0", () => {
+            console.log(`✅ Server running on port: ${this.port}`);
+        });
+
     }
 
     // ESTE MÉTODO ES PARA CANCELAR EL SERVIDOR, ESTO LO USO EN EL TESTING

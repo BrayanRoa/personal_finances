@@ -36,7 +36,7 @@ import { get } from 'env-var';
 dotenv.config();  // Solo carga el archivo .env si estás en desarrollo, ya que las variables en producción están configuradas en Railway
 
 export const envs = {
-  PORT: get("PORT").required().default(3000).asInt(),
+  PORT: get("PORT").required().asInt(),
   PUBLIC_PATH: get("PUBLIC_PATH").default("public").asString(),
   JWT_SEED: get("JWT_SEED").required().asString(),
   MAILER_SERVICE: get("MAILER_SERVICE").required().asString(),
