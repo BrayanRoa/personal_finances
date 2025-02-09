@@ -50,8 +50,18 @@ export class Server {
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }))
         this.app.use(express.static(this.public_path));
-        this.app.use(cors())
         this.app.use(morgan("dev"))
+        this.app.use(
+            cors({
+                origin: "https://personal-finances-front.web.app", // ⚠ Especifica el dominio de tu frontend
+                methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+                allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+                credentials: true, // Necesario si usas autenticación con Firebase
+            })
+        );
+
+        // Asegurar que el backend responde a las preflight requests (OPTIONS)
+        this.app.options("*", cors());
     }
 
     routers(): express.Router[] {
