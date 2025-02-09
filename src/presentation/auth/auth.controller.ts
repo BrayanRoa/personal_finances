@@ -6,6 +6,7 @@ import { LoginUser } from "../../domain/use-cases/auth/login-user";
 import { ValidateEmail } from "../../domain/use-cases/auth/validate-email";
 import { container } from "../../infraestructure/dependencies/container";
 import { ResendCode } from "../../domain/use-cases/auth/resend-code";
+import { LoginFirebaseUser } from "../../domain/use-cases/auth/login-firebase";
 
 export class AuthController {
     constructor(
@@ -20,8 +21,24 @@ export class AuthController {
             .catch(err => CustomResponse.handleResponse(res, err))
     }
 
+    public loginFirebase = (req: Request, res: Response) => {
+        const { userId } = req.body
+        return new LoginFirebaseUser(this.authRepository)
+            .execute(userId)
+            .then(auth => CustomResponse.handleResponse(res, auth, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
+    public registerFirebase = (req: Request, res: Response) => {
+        // const { email, password } = req.body
+        return new RegisterUser(this.authRepository, container.cradle.emailService, container.cradle.categoryRepository)
+            .execute(req.body)
+            .then(auth => CustomResponse.handleResponse(res, auth, 200))
+            .catch(err => CustomResponse.handleResponse(res, err))
+    }
+
     public register = async (req: Request, res: Response) => {
-        new RegisterUser(this.authRepository, container.cradle.emailService)
+        new RegisterUser(this.authRepository, container.cradle.emailService, container.cradle.categoryRepository)
             .execute(req.body)
             .then(auth => {
                 CustomResponse.handleResponse(res, auth, 201)

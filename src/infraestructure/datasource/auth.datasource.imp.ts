@@ -1,6 +1,7 @@
 // import { prisma } from "../../database/postgres";
 import { AuthDatasource } from "../../domain/datasources/auth.datasource";
 import { CreateUserDto } from "../../domain/dtos";
+import { CreateUserFirebaseDto } from "../../domain/dtos/users/create-user-firebase.dto";
 import { UpdateUserDto } from "../../domain/dtos/users/update-user.dto";
 import { UserEntity } from "../../domain/entities/users/user.entity";
 import { VerificationCodeEntity } from "../../domain/entities/verification_code/verification-code";
@@ -30,7 +31,7 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
                 : new CustomResponse("email not found", 404);
         })
     }
-    registerUser(data: CreateUserDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
+    registerUser(data: CreateUserDto | CreateUserFirebaseDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
         return this.handleErrors(async () => {
             // Paso 1: Verificar que el email no exista
             const exist = await BaseDatasource.prisma.user.findFirst({
@@ -39,23 +40,34 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
                 },
             });
             if (exist) {
-                return new CustomResponse("email already exists", 409);
+                return new CustomResponse("this email is already registered", 409);
             }
             // Paso 2: Generar y guardar la contraseña encriptada
             const new_user = await BaseDatasource.prisma.user.create({
                 data,
             });
             // Paso 3: Generar y guardar el código de verificación
-            const code = await this.generateAndSaveVerificationCode(new_user.id)
-            if (code instanceof CustomResponse) {
-                return code
-            }
-            return {
-                userId: new_user.id,
-                verificationCode: code
+            if (data instanceof CreateUserDto) {
+                const code = await this.generateAndSaveVerificationCode(new_user.id)
+                if (code instanceof CustomResponse) {
+                    return code
+                }
+                return {
+                    userId: new_user.id,
+                    verificationCode: code
+                }
+            } else {
+                return {
+                    userId: new_user.id,
+                    verificationCode: ""
+                }
             }
             // return UserEntity.fromObject(new_user);
         });
+    }
+
+    registerUserFirebase() {
+
     }
 
     updateUSer(id: string, data: UpdateUserDto): Promise<boolean | CustomResponse> {

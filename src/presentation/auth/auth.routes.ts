@@ -65,6 +65,16 @@ export class AuthRoutes extends BaseRouter<AuthController, AuthMiddleware, AuthR
             this.controller.login
         )
 
+        this.router.post(`${prefix}/login/firebase`,
+            (req, res, next) => this.middleware.validarJwt(req, res, next),
+            this.controller.loginFirebase
+        )
+
+        this.router.get(`${prefix}/register/firebase/:token`,
+            (req, res, next) => this.middleware.buildLoginDataFirebase(req, res, next),
+            this.controller.registerFirebase
+        )
+
         /**
         * @swagger
         * /auth/register:

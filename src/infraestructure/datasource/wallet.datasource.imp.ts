@@ -69,7 +69,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                     SUM(CASE WHEN t."type" = 'OUTFLOW' THEN t."amount" ELSE 0 END) 
                     AS balance
                 FROM "Wallet" w
-                JOIN "Transaction" t ON t."walletId" = w."id"
+                LEFT JOIN "Transaction" t ON t."walletId" = w."id"
                 WHERE w."deleted_at" IS NULL AND w."userId" = ${userId}
                 AND t."deleted_at" IS NULL 
                 GROUP BY w."id", w."name", w."main_account", w."type_account", w."incomes", w."expenses";

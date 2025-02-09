@@ -4,9 +4,29 @@ import { CustomResponse } from "../response/custom.response";
 import { JwtAdapter } from "../jwt/jwt";
 import { BaseDatasource } from "../datasource/base.datasource";
 
+import * as admin from 'firebase-admin';
+// import * as path from 'path';
+
+// const serviceAccount = require(path.resolve(__dirname, '../firebase/serviceAccountKey.json'));
+require('dotenv').config();
+// const admin = require('firebase-admin');
+
+require('dotenv').config();
+// const admin = require('firebase-admin');
+
+admin.initializeApp({
+    credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'), // Convierte '\n' en saltos de línea reales
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    }),
+});
+
+
+
 export class SharedMiddleware<
     T extends {} | null = null,
-    U extends {} | null = null
+    U extends {} | null = null,
 > {
     constructor(
         private TCreateDto?: { new(): T } | null,
@@ -56,6 +76,8 @@ export class SharedMiddleware<
 
     public async validarJwt(req: Request, res: Response, next: NextFunction) {
         const authorization = req.header("Authorization");
+        console.log({ authorization });
+
         if (!authorization)
             return CustomResponse.Unauthorized(res, `There is no token on the request`);
 
@@ -65,28 +87,66 @@ export class SharedMiddleware<
         const token = authorization.split(" ")[1] || "";
 
         try {
+            // Primero intenta decodificar tu propio token
             const payload = await JwtAdapter.decodeToken<{ id: string }>(token);
-            if (!payload)
-                return CustomResponse.Unauthorized(
-                    res,
-                    `Token invalid - Contact the administrator`
-                );
 
-            const user = await BaseDatasource.prisma.user.findFirst({
-                where: {
-                    id: payload.id,
-                },
-            });
-            if (!user)
-                return CustomResponse.Unauthorized(
-                    res,
-                    `Token invalid - Contact the administrator`
-                );
+            if (payload) {
+                // Si el payload de tu JWT es válido, busca el usuario
+                const user = await BaseDatasource.prisma.user.findFirst({
+                    where: { id: payload.id }
+                });
 
-            req.body.userId = user.id;
-            next();
+                if (!user)
+                    return CustomResponse.Unauthorized(res, `Token invalid - Contact the administrator`);
+
+                req.body.userId = user.id;
+                return next(); // Continúa con la petición
+            } else {
+                // Si no se pudo decodificar el token, intenta con Firebase
+                const decodedToken: any = await admin.auth().verifyIdToken(token);
+                console.log({ decodedToken });
+
+                if (!decodedToken)
+                    return CustomResponse.Unauthorized(res, `Token invalid - Contact the administrator`);
+
+                // Busca el usuario en tu base de datos por el email de Firebase
+                const user = await BaseDatasource.prisma.user.findFirst({
+                    where: { email: decodedToken.email }
+                });
+
+                if (!user)
+                    return CustomResponse.Unauthorized(res, `Token invalid - Contact the administrator`);
+
+                req.body.userId = user.id;
+                return next(); // Continúa con la petición
+            }
+
         } catch (error: any) {
-            CustomResponse.Unauthorized(res, error);
+            return CustomResponse.Unauthorized(res, error);
         }
+    }
+
+    async buildLoginDataFirebase(req: Request, res: Response, next: NextFunction) {
+        const { token } = req.params
+        const decodedToken: any = await admin.auth().verifyIdToken(token);
+
+        if (!decodedToken) return CustomResponse.Unauthorized(res, 'Invalid token')
+
+        // req.body.userId = data.uid
+        console.log(decodedToken)
+
+        req.body = {
+            name: decodedToken.name,
+            email: decodedToken.email,
+            authProvider: decodedToken.firebase.sign_in_provider,
+            emailValidated: true,
+            email_sent: true
+        }
+        next();
+    }
+
+
+    validateJwtFirebase() {
+
     }
 }

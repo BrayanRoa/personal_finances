@@ -1,5 +1,6 @@
 import { AuthDatasource } from "../../domain/datasources/auth.datasource";
 import { CreateUserDto } from "../../domain/dtos";
+import { CreateUserFirebaseDto } from "../../domain/dtos/users/create-user-firebase.dto";
 import { UpdateUserDto } from "../../domain/dtos/users/update-user.dto";
 import { UserEntity } from "../../domain/entities/users/user.entity";
 import { VerificationCodeEntity } from "../../domain/entities/verification_code/verification-code";
@@ -31,10 +32,13 @@ export class AuthRepositoryImpl implements AuthRepository {
     getOneUser(param: string, type?: string): Promise<UserEntity | CustomResponse> {
         return this.authDatasource.findOneUser(param, type)
     }
-    async registerUser(data: CreateUserDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
-        const hashedPassword = await this.passwordHasher.hashPassword(data.password)
-        data.password = hashedPassword
+    async registerUser(data: CreateUserDto | CreateUserFirebaseDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
+        if (data instanceof CreateUserDto) {
+            const hashedPassword = await this.passwordHasher.hashPassword(data.password)
+            data.password = hashedPassword
+        }
         return this.authDatasource.registerUser(data);
+
     }
 
 

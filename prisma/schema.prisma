@@ -18,7 +18,8 @@ model User {
   email          String    @unique
   emailValidated Boolean   @default(false)
   email_sent     Boolean   @default(false)
-  password       String
+  password       String?
+  authProvider   String?  
   name           String
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt

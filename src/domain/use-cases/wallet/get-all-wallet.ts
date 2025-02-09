@@ -11,8 +11,11 @@ export class GetAllWallet implements GetAllWalletUseCase {
     constructor(
         private repository: WalletRepository
     ) { }
-    execute(userId: string): Promise<CustomResponse | WalletEntity[]> {
-        return this.repository.getAll(userId)
+    async execute(userId: string): Promise<CustomResponse | WalletEntity[]> {
+        console.log(userId);
+        const a =await this.repository.getAll(userId)
+        console.log({a});
+        return a 
     }
 
 }
