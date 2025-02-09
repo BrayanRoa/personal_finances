@@ -47,12 +47,21 @@ export class Server {
     }
 
     middlewares() {
-        this.app.use(express.json())
-        this.app.use(express.urlencoded({ extended: true }))
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.static(this.public_path));
-        this.app.use(cors())
-        this.app.use(morgan("dev"))
+
+        // Configurar CORS correctamente
+        this.app.use(cors({
+            origin: "https://personal-finances-front.web.app", // 👈 Permite solo tu frontend
+            methods: ["GET", "POST", "PUT", "DELETE"],
+            allowedHeaders: ["Content-Type", "Authorization"],
+            credentials: true // 👈 Necesario si usas autenticación con cookies o tokens en encabezados
+        }));
+
+        this.app.use(morgan("dev"));
     }
+
 
     routers(): express.Router[] {
         return [
