@@ -52,14 +52,22 @@ export class Server {
         this.app.use(express.static(this.public_path));
 
         // Configurar CORS correctamente
+        const allowedOrigins = [
+            "https://personal-finances-front.web.app",
+            "http://localhost:4200" // Para desarrollo local
+        ];
+        
         this.app.use(cors({
-            origin: "https://personal-finances-front.web.app", // 👈 Permite solo tu frontend
-            methods: ["GET", "POST", "PUT", "DELETE"],
-            allowedHeaders: ["Content-Type", "Authorization"],
-            credentials: true // 👈 Necesario si usas autenticación con cookies o tokens en encabezados
+            origin: (origin, callback) => {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    callback(null, true);
+                } else {
+                    callback(new Error("CORS not allowed"));
+                }
+            },
+            credentials: true
         }));
-
-        this.app.use(morgan("dev"));
+        
     }
 
 
