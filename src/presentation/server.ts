@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { UserRoutes } from './users/users.routes';
@@ -60,8 +60,13 @@ export class Server {
             })
         );
 
-        // Asegurar que el backend responde a las preflight requests (OPTIONS)
-        this.app.options("*", cors());
+        this.app.use((req: Request, res: Response, next: NextFunction) => {
+            console.log("📢 Solicitud recibida:");
+            console.log("🔹 Método:", req.method);
+            console.log("🔹 URL:", req.originalUrl);
+            console.log("🔹 Headers:", req.headers);
+            next();
+        });
     }
 
     routers(): express.Router[] {
