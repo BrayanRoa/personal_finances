@@ -47,29 +47,12 @@ export class Server {
     }
 
     middlewares() {
-        this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(express.json())
+        this.app.use(express.urlencoded({ extended: true }))
         this.app.use(express.static(this.public_path));
-
-        // Configurar CORS correctamente
-        const allowedOrigins = [
-            "https://personal-finances-front.web.app",
-            "http://localhost:4200" // Para desarrollo local
-        ];
-        
-        this.app.use(cors({
-            origin: (origin, callback) => {
-                if (!origin || allowedOrigins.includes(origin)) {
-                    callback(null, true);
-                } else {
-                    callback(new Error("CORS not allowed"));
-                }
-            },
-            credentials: true
-        }));
-        
+        this.app.use(cors())
+        this.app.use(morgan("dev"))
     }
-
 
     routers(): express.Router[] {
         return [
