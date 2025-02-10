@@ -5,24 +5,17 @@ import { JwtAdapter } from "../jwt/jwt";
 import { BaseDatasource } from "../datasource/base.datasource";
 
 import * as admin from 'firebase-admin';
-// import * as path from 'path';
+import { envs } from "../../config/envs";
 
-// const serviceAccount = require(path.resolve(__dirname, '../firebase/serviceAccountKey.json'));
-require('dotenv').config();
-// const admin = require('firebase-admin');
-
-require('dotenv').config();
-// const admin = require('firebase-admin');
-
-admin.initializeApp({
-    credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'), // Convierte '\n' en saltos de línea reales
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    }),
-});
-
-
+if (!admin.apps.length) {
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: envs.FIREBASE_PROJECT_ID,
+            privateKey: envs.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+            clientEmail: envs.FIREBASE_CLIENT_EMAIL,
+        }),
+    });
+}
 
 export class SharedMiddleware<
     T extends {} | null = null,
@@ -145,8 +138,4 @@ export class SharedMiddleware<
         next();
     }
 
-
-    validateJwtFirebase() {
-
-    }
 }
