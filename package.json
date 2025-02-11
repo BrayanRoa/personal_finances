@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development tsnd --respawn --clear src/app.ts",
-    "build": "rm -rf ./dist && mkdir -p dist && npx tsc",
-    "start": "npm run build && node dist/app.js",
+    "build": "rimraf ./dist && tsc",
+    "start": "set NODE_ENV=production&&npm run build && node dist/app.js",
     "prisma:migrate:test": "dotenv -e .env.test -- npx prisma migrate deploy",
     "prisma:migrate:prod": "prisma migrate deploy",
     "test": "npm run prisma:migrate:test && jest",
