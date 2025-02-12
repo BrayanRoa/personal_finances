@@ -84,7 +84,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 if (data.repeat !== "NEVER") {
                     data = calculateNextDateToTransaction(data)
                 }
-                console.log({data});
+                console.log({ data });
                 transaction = await BaseDatasource.prisma.transaction.create({ data })
                 this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
                 return TransactionEntity.fromObject(transaction)
@@ -100,12 +100,13 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             // const dates = calculateMonths(filters.year!, filters.months!)
             const dates = QueryBuilder.calculateMonths(filters.year!, filters.months!)
 
-            // base conditions
             const baseCondition = {
-                deleted_at: null,
-                userId: userId,
+                AND: [
+                    { deleted_at: null },
+                    { userId: userId },
+                    { wallet: { deleted_at: null } }
+                ]
             }
-
             // search condition
             const searchCondition = search
                 ? {

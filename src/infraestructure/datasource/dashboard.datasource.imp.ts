@@ -34,27 +34,27 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
     private async totalIncomesAndOutfllows(userId: string) {
         const baseCondition = {
             AND: [
-                {
-                    deleted_at: null,
-                    userId: userId,
-                }
+                { deleted_at: null },
+                { userId: userId },
+                { wallet: { deleted_at: null } },
             ],
         }
+        console.log({baseCondition});
         const [expenses, income] = await Promise.all([
             BaseDatasource.prisma.transaction.aggregate({
                 _sum: {
                     amount: true
                 },
-                where: { ...baseCondition.AND[0], type: "OUTFLOW" },
+                where: { ...baseCondition, type: "OUTFLOW" },
             }),
             BaseDatasource.prisma.transaction.aggregate({
                 _sum: {
                     amount: true
                 },
-                where: { ...baseCondition.AND[0], type: "INCOME" },
+                where: { ...baseCondition, type: "INCOME" },
             })
         ])
-
+        console.log({expenses});
         return {
             totalIncome: income._sum.amount ? income._sum.amount : 0,
             totalExpenses: expenses._sum.amount ? expenses._sum.amount : 0,
