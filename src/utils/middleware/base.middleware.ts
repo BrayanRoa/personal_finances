@@ -133,7 +133,8 @@ export class SharedMiddleware<
             email: decodedToken.email,
             authProvider: decodedToken.firebase.sign_in_provider,
             emailValidated: true,
-            email_sent: true
+            email_sent: true,
+            password:""
         }
         next();
     }

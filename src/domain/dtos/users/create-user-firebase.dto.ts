@@ -12,6 +12,10 @@ export class CreateUserFirebaseDto {
 
     @IsString()
     @IsNotEmpty()
+    public password!: string;
+
+    @IsString()
+    @IsNotEmpty()
     public authProvider!: string;
 
     @IsBoolean()
