@@ -69,7 +69,6 @@ export class SharedMiddleware<
 
     public async validarJwt(req: Request, res: Response, next: NextFunction) {
         const authorization = req.header("Authorization");
-        console.log({ authorization });
 
         if (!authorization)
             return CustomResponse.Unauthorized(res, `There is no token on the request`);
@@ -97,10 +96,9 @@ export class SharedMiddleware<
             } else {
                 // Si no se pudo decodificar el token, intenta con Firebase
                 const decodedToken: any = await admin.auth().verifyIdToken(token);
-                console.log({ decodedToken });
 
                 if (!decodedToken)
-                    return CustomResponse.Unauthorized(res, `Token invalid - Contact the administrator`);
+                    return CustomResponse.Unauthorized(res, `User not found or Token invalid - Contact the administrator`);
 
                 // Busca el usuario en tu base de datos por el email de Firebase
                 const user = await BaseDatasource.prisma.user.findFirst({
@@ -108,7 +106,7 @@ export class SharedMiddleware<
                 });
 
                 if (!user)
-                    return CustomResponse.Unauthorized(res, `Token invalid - Contact the administrator`);
+                    return CustomResponse.Unauthorized(res, `User not found or Token invalid - Contact the administrator`);
 
                 req.body.userId = user.id;
                 return next(); // Continúa con la petición
@@ -125,16 +123,13 @@ export class SharedMiddleware<
 
         if (!decodedToken) return CustomResponse.Unauthorized(res, 'Invalid token')
 
-        // req.body.userId = data.uid
-        console.log(decodedToken)
-
         req.body = {
             name: decodedToken.name,
             email: decodedToken.email,
             authProvider: decodedToken.firebase.sign_in_provider,
             emailValidated: true,
             email_sent: true,
-            password:""
+            password: ""
         }
         next();
     }

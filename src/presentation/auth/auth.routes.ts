@@ -119,6 +119,9 @@ export class AuthRoutes extends BaseRouter<AuthController, AuthMiddleware, AuthR
         )
         this.router.get(`${prefix}/resend-code/:userId`, this.controller.resendCode)
 
+        this.router.post(`${prefix}/password-recovery`, this.controller.sendPasswordResetCode)
+        this.router.post(`${prefix}/password-reset`, this.controller.passwordReset)
+
         this.router.get(`${prefix}/validate-email/:userId/:token`, this.controller.validateEmail)
 
     }

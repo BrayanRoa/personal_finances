@@ -46,8 +46,9 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
             const new_user = await BaseDatasource.prisma.user.create({
                 data,
             });
+
             // Paso 3: Generar y guardar el código de verificación
-            if (data instanceof CreateUserDto) {
+            if (new_user.password !== "") {
                 const code = await this.generateAndSaveVerificationCode(new_user.id)
                 if (code instanceof CustomResponse) {
                     return code
@@ -86,6 +87,19 @@ export class AuthDatasourceImp extends BaseDatasource implements AuthDatasource 
         return this.handleErrors(async () => {
             const expiredAt = new Date();
             expiredAt.setMinutes(expiredAt.getMinutes() + 10);
+
+            const exist = await BaseDatasource.prisma.verification_codes.findFirst({
+                where: {
+                    userId,
+                    active: true,
+                    expired_at: expiredAt, // expires in 10 minutes
+                    used: false
+                }
+            })
+
+            if (exist) {
+                return exist.code
+            }
 
             const data = await BaseDatasource.prisma.verification_codes.create({
                 data: {

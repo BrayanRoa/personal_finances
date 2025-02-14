@@ -12,10 +12,7 @@ export class GetAllWallet implements GetAllWalletUseCase {
         private repository: WalletRepository
     ) { }
     async execute(userId: string): Promise<CustomResponse | WalletEntity[]> {
-        console.log(userId);
-        const a =await this.repository.getAll(userId)
-        console.log({a});
-        return a 
+        return this.repository.getAll(userId)
     }
 
 }

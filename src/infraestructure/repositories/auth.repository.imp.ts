@@ -33,7 +33,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         return this.authDatasource.findOneUser(param, type)
     }
     async registerUser(data: CreateUserDto | CreateUserFirebaseDto): Promise<{ userId: string, verificationCode: string } | CustomResponse> {
-        if (data instanceof CreateUserDto) {
+        if (data.password !== "") {
             const hashedPassword = await this.passwordHasher.hashPassword(data.password)
             data.password = hashedPassword
         }

@@ -39,7 +39,6 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                 { wallet: { deleted_at: null } },
             ],
         }
-        console.log({baseCondition});
         const [expenses, income] = await Promise.all([
             BaseDatasource.prisma.transaction.aggregate({
                 _sum: {
@@ -54,7 +53,6 @@ export class DashboardDatasourceImp extends BaseDatasource implements DashboardD
                 where: { ...baseCondition, type: "INCOME" },
             })
         ])
-        console.log({expenses});
         return {
             totalIncome: income._sum.amount ? income._sum.amount : 0,
             totalExpenses: expenses._sum.amount ? expenses._sum.amount : 0,

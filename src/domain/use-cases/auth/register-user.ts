@@ -17,12 +17,10 @@ export class RegisterUser implements RegisterUserUseCase {
     ) { }
     async execute(dto: CreateUserDto | CreateUserFirebaseDto): Promise<string | CustomResponse> {
         // Paso 1: Registrar el usuario
-        console.log("VAMNOS DE AAQUI");
         const user = await this.authRepository.registerUser(dto);
         if (user instanceof CustomResponse) {
             return user;
         }
-        console.log({user});
         if (user.verificationCode !== "") {
 
             try {
@@ -39,7 +37,6 @@ export class RegisterUser implements RegisterUserUseCase {
                 return new CustomResponse(`Failed to send verification email. Please try again later.`, 500);
             }
         } else {
-            console.log("aaaaaa");
             this.categoryRepository.defaultCategories(user.userId)
         }
 

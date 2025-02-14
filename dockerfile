@@ -11,6 +11,9 @@ RUN npm install
 
 COPY . .
 
+# 🔥 Asegúrate de compilar el código TypeScript antes de ejecutar la app
+RUN npm run build  
+
 RUN npx prisma generate
 
 EXPOSE 3000
