@@ -69,7 +69,7 @@ export class QueryBuilder {
             default:
                 throw new Error(`Invalid repeat value: ${repeat}`);
         }
-        if(!isTransaction){
+        if(isTransaction === false){
             nextDate = nextDate.subtract(1, "day"); // Si es una transacción, devuelve el día anterior al siguiente ajustado al principio de día UTC.
         }
         return nextDate.utc().toDate(); // Asegurar UTC y formato Date

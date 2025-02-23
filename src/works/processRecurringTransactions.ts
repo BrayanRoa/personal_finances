@@ -54,7 +54,7 @@ export function calculateNextDateToTransaction(transaction: Transaction) {
 
 export function calculateNextDateToBudget(strat_date: Date, repeat: string) {
 
-    const next_date = QueryBuilder.switchTransaction(strat_date, repeat, true)!;
+    const next_date = QueryBuilder.switchTransaction(strat_date, repeat, false)!;
 
     return next_date;
 }

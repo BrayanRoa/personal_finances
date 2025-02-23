@@ -89,7 +89,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
             // Si la transacción se repite, calcular la próxima fecha
             if (data.repeat !== "NEVER") {
-                data.next_date = QueryBuilder.switchTransaction(data.date, data.repeat, false)!;
+                data.next_date = QueryBuilder.switchTransaction(data.date, data.repeat, true)!;
             }
 
             let transactionDate = dayjs.utc(data.date); // Usar la fecha original
@@ -108,7 +108,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                     userId: data.userId,
                     repeat: data.repeat,
                     active: data.repeat === "NEVER" ? false : true,
-                    next_date: data.repeat === "NEVER" ? null : QueryBuilder.switchTransaction(transactionDate.toDate(), data.repeat, false),
+                    next_date: data.repeat === "NEVER" ? null : QueryBuilder.switchTransaction(transactionDate.toDate(), data.repeat, true),
                 });
 
                 transactionDate = dayjs.utc(transactionsToCreate[transactionsToCreate.length - 1].next_date);
