@@ -10,6 +10,9 @@ import { calculateNextDateToTransaction } from "../../works/processRecurringTran
 import { FiltersTransaction } from "../../utils/interfaces/filters-transactions.interface";
 import { QueryBuilder } from "../../utils/query-builder";
 import { BudgetTransactionEntity } from "../../domain/entities/budget/budget-transactions.entity";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 export class TransactionDatasourceImp extends BaseDatasource implements TransactionDatasource {
 
@@ -71,26 +74,55 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
     create(data: CreateTransactionDto[] | CreateTransactionDto): Promise<string | TransactionEntity | CustomResponse> {
         return this.handleErrors(async () => {
-            let transaction;
             if (data instanceof Array) {
                 const createUserOperations = data.map(item =>
                     BaseDatasource.prisma.transaction.create({ data: item })
-                )
-                const transactions = await BaseDatasource.prisma.$transaction(createUserOperations)
+                );
+                const transactions = await BaseDatasource.prisma.$transaction(createUserOperations);
                 transactions.forEach(transaction => {
-                    this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
-                })
-            } else {
-                if (data.repeat !== "NEVER") {
-                    data = calculateNextDateToTransaction(data)
-                }
-                transaction = await BaseDatasource.prisma.transaction.create({ data })
-                this.auditSave(transaction.id, transaction, "CREATE", transaction.userId)
-                return TransactionEntity.fromObject(transaction)
+                    this.auditSave(transaction.id, transaction, "CREATE", transaction.userId);
+                });
+                return "Transactions created successfully";
             }
-            return "Transaction created successfully"
-        })
+
+            const todayUTC = dayjs().utc().startOf("day");
+
+            // Si la transacción se repite, calcular la próxima fecha
+            if (data.repeat !== "NEVER") {
+                data.next_date = QueryBuilder.switchTransaction(data.date, data.repeat, false)!;
+            }
+
+            let transactionDate = dayjs.utc(data.date); // Usar la fecha original
+            let transactionsToCreate = [];
+
+            // 🛠️ Generar transacciones desde la fecha original hasta hoy
+            while (transactionDate.isBefore(todayUTC) || transactionDate.isSame(todayUTC)) {
+                transactionsToCreate.push({
+                    amount: data.amount,
+                    name: data.name,
+                    description: data.description,
+                    type: data.type,
+                    walletId: data.walletId,
+                    categoryId: data.categoryId,
+                    date: transactionDate.toDate(),
+                    userId: data.userId,
+                    repeat: data.repeat,
+                    active: data.repeat === "NEVER" ? false : true,
+                    next_date: data.repeat === "NEVER" ? null : QueryBuilder.switchTransaction(transactionDate.toDate(), data.repeat, false),
+                });
+
+                transactionDate = dayjs.utc(transactionsToCreate[transactionsToCreate.length - 1].next_date);
+            }
+
+            // Crear todas las transacciones generadas
+            const createdTransactions = await BaseDatasource.prisma.transaction.createMany({
+                data: transactionsToCreate
+            });
+
+            return "Transaction(s) created successfully";
+        });
     }
+
 
     getAllWithFilters(
         userId: string, search: string | undefined, page: number, per_page: number, filters: FiltersTransaction): Promise<CustomResponse | TransactionInterface> {
@@ -222,18 +254,22 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
 
     getAllRecurring(): Promise<CustomResponse | TransactionEntity[]> {
         return this.handleErrors(async () => {
-            const today = new Date();
-            today.setUTCHours(0, 0, 0, 0);
+            const todayLocal = dayjs().startOf('day');  // Inicio del día en tu zona horaria
+            const todayUTC = todayLocal.utc().toDate(); // Convertir a UTC
+            const tomorrowUTC = todayLocal.add(1, 'day').utc().toDate();
+
+            console.log("Fechas en UTC:", todayUTC, tomorrowUTC);
+
             const action = await BaseDatasource.prisma.transaction.findMany({
                 where: {
                     AND: [
                         { deleted_at: null },
                         { repeat: { not: "NEVER" } },
-                        { next_date: today },
+                        { next_date: { gte: todayUTC, lt: tomorrowUTC } },  // Rango 00:00 a 23:59 UTC
                         { active: true }
                     ]
                 }
-            })
+            });
             return action.map(transaction => TransactionEntity.fromObject(transaction))
         })
     }

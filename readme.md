@@ -10,3 +10,13 @@
 
 ```npx prisma migrate dev --name init```
 
+5. execute the following commands
+```npm run seed```
+
+```npx run dev``
+
+## if you want to create or update your image in dockerhub, execute the following commands
+
+```docker build -t user-name/name-of-image:latest .```
+
+```docker push bryanmiusuario/miproyecto:latest```

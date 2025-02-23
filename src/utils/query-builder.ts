@@ -1,6 +1,9 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
+dayjs.extend(utc);
+dayjs.extend(isoWeek);
 
 export class QueryBuilder {
 
@@ -20,57 +23,56 @@ export class QueryBuilder {
     };
 
     static switchTransaction = (date: Date, repeat: string, isTransaction: boolean) => {
-        let nextDate;
-        let nextMonthStart
+        const baseDate = dayjs(date).utc().startOf("day"); // Convertimos la fecha a UTC y eliminamos la hora
+        let nextDate: dayjs.Dayjs;
+
+        const originalDay = baseDate.date(); // Guardamos el día original
+
         switch (repeat) {
             case "EVERY DAY":
-                nextDate = dayjs(date).add(1, 'days');
+                nextDate = baseDate.add(1, "day");
                 break;
             case "EVERY TWO DAYS":
-                nextDate = dayjs(date).add(2, 'days');
+                nextDate = baseDate.add(2, "days");
                 break;
             case "EVERY WORKING DAY":
-                const currentDay = dayjs(date).isoWeekday(); // 1 (lunes) a 7 (domingo)
-                nextDate = dayjs(date);
+                let currentDay = baseDate.isoWeekday(); // 1 (lunes) a 7 (domingo)
                 if (currentDay >= 5) {
-                    // Si es viernes o fin de semana, mueve al lunes
-                    nextDate = nextDate.isoWeekday(8); // Próximo lunes
+                    nextDate = baseDate.isoWeekday(8); // Lunes siguiente
                 } else {
-                    // Día hábil normal
-                    nextDate = nextDate.add(1, 'day');
+                    nextDate = baseDate.add(1, "day");
                 }
                 break;
-
             case "EVERY WEEK":
-                nextMonthStart = dayjs(date).add(1, 'week');
+                nextDate = baseDate.add(1, "week");
                 break;
             case "EVERY TWO WEEKS":
-                nextMonthStart = dayjs(date).add(2, 'week');
+                nextDate = baseDate.add(2, "weeks");
                 break;
             case "EVERY MONTH":
-                nextMonthStart = dayjs(date).add(1, 'month');
+                nextDate = baseDate.add(1, "month").set("date", originalDay);
                 break;
             case "EVERY TWO MONTHS":
-                nextMonthStart = dayjs(date).add(2, 'month');
+                nextDate = baseDate.add(2, "months").set("date", originalDay);
                 break;
             case "EVERY THREE MONTHS":
-                nextMonthStart = dayjs(date).add(3, 'month');
+                nextDate = baseDate.add(3, "months").set("date", originalDay);
                 break;
             case "EVERY SIX MONTHS":
-                nextMonthStart = dayjs(date).add(6, 'month');
+                nextDate = baseDate.add(6, "months").set("date", originalDay);
                 break;
             case "EVERY YEAR":
-                nextDate = dayjs(date).add(1, 'year').subtract(1, 'day');
+                nextDate = baseDate.add(1, "year").set("date", originalDay);
                 break;
             case "NEVER":
-                nextDate = null;
-                break;
+                return null;
             default:
                 throw new Error(`Invalid repeat value: ${repeat}`);
         }
-        if (!isTransaction) {
-            nextDate = nextMonthStart!.subtract(1, 'day'); // Último día del mes actual
+        if(!isTransaction){
+            nextDate = nextDate.subtract(1, "day"); // Si es una transacción, devuelve el día anterior al siguiente ajustado al principio de día UTC.
         }
-        return nextDate?.toDate()
-    }
+        return nextDate.utc().toDate(); // Asegurar UTC y formato Date
+    };
+
 }

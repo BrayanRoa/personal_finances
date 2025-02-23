@@ -63,7 +63,7 @@ export function calculateNextDateToBudget(strat_date: Date, repeat: string) {
 export const transactionsRecurring = async () => {
     try {
         const transactions = await new GetAllTransactionRecurring(container.cradle.transactionRepository).execute();
-
+        console.log({transactions});
         if (transactions instanceof Array) {
             const modifiedTransactions = transactions.map(calculateNextDateToTransaction);
 

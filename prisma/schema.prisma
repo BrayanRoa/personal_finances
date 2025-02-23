@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl"]
 }
 
@@ -20,7 +20,7 @@ model User {
   emailValidated Boolean   @default(false)
   email_sent     Boolean   @default(false)
   password       String?
-  authProvider   String?  
+  authProvider   String?
   name           String
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
@@ -53,13 +53,13 @@ model Verification_codes {
 
 model Transaction {
   id          Int       @id @default(autoincrement())
-  date        DateTime
+  date        DateTime  @db.Date
   amount      Float
   name        String
   description String
   type        String
   repeat      String
-  next_date   DateTime?
+  next_date   DateTime? @db.Date // <---- Cambia a @db.Date para solo almacenar la fecha
   active      Boolean
 
   created_at DateTime  @default(now())
@@ -148,13 +148,13 @@ model Budget {
   id               Int              @id @default(autoincrement())
   name             String
   description      String
-  date             DateTime
+  date             DateTime         @db.Date
   end_date         DateTime
   limit_amount     Decimal
   current_amount   Decimal
   repeat           String
   percentage       Decimal
-  next_date        DateTime?
+  next_date        DateTime?        @db.Date
   active           Boolean
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
