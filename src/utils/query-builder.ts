@@ -36,9 +36,9 @@ export class QueryBuilder {
                 nextDate = baseDate.add(2, "days");
                 break;
             case "EVERY WORKING DAY":
-                let currentDay = baseDate.isoWeekday(); // 1 (lunes) a 7 (domingo)
+                let currentDay = baseDate.isoWeekday();
                 if (currentDay >= 5) {
-                    nextDate = baseDate.isoWeekday(8); // Lunes siguiente
+                    nextDate = baseDate.isoWeekday(8);
                 } else {
                     nextDate = baseDate.add(1, "day");
                 }
@@ -50,26 +50,41 @@ export class QueryBuilder {
                 nextDate = baseDate.add(2, "weeks");
                 break;
             case "EVERY MONTH":
-                nextDate = baseDate.add(1, "month").set("date", originalDay);
+                nextDate = baseDate.add(1, "month"); // Suma un mes
+                // Si el mes no tiene el mismo día, ajusta al último día posible
+                nextDate = nextDate.set("date", Math.min(originalDay, nextDate.daysInMonth()));
+                break;
                 break;
             case "EVERY TWO MONTHS":
-                nextDate = baseDate.add(2, "months").set("date", originalDay);
+                nextDate = baseDate.add(2, "months");
+                if (nextDate.date() !== originalDay) {
+                    nextDate = nextDate.set("date", Math.min(originalDay, nextDate.daysInMonth()));
+                }
                 break;
             case "EVERY THREE MONTHS":
-                nextDate = baseDate.add(3, "months").set("date", originalDay);
+                nextDate = baseDate.add(3, "months");
+                if (nextDate.date() !== originalDay) {
+                    nextDate = nextDate.set("date", Math.min(originalDay, nextDate.daysInMonth()));
+                }
                 break;
             case "EVERY SIX MONTHS":
-                nextDate = baseDate.add(6, "months").set("date", originalDay);
+                nextDate = baseDate.add(6, "months");
+                if (nextDate.date() !== originalDay) {
+                    nextDate = nextDate.set("date", Math.min(originalDay, nextDate.daysInMonth()));
+                }
                 break;
             case "EVERY YEAR":
-                nextDate = baseDate.add(1, "year").set("date", originalDay);
+                nextDate = baseDate.add(1, "year");
+                if (nextDate.date() !== originalDay) {
+                    nextDate = nextDate.set("date", Math.min(originalDay, nextDate.daysInMonth()));
+                }
                 break;
             case "NEVER":
                 return null;
             default:
                 throw new Error(`Invalid repeat value: ${repeat}`);
         }
-        if(isTransaction === false){
+        if (isTransaction === false) {
             nextDate = nextDate.subtract(1, "day"); // Si es una transacción, devuelve el día anterior al siguiente ajustado al principio de día UTC.
         }
         return nextDate.utc().toDate(); // Asegurar UTC y formato Date

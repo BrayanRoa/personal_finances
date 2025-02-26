@@ -172,7 +172,12 @@ export class BudgetDatasourceImp extends BaseDatasource implements BudgetDatasou
                         include: {
                             transaction: {
                                 include: {
-                                    category: true,
+                                    category: {
+                                        include:{
+                                            color:true,
+                                            icon:true
+                                        }
+                                    },
                                     wallet: true
                                 }
                             },
