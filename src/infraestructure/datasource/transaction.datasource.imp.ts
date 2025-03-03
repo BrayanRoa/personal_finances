@@ -84,7 +84,7 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
                 });
                 return "Transactions created successfully";
             }
-
+            console.log({ data });
             const todayUTC = dayjs().utc().startOf("day");
 
             // Si la transacción se repite, calcular la próxima fecha
@@ -96,29 +96,49 @@ export class TransactionDatasourceImp extends BaseDatasource implements Transact
             let transactionsToCreate = [];
 
             // 🛠️ Generar transacciones desde la fecha original hasta hoy
-            while (transactionDate.isBefore(todayUTC) || transactionDate.isSame(todayUTC)) {
-                transactionsToCreate.push({
-                    amount: data.amount,
-                    name: data.name,
-                    description: data.description,
-                    type: data.type,
-                    walletId: data.walletId,
-                    categoryId: data.categoryId,
-                    date: transactionDate.toDate(),
-                    userId: data.userId,
-                    repeat: data.repeat,
-                    active: data.repeat === "NEVER" ? false : true,
-                    next_date: data.repeat === "NEVER" ? null : QueryBuilder.switchTransaction(transactionDate.toDate(), data.repeat, true),
-                });
+            if (transactionDate.isBefore(todayUTC) || transactionDate.isSame(todayUTC)) {
 
-                transactionDate = dayjs.utc(transactionsToCreate[transactionsToCreate.length - 1].next_date);
+                while (transactionDate.isBefore(todayUTC) || transactionDate.isSame(todayUTC)) {
+                    transactionsToCreate.push({
+                        amount: data.amount,
+                        name: data.name,
+                        description: data.description,
+                        type: data.type,
+                        walletId: data.walletId,
+                        categoryId: data.categoryId,
+                        date: transactionDate.toDate(),
+                        userId: data.userId,
+                        repeat: data.repeat,
+                        active: data.repeat === "NEVER" ? false : true,
+                        next_date: data.repeat === "NEVER" ? null : QueryBuilder.switchTransaction(transactionDate.toDate(), data.repeat, true),
+                    });
+
+                    transactionDate = dayjs.utc(transactionsToCreate[transactionsToCreate.length - 1].next_date);
+                }
+            } else {
+                // Si la transacción no se repite y la fecha es posterior a hoy, crear solo la transacción original
+                transactionsToCreate = [
+                    {
+                        amount: data.amount,
+                        name: data.name,
+                        description: data.description,
+                        type: data.type,
+                        walletId: data.walletId,
+                        categoryId: data.categoryId,
+                        date: data.date,
+                        userId: data.userId,
+                        repeat: data.repeat,
+                        active: data.repeat === "NEVER" ? false : true,
+                        next_date: data.repeat === "NEVER" ? null : QueryBuilder.switchTransaction(data.date, data.repeat, true),
+                    }
+                ]
             }
 
             // Crear todas las transacciones generadas
             const createdTransactions = await BaseDatasource.prisma.transaction.createMany({
                 data: transactionsToCreate
             });
-
+            console.log({ transactionsToCreate });
             return "Transaction(s) created successfully";
         });
     }
