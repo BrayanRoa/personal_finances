@@ -21,19 +21,6 @@ export class DeleteTransaction implements DeleteTransactionUseCase {
             return deletedTransaction;
         }
 
-        // const transaction = await this.repository.findById(id, user_audits)
-        // if (!(transaction instanceof TransactionEntity)) {
-        //     return transaction;
-        // }
-
-        // const wallet = await this.walletRepository.findById(transaction.walletId, user_audits)
-        // if (!(wallet instanceof WalletEntity)) {
-        //     return wallet
-        // }
-
-        // const newBalance = Number(wallet.balance) + Number(transaction.amount);
-        // await this.walletRepository.update(wallet.id, { balance: newBalance }, user_audits)
-
         return deletedTransaction;
     }
 }

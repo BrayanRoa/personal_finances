@@ -32,18 +32,6 @@ export class CreateTransaction implements CreateTransactionUseCase {
 
             if (walletData instanceof WalletEntity) {
 
-                // const amount = Number(item.amount);
-
-                // if (item.type === 'INCOME') {
-                //     walletData.incomes += amount;
-                //     walletData.balance += amount;
-                // } else {
-                //     walletData.expenses += amount;
-                //     walletData.balance -= amount;
-                // }
-
-                // await this.wallet.update(item.walletId, { balance: walletData.balance, incomes: walletData.incomes, expenses: walletData.expenses }, item.userId)
-
                 if (item.type === "OUTFLOW") {
                     const budget = await this.budget.get_one_by_date(
                         item.walletId, [item.categoryId], item.userId, item.date
