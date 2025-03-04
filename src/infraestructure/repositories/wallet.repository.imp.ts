@@ -29,8 +29,8 @@ export class WalletRepositoryImp implements WalletRepository {
     }
     create(data: CreateWalletDto, user_audits: string): Promise<WalletEntity | CustomResponse> {
         data.name = data.name.toUpperCase()
-        data.balance = data.initial_balance
-        data.incomes = data.initial_balance
+        // data.balance = data.initial_balance
+        // data.incomes = data.initial_balance
         return this.walletDatasource.create(data, user_audits)
     }
     delete(id: number, user_audits: string): Promise<string | CustomResponse> {

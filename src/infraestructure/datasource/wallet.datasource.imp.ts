@@ -59,7 +59,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                 SELECT 
                     w."id",
                     w."name", 
-                    sum(CASE WHEN t."type" = 'INCOME' THEN t."amount" ELSE 0 END) as "incomes",
+                    sum(CASE WHEN t."type" = 'INCOME' and t."name" != 'Initial Balance' THEN t."amount" ELSE 0 END) as "incomes",
                     SUM(CASE WHEN t."type" = 'OUTFLOW' THEN t."amount" ELSE 0 END) as "expenses",
                     w."main_account", 
                     w."initial_balance",
@@ -72,7 +72,7 @@ export class WalletDatasourceImp extends BaseDatasource implements WalletDatasou
                 LEFT JOIN "Transaction" t ON t."walletId" = w."id"
                 WHERE w."deleted_at" IS NULL AND w."userId" = ${userId}
                 AND t."deleted_at" IS NULL 
-                GROUP BY w."id", w."name", w."main_account", w."type_account", w."incomes", w."expenses";
+                GROUP BY w."id", w."name", w."main_account", w."type_account";
             `
 
             return wallets.map(item => WalletEntity.fromObject(item))

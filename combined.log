@@ -231,3 +231,9 @@
 {"clientVersion":"5.22.0","code":"P2024","level":"error","meta":{"connection_limit":9,"modelName":"Transaction","timeout":10},"name":"PrismaClientKnownRequestError","service":"user-service"}
 {"clientVersion":"5.22.0","code":"P2024","level":"error","meta":{"connection_limit":9,"modelName":"Budget","timeout":10},"name":"PrismaClientKnownRequestError","service":"user-service"}
 {"clientVersion":"5.22.0","code":"P1017","level":"error","meta":{"modelName":"Transaction"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.22.0","code":"P2010","level":"error","meta":{"code":"42703","message":"column w.incomes does not exist"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.22.0","code":"P2010","level":"error","meta":{"code":"42703","message":"column w.incomes does not exist"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.22.0","code":"P2010","level":"error","meta":{"code":"42703","message":"column w.incomes does not exist"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.22.0","code":"P2010","level":"error","meta":{"code":"42703","message":"column w.incomes does not exist"},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.22.0","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"'Initial balance'\""},"name":"PrismaClientKnownRequestError","service":"user-service"}
+{"clientVersion":"5.22.0","code":"P2010","level":"error","meta":{"code":"42601","message":"ERROR: syntax error at or near \"'Initial balance'\""},"name":"PrismaClientKnownRequestError","service":"user-service"}

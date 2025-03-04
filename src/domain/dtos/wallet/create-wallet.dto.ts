@@ -19,14 +19,6 @@ export class CreateWalletDto {
 
     @IsNumber()
     @IsOptional()
-    public balance?: number
-
-    // @IsBoolean()
-    // @IsOptional()
-    // public readonly main_account!: boolean
-
-    @IsNumber()
-    @IsOptional()
     public incomes?: number
 
 
