@@ -33,12 +33,12 @@ export class UpdateWalletDto {
     @IsOptional()
     public readonly expenses?: number
     
-    @IsString()
-    @IsOptional()
-    @IsEnum([
-        "CREDIT",
-        "DEBIT",
-    ])
-    public readonly type_account?: string
+    // @IsString()
+    // @IsOptional()
+    // @IsEnum([
+    //     "CREDIT",
+    //     "DEBIT",
+    // ])
+    // public readonly type_account?: string
 
 }

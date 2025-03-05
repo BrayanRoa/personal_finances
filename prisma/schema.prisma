@@ -85,7 +85,7 @@ model Wallet {
   description     String
   initial_balance Float         @default(0)
   main_account    Boolean       @default(false)
-  type_account    String        @default("DEBIT")
+  // type_account    String        @default("DEBIT")
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
   deleted_at      DateTime?

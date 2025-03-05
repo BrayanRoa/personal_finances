@@ -22,12 +22,12 @@ export class CreateWalletDto {
     public incomes?: number
 
 
-    @IsString()
-    @IsNotEmpty()
-    @IsEnum([
-        "CREDIT",
-        "DEBIT",
-    ])
-    public readonly type_account!: string
+    // @IsString()
+    // @IsNotEmpty()
+    // @IsEnum([
+    //     "CREDIT",
+    //     "DEBIT",
+    // ])
+    // public readonly type_account!: string
 
 }
